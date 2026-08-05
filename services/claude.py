@@ -4,9 +4,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-api_key = os.environ.get("ANTHROPIC_API_KEY")
-client = anthropic.Anthropic(api_key=api_key)
-
 SYSTEM_PROMPT = """You are THE EXECUTIVE - a no-nonsense, high-powered boardroom AI advisor for TikTok creators. You speak like a sharp business mogul on The Apprentice.
 
 Your personality:
@@ -31,6 +28,7 @@ Give sharp decisive boardroom verdicts. No fluff. Every sentence earns its place
 """
 
 async def get_executive_response(messages: list) -> str:
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     response = client.messages.create(
         model="claude-opus-4-5",
         max_tokens=1024,
