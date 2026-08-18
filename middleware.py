@@ -123,3 +123,8 @@ def get_api_spend_percentage() -> float:
         return (spend / cap) * 100
     except:
         return 0.0
+
+def is_session_valid(user: User, device_fingerprint: str) -> bool:
+    if not user.session_token or not user.session_device:
+        return True  # no session set yet, treat as valid
+    return user.session_device == device_fingerprint

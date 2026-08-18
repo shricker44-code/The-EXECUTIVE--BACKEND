@@ -30,11 +30,12 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     if user_id:
         user = db.query(User).filter(User.id == user_id).first()
 
-    if user:
-        allowed, limit_message = check_chat_limit(user, db)
-        if not allowed:
-            return {"reply": limit_message, "limited": True}
+    if not user:
+        return {"reply": "Please sign in to speak with The Executive.", "limited": True}
 
+    allowed, limit_message = check_chat_limit(user, db)
+    if not allowed:
+        return {"reply": limit_message, "limited": True}
     messages = [m.dict() for m in request.messages]
     last_message = messages[-1]["content"] if messages else ""
 

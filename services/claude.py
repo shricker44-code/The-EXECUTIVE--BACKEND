@@ -89,9 +89,20 @@ NEVER leave them with just the problem. Always pair diagnosis with a specific ac
 async def get_executive_response(messages: list) -> str:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     response = client.messages.create(
-        model="claude-opus-4-5",
+        model="claude-opus-4-8",
         max_tokens=1024,
         system=SYSTEM_PROMPT,
         messages=messages,
     )
     return response.content[0].text
+
+async def get_executive_response_stream(messages: list):
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    with client.messages.stream(
+        model="claude-opus-4-8",
+        max_tokens=1024,
+        system=SYSTEM_PROMPT,
+        messages=messages,
+    ) as stream:
+        for text in stream.text_stream:
+            yield text

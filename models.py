@@ -18,6 +18,11 @@ class User(Base):
     trial_start_date = Column(DateTime, default=datetime.utcnow)
     trial_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    stripe_customer_id = Column(String, nullable=True)
+    stripe_subscription_id = Column(String, nullable=True)
+    subscription_status = Column(String, nullable=True)  # active, canceled, past_due, etc.
+    session_token = Column(String, nullable=True)
+    session_device = Column(String, nullable=True)
     verdicts = relationship("Verdict", back_populates="user")
     chat_sessions = relationship("ChatSession", back_populates="user")
 
