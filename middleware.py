@@ -69,6 +69,8 @@ def increment_chat_count(user: User, db: Session):
 
     if session:
         session.session_count += 1
+        if not session.session_start:
+            session.session_start = datetime.utcnow()
     else:
         session = ChatSession(
             id=str(uuid.uuid4()),
