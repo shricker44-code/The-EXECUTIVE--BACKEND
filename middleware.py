@@ -37,6 +37,8 @@ def check_trial_message(user: User) -> str | None:
         return get_day7_message(user)
     return TRIAL_MESSAGES.get(trial_day)
 
+SESSION_DURATION_SECONDS = 10 * 60  # 10 minutes
+
 def check_chat_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if user.is_paid:
         return True, None
@@ -51,8 +53,10 @@ def check_chat_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if spend_pct >= 75:
         return False, THROTTLE_MESSAGE
 
-    if session and session.session_count >= FREE_DAILY_CHAT_LIMIT:
-        return False, "You've used your daily boardroom sessions. Your account is at a critical growth point right now. Upgrade to continue — your strategy can't wait."
+    if session and session.session_start:
+        elapsed = (datetime.utcnow() - session.session_start).total_seconds()
+        if elapsed >= SESSION_DURATION_SECONDS:
+            return False, "Your session has ended. That's all the time I have for you today. Upgrade to The Executive Plan for unlimited boardroom time — your strategy can't wait."
 
     return True, None
 
@@ -70,7 +74,8 @@ def increment_chat_count(user: User, db: Session):
             id=str(uuid.uuid4()),
             user_id=user.id,
             date=today,
-            session_count=1
+            session_count=1,
+            session_start=datetime.utcnow(),
         )
         db.add(session)
     db.commit()

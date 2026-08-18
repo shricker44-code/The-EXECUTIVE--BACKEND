@@ -122,3 +122,28 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             yield f"\n\n---\n{trial_message}"
 
     return StreamingResponse(generate(), media_type="text/plain")
+from models import ChatSession
+from datetime import date as date_type
+
+@router.get("/session-status/{user_id}")
+async def session_status(user_id: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return {"unlimited": False, "seconds_remaining": 0}
+
+    if user.is_paid:
+        return {"unlimited": True, "seconds_remaining": None}
+
+    today = str(date_type.today())
+    session = db.query(ChatSession).filter(
+        ChatSession.user_id == user_id,
+        ChatSession.date == today
+    ).first()
+
+    if not session or not session.session_start:
+        return {"unlimited": False, "seconds_remaining": 600, "started": False}
+
+    elapsed = (datetime.utcnow() - session.session_start).total_seconds()
+    remaining = max(0, 600 - elapsed)
+
+    return {"unlimited": False, "seconds_remaining": round(remaining), "started": True}
