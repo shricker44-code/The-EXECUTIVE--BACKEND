@@ -45,11 +45,11 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     if cached:
         return {"reply": cached, "cached": True}
 
-    reply = await get_executive_response(messages)
+    reply, tokens_used = await get_executive_response(messages)
 
     cache_response(last_message, reply, db)
 
-    increment_chat_count(user, db)
+    increment_chat_count(user, db, tokens_used=tokens_used)
 
     trial_message = check_trial_message(user)
     if trial_message:
@@ -97,12 +97,15 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
 
     async def generate():
         full_reply = ""
-        async for chunk in get_executive_response_stream(messages):
+        usage_tracker = {}
+        async for chunk in get_executive_response_stream(messages, usage_tracker):
             full_reply += chunk
             yield chunk
 
+        tokens_used = usage_tracker.get("tokens", 0)
+
         cache_response(last_message, full_reply, db)
-        increment_chat_count(user, db)
+        increment_chat_count(user, db, tokens_used=tokens_used)
 
         trial_message = check_trial_message(user)
         final_reply = full_reply
@@ -122,28 +125,3 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             yield f"\n\n---\n{trial_message}"
 
     return StreamingResponse(generate(), media_type="text/plain")
-from models import ChatSession
-from datetime import date as date_type
-
-@router.get("/session-status/{user_id}")
-async def session_status(user_id: str, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        return {"unlimited": False, "seconds_remaining": 0}
-
-    if user.is_paid:
-        return {"unlimited": True, "seconds_remaining": None}
-
-    today = str(date_type.today())
-    session = db.query(ChatSession).filter(
-        ChatSession.user_id == user_id,
-        ChatSession.date == today
-    ).first()
-
-    if not session or not session.session_start:
-        return {"unlimited": False, "seconds_remaining": 600, "started": False}
-
-    elapsed = (datetime.utcnow() - session.session_start).total_seconds()
-    remaining = max(0, 600 - elapsed)
-
-    return {"unlimited": False, "seconds_remaining": round(remaining), "started": True}

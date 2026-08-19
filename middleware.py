@@ -5,8 +5,8 @@ from sqlalchemy.orm import Session
 from models import User, ChatSession, Verdict, ResponseCache
 import uuid
 
-FREE_DAILY_CHAT_LIMIT = 3
 FREE_MONTHLY_VERDICT_LIMIT = 3
+FREE_SESSION_TOKEN_CAP = 1000
 
 THROTTLE_MESSAGE = "High demand on The Executive right now. Your next session will be available in a few hours. In the meantime review your last verdict and implement before we reconvene."
 
@@ -37,8 +37,6 @@ def check_trial_message(user: User) -> str | None:
         return get_day7_message(user)
     return TRIAL_MESSAGES.get(trial_day)
 
-SESSION_DURATION_SECONDS = 10 * 60  # 10 minutes
-
 def check_chat_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if user.is_paid:
         return True, None
@@ -53,14 +51,12 @@ def check_chat_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if spend_pct >= 75:
         return False, THROTTLE_MESSAGE
 
-    if session and session.session_start:
-        elapsed = (datetime.utcnow() - session.session_start).total_seconds()
-        if elapsed >= SESSION_DURATION_SECONDS:
-            return False, "Your session has ended. That's all the time I have for you today. Upgrade to The Executive Plan for unlimited boardroom time — your strategy can't wait."
+    if session and session.tokens_used >= FREE_SESSION_TOKEN_CAP:
+        return False, "You have your verdict. You have your assignment. My time is valuable. Come back when it's done."
 
     return True, None
 
-def increment_chat_count(user: User, db: Session):
+def increment_chat_count(user: User, db: Session, tokens_used: int = 0):
     today = str(date.today())
     session = db.query(ChatSession).filter(
         ChatSession.user_id == user.id,
@@ -69,6 +65,7 @@ def increment_chat_count(user: User, db: Session):
 
     if session:
         session.session_count += 1
+        session.tokens_used += tokens_used
         if not session.session_start:
             session.session_start = datetime.utcnow()
     else:
@@ -78,9 +75,25 @@ def increment_chat_count(user: User, db: Session):
             date=today,
             session_count=1,
             session_start=datetime.utcnow(),
+            tokens_used=tokens_used,
         )
         db.add(session)
     db.commit()
+
+def get_session_tokens_remaining(user: User, db: Session) -> int | None:
+    if user.is_paid:
+        return None
+
+    today = str(date.today())
+    session = db.query(ChatSession).filter(
+        ChatSession.user_id == user.id,
+        ChatSession.date == today
+    ).first()
+
+    if not session:
+        return FREE_SESSION_TOKEN_CAP
+
+    return max(0, FREE_SESSION_TOKEN_CAP - session.tokens_used)
 
 def check_verdict_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if user.is_paid:

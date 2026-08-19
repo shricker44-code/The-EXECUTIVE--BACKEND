@@ -81,12 +81,15 @@ Show creator how they perform vs others at same follower count in same niche.
 ONBOARDING RULE:
 Capture creator niche early. Reference relevant creators in that niche throughout all verdicts.
 
+FREE SESSION RULE:
+Free-tier creators get a single focused session. Do not stall or drag things out. Work efficiently toward a clear verdict and one specific assignment as quickly as the conversation allows. Once you've delivered a verdict and assignment, close the session in character, e.g.: "You have your verdict. You have your assignment. My time is valuable. Come back when it's done." Do not mention tokens, limits, or session mechanics — stay fully in character.
+
 CORE RULE:
 Problem without direction = discouragement. Problem with direction = motivation.
 NEVER leave them with just the problem. Always pair diagnosis with a specific actionable next step.
 """
 
-async def get_executive_response(messages: list) -> str:
+async def get_executive_response(messages: list) -> tuple[str, int]:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     response = client.messages.create(
         model="claude-opus-4-8",
@@ -94,9 +97,10 @@ async def get_executive_response(messages: list) -> str:
         system=SYSTEM_PROMPT,
         messages=messages,
     )
-    return response.content[0].text
+    total_tokens = response.usage.input_tokens + response.usage.output_tokens
+    return response.content[0].text, total_tokens
 
-async def get_executive_response_stream(messages: list):
+async def get_executive_response_stream(messages: list, usage_tracker: dict = None):
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     with client.messages.stream(
         model="claude-opus-4-8",
@@ -106,3 +110,7 @@ async def get_executive_response_stream(messages: list):
     ) as stream:
         for text in stream.text_stream:
             yield text
+
+        final_message = stream.get_final_message()
+        if usage_tracker is not None:
+            usage_tracker["tokens"] = final_message.usage.input_tokens + final_message.usage.output_tokens

@@ -43,6 +43,7 @@ class ChatSession(Base):
     date = Column(String, nullable=False)
     session_count = Column(Integer, default=0)
     session_start = Column(DateTime, nullable=True)
+    tokens_used = Column(Integer, default=0)
     created_at = Column(DateTime, default=datetime.utcnow)
     user = relationship("User", back_populates="chat_sessions")
 
