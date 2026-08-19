@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Verdict
 from services.claude import get_executive_response, get_executive_response_stream
+from services.tts import synthesize_speech
 from middleware import (
     check_chat_limit, increment_chat_count,
     check_trial_message, get_cached_response, cache_response
@@ -64,7 +65,17 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     db.add(verdict)
     db.commit()
 
-    return {"reply": reply, "limited": False}
+    audio_base64 = None
+    if user.is_paid:
+        try:
+            speech_text = reply
+            if user.first_name:
+                speech_text = f"{user.first_name}. {reply}"
+            audio_base64 = synthesize_speech(speech_text, user.voice_preference or 1)
+        except Exception as e:
+            print(f"TTS generation failed: {e}")
+
+    return {"reply": reply, "limited": False, "audio": audio_base64}
 
 
 @router.post("/stream")
@@ -125,3 +136,23 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             yield f"\n\n---\n{trial_message}"
 
     return StreamingResponse(generate(), media_type="text/plain")
+
+
+class TTSRequest(BaseModel):
+    text: str
+    user_id: str
+
+@router.post("/tts")
+async def generate_tts(request: TTSRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == request.user_id).first()
+    if not user or not user.is_paid:
+        return {"audio": None, "error": "TTS is a paid feature"}
+
+    try:
+        speech_text = request.text
+        if user.first_name:
+            speech_text = f"{user.first_name}. {request.text}"
+        audio_base64 = synthesize_speech(speech_text, user.voice_preference or 1)
+        return {"audio": audio_base64}
+    except Exception as e:
+        return {"audio": None, "error": str(e)}
