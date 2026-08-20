@@ -1,35 +1,24 @@
 import os
-from google.cloud import texttospeech
+from elevenlabs.client import ElevenLabs
 import base64
 
-VOICES = {
-    1: {"name": "en-GB-Neural2-B", "gender": texttospeech.SsmlVoiceGender.MALE},
-    2: {"name": "en-GB-Neural2-D", "gender": texttospeech.SsmlVoiceGender.MALE},
-    3: {"name": "en-GB-Wavenet-B", "gender": texttospeech.SsmlVoiceGender.MALE},
-}
-
 def synthesize_speech(text: str, voice_preference: int = 1) -> str:
-    client = texttospeech.TextToSpeechClient()
+    client = ElevenLabs(api_key=os.environ.get("ELEVENLABS_API_KEY"))
 
-    voice_config = VOICES.get(voice_preference, VOICES[1])
+    voice_id = os.environ.get("ELEVENLABS_VOICE_ID")
 
-    synthesis_input = texttospeech.SynthesisInput(text=text)
-
-    voice = texttospeech.VoiceSelectionParams(
-        language_code="en-GB",
-        name=voice_config["name"],
-        ssml_gender=voice_config["gender"],
+    audio_generator = client.text_to_speech.convert(
+        voice_id=voice_id,
+        text=text,
+        model_id="eleven_multilingual_v2",
+        voice_settings={
+            "stability": 0.5,
+            "similarity_boost": 0.75,
+            "style": 0.3,
+            "speed": 0.92,
+        },
     )
 
-    audio_config = texttospeech.AudioConfig(
-        audio_encoding=texttospeech.AudioEncoding.MP3,
-        speaking_rate=0.90,
-        pitch=-4.0,
-    )
-
-    response = client.synthesize_speech(
-        input=synthesis_input, voice=voice, audio_config=audio_config
-    )
-
-    audio_base64 = base64.b64encode(response.audio_content).decode("utf-8")
+    audio_bytes = b"".join(audio_generator)
+    audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
     return audio_base64
