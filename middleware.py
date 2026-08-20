@@ -32,6 +32,9 @@ def get_day7_message(user: User) -> str:
     return f"We're halfway through your trial. Based on your posting schedule, you should have {expected} posts live by now. If you're behind — that's your biggest problem, not your strategy. What's stopping you?"
 
 def check_trial_message(user: User) -> str | None:
+    if user.is_paid:
+        return None
+
     trial_day = get_trial_day(user)
     if trial_day == 7:
         return get_day7_message(user)
