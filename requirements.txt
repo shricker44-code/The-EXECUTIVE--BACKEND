@@ -10,4 +10,4 @@ alembic
 supabase
 pywebpush
 stripe
-google-cloud-texttospeech
+elevenlabs
