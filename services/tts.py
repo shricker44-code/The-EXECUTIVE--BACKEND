@@ -19,6 +19,8 @@ def synthesize_speech(text: str, voice_preference: int = 1) -> str:
         },
     )
 
-    response.raise_for_status()
+    if not response.ok:
+        raise Exception(f"Inworld TTS error {response.status_code}: {response.text}")
+
     data = response.json()
     return data["audioContent"]
