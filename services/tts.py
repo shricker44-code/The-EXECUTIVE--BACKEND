@@ -3,9 +3,9 @@ from google.cloud import texttospeech
 import base64
 
 VOICES = {
-    1: {"name": "en-US-Chirp3-HD-Charon", "gender": texttospeech.SsmlVoiceGender.MALE},
-    2: {"name": "en-US-Chirp3-HD-Fenrir", "gender": texttospeech.SsmlVoiceGender.MALE},
-    3: {"name": "en-US-Chirp3-HD-Orus", "gender": texttospeech.SsmlVoiceGender.MALE},
+    1: {"name": "en-GB-Neural2-B", "gender": texttospeech.SsmlVoiceGender.MALE},
+    2: {"name": "en-GB-Neural2-D", "gender": texttospeech.SsmlVoiceGender.MALE},
+    3: {"name": "en-GB-Wavenet-B", "gender": texttospeech.SsmlVoiceGender.MALE},
 }
 
 def synthesize_speech(text: str, voice_preference: int = 1) -> str:
@@ -16,13 +16,15 @@ def synthesize_speech(text: str, voice_preference: int = 1) -> str:
     synthesis_input = texttospeech.SynthesisInput(text=text)
 
     voice = texttospeech.VoiceSelectionParams(
-        language_code="en-US",
+        language_code="en-GB",
         name=voice_config["name"],
         ssml_gender=voice_config["gender"],
     )
 
     audio_config = texttospeech.AudioConfig(
         audio_encoding=texttospeech.AudioEncoding.MP3,
+        speaking_rate=0.90,
+        pitch=-4.0,
     )
 
     response = client.synthesize_speech(
