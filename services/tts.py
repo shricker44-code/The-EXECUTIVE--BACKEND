@@ -1,24 +1,24 @@
 import os
-from elevenlabs.client import ElevenLabs
+import requests
 import base64
 
 def synthesize_speech(text: str, voice_preference: int = 1) -> str:
-    client = ElevenLabs(api_key=os.environ.get("ELEVENLABS_API_KEY"))
+    api_key = os.environ.get("INWORLD_API_KEY")
+    voice_id = os.environ.get("INWORLD_VOICE_ID")
 
-    voice_id = os.environ.get("ELEVENLABS_VOICE_ID")
-
-    audio_generator = client.text_to_speech.convert(
-        voice_id=voice_id,
-        text=text,
-        model_id="eleven_multilingual_v2",
-        voice_settings={
-            "stability": 0.5,
-            "similarity_boost": 0.75,
-            "style": 0.3,
-            "speed": 0.92,
+    response = requests.post(
+        "https://api.inworld.ai/tts/v1/voice",
+        headers={
+            "Authorization": f"Basic {api_key}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "text": text,
+            "voiceId": voice_id,
+            "modelId": "inworld-tts-2",
         },
     )
 
-    audio_bytes = b"".join(audio_generator)
-    audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
-    return audio_base64
+    response.raise_for_status()
+    data = response.json()
+    return data["audioContent"]
