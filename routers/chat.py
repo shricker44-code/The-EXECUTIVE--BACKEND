@@ -68,10 +68,7 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     audio_base64 = None
     if user.is_paid:
         try:
-            speech_text = reply
-            if user.first_name:
-                speech_text = f"{user.first_name}. {reply}"
-            audio_base64 = synthesize_speech(speech_text, user.voice_preference or 1)
+            audio_base64 = synthesize_speech(reply, user.voice_preference or 1)
         except Exception as e:
             print(f"TTS generation failed: {e}")
 
@@ -149,10 +146,7 @@ async def generate_tts(request: TTSRequest, db: Session = Depends(get_db)):
         return {"audio": None, "error": "TTS is a paid feature"}
 
     try:
-        speech_text = request.text
-        if user.first_name:
-            speech_text = f"{user.first_name}. {request.text}"
-        audio_base64 = synthesize_speech(speech_text, user.voice_preference or 1)
+        audio_base64 = synthesize_speech(request.text, user.voice_preference or 1)
         return {"audio": audio_base64}
     except Exception as e:
         return {"audio": None, "error": str(e)}
