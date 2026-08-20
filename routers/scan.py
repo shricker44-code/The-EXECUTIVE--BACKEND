@@ -7,6 +7,7 @@ from services.scanner import scan_content
 from middleware import check_verdict_limit
 import uuid
 from datetime import datetime
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -45,3 +46,14 @@ async def scan(
     db.commit()
 
     return {"verdict": result, "limited": False}
+
+class QuickScanRequest(BaseModel):
+    niche: str
+    followers: str
+    views: str
+
+@router.post("/quick")
+async def quick_scan(request: QuickScanRequest):
+    from services.claude import get_quick_scan_hook
+    hook = await get_quick_scan_hook(request.niche, request.followers, request.views)
+    return {"hook": hook}

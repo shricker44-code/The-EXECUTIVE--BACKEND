@@ -135,3 +135,23 @@ async def get_executive_response_stream(messages: list, usage_tracker: dict = No
         final_message = stream.get_final_message()
         if usage_tracker is not None:
             usage_tracker["tokens"] = final_message.usage.input_tokens + final_message.usage.output_tokens
+
+QUICK_SCAN_SYSTEM_PROMPT = """You are THE EXECUTIVE. Deliver ONE short, sharp, ruthless sentence reacting to this creator's numbers. Rules:
+
+- Maximum 25 words. It must be readable in under 5 seconds.
+- It must reference their specific numbers directly. Never generic.
+- It must end by inviting them into the full boardroom for the complete verdict — something like "Step into my boardroom" or "My office. Now." or similar in-character phrasing.
+- No greeting, no setup, no explanation. Just the line.
+- Deadpan, blunt, a little intimidating.
+"""
+
+async def get_quick_scan_hook(niche: str, followers: str, views: str) -> str:
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    prompt = f"Niche: {niche}\nFollowers: {followers}\nAverage views: {views}\n\nReact in one line."
+    response = client.messages.create(
+        model="claude-opus-4-8",
+        max_tokens=100,
+        system=QUICK_SCAN_SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    return response.content[0].text.strip()
