@@ -29,7 +29,9 @@ What is working. What is dead weight. What needs to change. Now."""
             "role": "user",
             "content": [
                 {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64_image}},
-                {"type": "text", "text": "This is a screenshot of my TikTok analytics. Scan it and deliver your full boardroom verdict. What is working. What is failing. What changes immediately."}
+                {"type": "text", "text": """This is a screenshot of my TikTok analytics page. Read every number visible in this screenshot precisely — follower count, total likes, engagement rate, watch time percentage, completion rate, profile visits, and any top-performing video data shown.
+
+Extract and state the exact numbers you see before giving your verdict, so I know you actually read my data and did not guess. Then deliver your full boardroom verdict using those exact numbers per your specificity requirements. What is working. What is failing. What changes immediately."""}
             ],
         })
 
@@ -47,7 +49,7 @@ What is working. What is dead weight. What needs to change. No fluff."""
         return "No content submitted. The Executive does not work with nothing. Give me something to analyze."
 
     response = client.messages.create(
-        model="claude-opus-4-5",
+        model="claude-opus-4-8",
         max_tokens=1024,
         system=SYSTEM_PROMPT,
         messages=messages,
