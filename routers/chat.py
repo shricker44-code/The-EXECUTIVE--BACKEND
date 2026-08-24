@@ -9,7 +9,8 @@ from services.claude import get_executive_response, get_executive_response_strea
 from services.tts import synthesize_speech
 from middleware import (
     check_chat_limit, increment_chat_count,
-    check_trial_message, get_cached_response, cache_response
+    check_trial_message, get_cached_response, cache_response,
+    get_model_for_user
 )
 import uuid
 from datetime import datetime
@@ -46,7 +47,10 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     if cached:
         return {"reply": cached, "cached": True}
 
-    reply, tokens_used = await get_executive_response(messages)
+    model = get_model_for_user(user)
+    print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
+
+    reply, tokens_used = await get_executive_response(messages, model=model)
 
     cache_response(last_message, reply, db)
 
@@ -103,10 +107,13 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             yield cached
         return StreamingResponse(cached_gen(), media_type="text/plain")
 
+    model = get_model_for_user(user)
+    print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
+
     async def generate():
         full_reply = ""
         usage_tracker = {}
-        async for chunk in get_executive_response_stream(messages, usage_tracker):
+        async for chunk in get_executive_response_stream(messages, usage_tracker, model=model):
             full_reply += chunk
             yield chunk
 

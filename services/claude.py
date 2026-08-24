@@ -220,10 +220,10 @@ Problem without direction = discouragement. Problem with direction = motivation.
 NEVER leave them with just the problem. Always pair diagnosis with a specific actionable next step.
 """
 
-async def get_executive_response(messages: list) -> tuple[str, int]:
+async def get_executive_response(messages: list, model: str = "claude-opus-4-8") -> tuple[str, int]:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     response = client.messages.create(
-        model="claude-opus-4-8",
+        model=model,
         max_tokens=1024,
         system=SYSTEM_PROMPT,
         messages=messages,
@@ -231,10 +231,10 @@ async def get_executive_response(messages: list) -> tuple[str, int]:
     total_tokens = response.usage.input_tokens + response.usage.output_tokens
     return response.content[0].text, total_tokens
 
-async def get_executive_response_stream(messages: list, usage_tracker: dict = None):
+async def get_executive_response_stream(messages: list, usage_tracker: dict = None, model: str = "claude-opus-4-8"):
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     with client.messages.stream(
-        model="claude-opus-4-8",
+        model=model,
         max_tokens=1024,
         system=SYSTEM_PROMPT,
         messages=messages,

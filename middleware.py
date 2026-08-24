@@ -6,9 +6,12 @@ from models import User, ChatSession, Verdict, ResponseCache
 import uuid
 
 FREE_MONTHLY_VERDICT_LIMIT = 3
-FREE_SESSION_TOKEN_CAP = 1000
+FREE_SESSION_TOKEN_CAP = 15000  # raised from 1000 — system prompt alone can exceed the old cap
+TRIAL_DURATION_DAYS = 14
 
 THROTTLE_MESSAGE = "High demand on The Executive right now. Your next session will be available in a few hours. In the meantime review your last verdict and implement before we reconvene."
+
+TRIAL_EXPIRED_MESSAGE = "Your fourteen days are up. That was plenty of time to prove you were serious. If you want back in my boardroom, upgrade. The door reopens the moment you do."
 
 TRIAL_MESSAGES = {
     1: "You have 14 days. Every day you don't post is a day wasted. Your first assignment is due tomorrow. Come back after you've posted and we'll assess.",
@@ -21,6 +24,14 @@ def get_trial_day(user: User) -> int:
         return 1
     delta = datetime.utcnow() - user.trial_start_date
     return delta.days + 1
+
+def check_trial_expired(user: User) -> bool:
+    if user.is_paid:
+        return False
+    return get_trial_day(user) > TRIAL_DURATION_DAYS
+
+def get_model_for_user(user: User) -> str:
+    return "claude-opus-4-8" if user.is_paid else "claude-sonnet-5"
 
 def get_day7_message(user: User) -> str:
     freq = user.posting_frequency or "3x per week"
@@ -43,6 +54,9 @@ def check_trial_message(user: User) -> str | None:
 def check_chat_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if user.is_paid:
         return True, None
+
+    if check_trial_expired(user):
+        return False, TRIAL_EXPIRED_MESSAGE
 
     today = str(date.today())
     session = db.query(ChatSession).filter(
@@ -101,6 +115,9 @@ def get_session_tokens_remaining(user: User, db: Session) -> int | None:
 def check_verdict_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if user.is_paid:
         return True, None
+
+    if check_trial_expired(user):
+        return False, TRIAL_EXPIRED_MESSAGE
 
     month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0)
     verdict_count = db.query(Verdict).filter(
