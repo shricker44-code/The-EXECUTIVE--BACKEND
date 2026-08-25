@@ -25,6 +25,26 @@ class ChatRequest(BaseModel):
     messages: List[Message]
     user_id: Optional[str] = None
 
+
+def build_history_summary(user, db, limit=5):
+    past_verdicts = (
+        db.query(Verdict)
+        .filter(Verdict.user_id == user.id)
+        .order_by(Verdict.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+    if not past_verdicts:
+        return ""
+
+    lines = []
+    for v in reversed(past_verdicts):
+        date_str = v.created_at.strftime("%b %d")
+        snippet = v.content[:200].replace("\n", " ")
+        lines.append(f"[{date_str}] {snippet}...")
+    return "\n".join(lines)
+
+
 @router.post("/")
 async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     user_id = request.user_id
@@ -50,7 +70,9 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     model = get_model_for_user(user)
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
-    reply, tokens_used = await get_executive_response(messages, model=model)
+    history_summary = build_history_summary(user, db)
+
+    reply, tokens_used = await get_executive_response(messages, model=model, history_summary=history_summary)
 
     cache_response(last_message, reply, db)
 
@@ -110,10 +132,12 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
     model = get_model_for_user(user)
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
+    history_summary = build_history_summary(user, db)
+
     async def generate():
         full_reply = ""
         usage_tracker = {}
-        async for chunk in get_executive_response_stream(messages, usage_tracker, model=model):
+        async for chunk in get_executive_response_stream(messages, usage_tracker, model=model, history_summary=history_summary):
             full_reply += chunk
             yield chunk
 
