@@ -1,0 +1,81 @@
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from database import get_db
+from models import User, Account
+import uuid
+from datetime import datetime
+
+router = APIRouter()
+
+MAX_ACCOUNTS = 3
+
+
+class CreateAccountRequest(BaseModel):
+    user_id: str
+    label: str
+
+
+@router.post("/")
+async def create_account(request: CreateAccountRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not user.has_multi_account:
+        raise HTTPException(
+            status_code=403,
+            detail="Multi-account access requires the Executive Multi-Account plan."
+        )
+
+    existing_count = db.query(Account).filter(Account.user_id == user.id).count()
+    if existing_count >= MAX_ACCOUNTS:
+        raise HTTPException(
+            status_code=403,
+            detail=f"You've reached the {MAX_ACCOUNTS}-account limit for your plan."
+        )
+
+    account = Account(
+        id=str(uuid.uuid4()),
+        user_id=user.id,
+        label=request.label,
+        created_at=datetime.utcnow(),
+    )
+    db.add(account)
+    db.commit()
+
+    return {
+        "success": True,
+        "account": {
+            "id": account.id,
+            "label": account.label,
+        }
+    }
+
+
+@router.get("/{user_id}")
+async def list_accounts(user_id: str, db: Session = Depends(get_db)):
+    accounts = db.query(Account).filter(Account.user_id == user_id).order_by(Account.created_at).all()
+    return {
+        "accounts": [
+            {
+                "id": a.id,
+                "label": a.label,
+                "last_follower_count": a.last_follower_count,
+                "last_engagement_rate": a.last_engagement_rate,
+            }
+            for a in accounts
+        ]
+    }
+
+
+@router.delete("/{account_id}")
+async def delete_account(account_id: str, user_id: str, db: Session = Depends(get_db)):
+    account = db.query(Account).filter(Account.id == account_id, Account.user_id == user_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+
+    db.delete(account)
+    db.commit()
+
+    return {"success": True}

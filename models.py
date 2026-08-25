@@ -30,7 +30,17 @@ class User(Base):
     daily_report_time = Column(String, nullable=True)
     timezone = Column(String, nullable=True)
     verdicts = relationship("Verdict", back_populates="user")
+    has_multi_account = Column(Boolean, default=False)
     chat_sessions = relationship("ChatSession", back_populates="user")
+
+class Account(Base):
+    __tablename__ = "accounts"
+    id = Column(String, primary_key=True)
+    user_id = Column(String, ForeignKey("users.id"))
+    label = Column(String, nullable=False)  # e.g. "@mainaccount" or a nickname
+    last_follower_count = Column(Integer, nullable=True)
+    last_engagement_rate = Column(Float, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class Verdict(Base):
     __tablename__ = "verdicts"
@@ -41,6 +51,7 @@ class Verdict(Base):
     posted_after = Column(Boolean, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     user = relationship("User", back_populates="verdicts")
+    account_id = Column(String, ForeignKey("accounts.id"), nullable=True)
 
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
