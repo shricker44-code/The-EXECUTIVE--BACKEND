@@ -7,11 +7,14 @@ import uuid
 
 FREE_MONTHLY_VERDICT_LIMIT = 3
 FREE_SESSION_TOKEN_CAP = 15000  # raised from 1000 — system prompt alone can exceed the old cap
+PAID_SESSION_TOKEN_CAP = 75000  # generous ceiling so no normal user hits it, but caps worst-case spend
 TRIAL_DURATION_DAYS = 14
 
 THROTTLE_MESSAGE = "High demand on The Executive right now. Your next session will be available in a few hours. In the meantime review your last verdict and implement before we reconvene."
 
 TRIAL_EXPIRED_MESSAGE = "Your fourteen days are up. That was plenty of time to prove you were serious. If you want back in my boardroom, upgrade. The door reopens the moment you do."
+
+PAID_CAP_MESSAGE = "You have your verdict. You have your assignment. My time is valuable. Come back tomorrow."
 
 TRIAL_MESSAGES = {
     1: "You have 14 days. Every day you don't post is a day wasted. Your first assignment is due tomorrow. Come back after you've posted and we'll assess.",
@@ -52,10 +55,7 @@ def check_trial_message(user: User) -> str | None:
     return TRIAL_MESSAGES.get(trial_day)
 
 def check_chat_limit(user: User, db: Session) -> tuple[bool, str | None]:
-    if user.is_paid:
-        return True, None
-
-    if check_trial_expired(user):
+    if not user.is_paid and check_trial_expired(user):
         return False, TRIAL_EXPIRED_MESSAGE
 
     today = str(date.today())
@@ -68,7 +68,12 @@ def check_chat_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if spend_pct >= 75:
         return False, THROTTLE_MESSAGE
 
-    if session and session.tokens_used >= FREE_SESSION_TOKEN_CAP:
+    cap = PAID_SESSION_TOKEN_CAP if user.is_paid else FREE_SESSION_TOKEN_CAP
+
+    if session and session.tokens_used >= cap:
+        if user.is_paid:
+            print(f"PAID CAP HIT: user={user.id} tokens_used={session.tokens_used} cap={cap} timestamp={datetime.utcnow().isoformat()}")
+            return False, PAID_CAP_MESSAGE
         return False, "You have your verdict. You have your assignment. My time is valuable. Come back when it's done."
 
     return True, None
@@ -98,19 +103,18 @@ def increment_chat_count(user: User, db: Session, tokens_used: int = 0):
     db.commit()
 
 def get_session_tokens_remaining(user: User, db: Session) -> int | None:
-    if user.is_paid:
-        return None
-
     today = str(date.today())
     session = db.query(ChatSession).filter(
         ChatSession.user_id == user.id,
         ChatSession.date == today
     ).first()
 
-    if not session:
-        return FREE_SESSION_TOKEN_CAP
+    cap = PAID_SESSION_TOKEN_CAP if user.is_paid else FREE_SESSION_TOKEN_CAP
 
-    return max(0, FREE_SESSION_TOKEN_CAP - session.tokens_used)
+    if not session:
+        return cap
+
+    return max(0, cap - session.tokens_used)
 
 def check_verdict_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if user.is_paid:

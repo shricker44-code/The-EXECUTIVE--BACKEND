@@ -34,6 +34,8 @@ async def scan(
         tiktok_url=tiktok_url,
         manual_input=manual_input,
         screenshot=screenshot,
+        user=user,
+        db=db,
     )
 
     verdict = Verdict(

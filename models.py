@@ -1,4 +1,4 @@
-﻿from sqlalchemy import Column, String, Integer, Boolean, DateTime, Text, ForeignKey
+﻿from sqlalchemy import Column, String, Integer, Boolean, DateTime, Text, ForeignKey, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from database import Base
@@ -24,6 +24,8 @@ class User(Base):
     session_token = Column(String, nullable=True)
     session_device = Column(String, nullable=True)
     push_subscription = Column(Text, nullable=True)
+    last_follower_count = Column(Integer, nullable=True)
+    last_engagement_rate = Column(Float, nullable=True)
     daily_report_time = Column(String, nullable=True)
     timezone = Column(String, nullable=True)
     verdicts = relationship("Verdict", back_populates="user")
