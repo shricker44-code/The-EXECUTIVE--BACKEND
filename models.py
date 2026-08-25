@@ -23,6 +23,9 @@ class User(Base):
     subscription_status = Column(String, nullable=True)  # active, canceled, past_due, etc.
     session_token = Column(String, nullable=True)
     session_device = Column(String, nullable=True)
+    push_subscription = Column(Text, nullable=True)
+    daily_report_time = Column(String, nullable=True)
+    timezone = Column(String, nullable=True)
     verdicts = relationship("Verdict", back_populates="user")
     chat_sessions = relationship("ChatSession", back_populates="user")
 
