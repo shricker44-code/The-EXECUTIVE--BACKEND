@@ -276,3 +276,17 @@ async def get_quick_scan_hook(niche: str, followers: str, views: str) -> str:
         messages=[{"role": "user", "content": prompt}],
     )
     return response.content[0].text.strip()
+
+ASSIGNMENT_EXTRACTION_PROMPT = """Extract ONLY the specific assignment/task given at the end of this verdict, as one short sentence, no preamble, no quotation marks. If there is no clear assignment, respond with exactly: none
+
+Verdict text:
+"""
+
+async def get_assignment_summary(verdict_text: str) -> str:
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    response = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=60,
+        messages=[{"role": "user", "content": ASSIGNMENT_EXTRACTION_PROMPT + verdict_text}],
+    )
+    return response.content[0].text.strip()

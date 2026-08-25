@@ -5,7 +5,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Verdict
-from services.claude import get_executive_response, get_executive_response_stream
+from services.claude import get_executive_response, get_executive_response_stream, get_assignment_summary
 from services.tts import synthesize_speech
 from middleware import (
     check_chat_limit, increment_chat_count,
@@ -16,6 +16,12 @@ import uuid
 from datetime import datetime
 
 router = APIRouter()
+
+GAP_THRESHOLD_DAYS = 5
+
+POSTED_YES_PHRASE = "I posted since my last verdict."
+POSTED_NO_PHRASE = "I haven't posted since my last verdict yet."
+
 
 class Message(BaseModel):
     role: str
@@ -45,6 +51,59 @@ def build_history_summary(user, db, limit=5):
     return "\n".join(lines)
 
 
+def handle_posted_after_update(last_message: str, user, db):
+    """If the user just answered the posted/not-posted prompt, record it on their most recent verdict."""
+    last_verdict = (
+        db.query(Verdict)
+        .filter(Verdict.user_id == user.id)
+        .order_by(Verdict.created_at.desc())
+        .first()
+    )
+    if not last_verdict:
+        return
+
+    if last_message.strip() == POSTED_YES_PHRASE:
+        last_verdict.posted_after = True
+        db.commit()
+    elif last_message.strip() == POSTED_NO_PHRASE:
+        last_verdict.posted_after = False
+        db.commit()
+
+
+def get_gap_context(user, db) -> str:
+    """
+    Returns a note for the system prompt when the user is returning after a
+    meaningful gap (5+ days), optionally combined with a still-pending assignment.
+    Returns "" when the gap is under threshold — no mention wanted on normal returns.
+    """
+    last_verdict = (
+        db.query(Verdict)
+        .filter(Verdict.user_id == user.id)
+        .order_by(Verdict.created_at.desc())
+        .first()
+    )
+    if not last_verdict:
+        return ""
+
+    days_since = (datetime.utcnow() - last_verdict.created_at).days
+    if days_since < GAP_THRESHOLD_DAYS:
+        return ""
+
+    pending = last_verdict.assignment and last_verdict.assignment.lower() != "none" and last_verdict.posted_after is None
+
+    if pending:
+        return (
+            f"TIME GAP NOTE: It has been {days_since} days since the creator's last session. "
+            f"Their pending assignment from that session was: \"{last_verdict.assignment}\" — status unknown, never confirmed. "
+            f"Acknowledge the time gap explicitly, matter-of-fact not scolding, AND check on that specific assignment in the same response — do not send two separate messages for this."
+        )
+
+    return (
+        f"TIME GAP NOTE: It has been {days_since} days since the creator's last session. "
+        f"Acknowledge this gap explicitly and matter-of-factly before addressing their new data — do not treat this as a blank-slate first session."
+    )
+
+
 @router.post("/")
 async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     user_id = request.user_id
@@ -63,6 +122,8 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     messages = [m.dict() for m in request.messages]
     last_message = messages[-1]["content"] if messages else ""
 
+    handle_posted_after_update(last_message, user, db)
+
     cached = get_cached_response(last_message, db)
     if cached:
         return {"reply": cached, "cached": True}
@@ -71,6 +132,9 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
     history_summary = build_history_summary(user, db)
+    gap_context = get_gap_context(user, db)
+    if gap_context:
+        history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
 
     reply, tokens_used = await get_executive_response(messages, model=model, history_summary=history_summary)
 
@@ -82,10 +146,19 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     if trial_message:
         reply = f"{reply}\n\n---\n{trial_message}"
 
+    try:
+        assignment_summary = await get_assignment_summary(reply)
+        if assignment_summary.lower() == "none":
+            assignment_summary = None
+    except Exception as e:
+        print(f"Assignment extraction failed: {e}")
+        assignment_summary = None
+
     verdict = Verdict(
         id=str(uuid.uuid4()),
         user_id=user.id,
         content=reply,
+        assignment=assignment_summary,
         created_at=datetime.utcnow()
     )
     db.add(verdict)
@@ -123,6 +196,8 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
     messages = [m.dict() for m in request.messages]
     last_message = messages[-1]["content"] if messages else ""
 
+    handle_posted_after_update(last_message, user, db)
+
     cached = get_cached_response(last_message, db)
     if cached:
         def cached_gen():
@@ -133,6 +208,9 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
     history_summary = build_history_summary(user, db)
+    gap_context = get_gap_context(user, db)
+    if gap_context:
+        history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
 
     async def generate():
         full_reply = ""
@@ -151,10 +229,19 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
         if trial_message:
             final_reply = f"{full_reply}\n\n---\n{trial_message}"
 
+        try:
+            assignment_summary = await get_assignment_summary(final_reply)
+            if assignment_summary.lower() == "none":
+                assignment_summary = None
+        except Exception as e:
+            print(f"Assignment extraction failed: {e}")
+            assignment_summary = None
+
         verdict = Verdict(
             id=str(uuid.uuid4()),
             user_id=user.id,
             content=final_reply,
+            assignment=assignment_summary,
             created_at=datetime.utcnow()
         )
         db.add(verdict)
