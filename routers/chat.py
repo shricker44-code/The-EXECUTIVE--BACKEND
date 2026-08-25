@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from database import get_db
-from models import User, Verdict
+from models import User, Verdict, Account
 from services.claude import get_executive_response, get_executive_response_stream, get_assignment_summary
 from services.tts import synthesize_speech
 from middleware import (
@@ -30,12 +30,27 @@ class Message(BaseModel):
 class ChatRequest(BaseModel):
     messages: List[Message]
     user_id: Optional[str] = None
+    account_id: Optional[str] = None
 
 
-def build_history_summary(user, db, limit=5):
+def get_verdict_query(user, account_id, db):
+    """
+    Scopes verdict lookups to a specific account when one is selected.
+    When no account_id is given, scopes to the user's own (account-less)
+    verdicts only — keeps a multi-account user's default history separate
+    from any account they've since created.
+    """
+    query = db.query(Verdict).filter(Verdict.user_id == user.id)
+    if account_id:
+        query = query.filter(Verdict.account_id == account_id)
+    else:
+        query = query.filter(Verdict.account_id.is_(None))
+    return query
+
+
+def build_history_summary(user, account_id, db, limit=5):
     past_verdicts = (
-        db.query(Verdict)
-        .filter(Verdict.user_id == user.id)
+        get_verdict_query(user, account_id, db)
         .order_by(Verdict.created_at.desc())
         .limit(limit)
         .all()
@@ -51,11 +66,10 @@ def build_history_summary(user, db, limit=5):
     return "\n".join(lines)
 
 
-def handle_posted_after_update(last_message: str, user, db):
+def handle_posted_after_update(last_message: str, user, account_id, db):
     """If the user just answered the posted/not-posted prompt, record it on their most recent verdict."""
     last_verdict = (
-        db.query(Verdict)
-        .filter(Verdict.user_id == user.id)
+        get_verdict_query(user, account_id, db)
         .order_by(Verdict.created_at.desc())
         .first()
     )
@@ -70,15 +84,14 @@ def handle_posted_after_update(last_message: str, user, db):
         db.commit()
 
 
-def get_gap_context(user, db) -> str:
+def get_gap_context(user, account_id, db) -> str:
     """
     Returns a note for the system prompt when the user is returning after a
     meaningful gap (5+ days), optionally combined with a still-pending assignment.
     Returns "" when the gap is under threshold — no mention wanted on normal returns.
     """
     last_verdict = (
-        db.query(Verdict)
-        .filter(Verdict.user_id == user.id)
+        get_verdict_query(user, account_id, db)
         .order_by(Verdict.created_at.desc())
         .first()
     )
@@ -107,6 +120,7 @@ def get_gap_context(user, db) -> str:
 @router.post("/")
 async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     user_id = request.user_id
+    account_id = request.account_id
     user = None
 
     if user_id:
@@ -115,6 +129,11 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     if not user:
         return {"reply": "Please sign in to speak with The Executive.", "limited": True}
 
+    if account_id:
+        account = db.query(Account).filter(Account.id == account_id, Account.user_id == user.id).first()
+        if not account:
+            return {"reply": "That account could not be found on your profile.", "limited": True}
+
     allowed, limit_message = check_chat_limit(user, db)
     if not allowed:
         return {"reply": limit_message, "limited": True}
@@ -122,7 +141,7 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     messages = [m.dict() for m in request.messages]
     last_message = messages[-1]["content"] if messages else ""
 
-    handle_posted_after_update(last_message, user, db)
+    handle_posted_after_update(last_message, user, account_id, db)
 
     cached = get_cached_response(last_message, db)
     if cached:
@@ -131,8 +150,8 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     model = get_model_for_user(user)
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
-    history_summary = build_history_summary(user, db)
-    gap_context = get_gap_context(user, db)
+    history_summary = build_history_summary(user, account_id, db)
+    gap_context = get_gap_context(user, account_id, db)
     if gap_context:
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
 
@@ -157,6 +176,7 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     verdict = Verdict(
         id=str(uuid.uuid4()),
         user_id=user.id,
+        account_id=account_id,
         content=reply,
         assignment=assignment_summary,
         created_at=datetime.utcnow()
@@ -177,6 +197,7 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
 @router.post("/stream")
 async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
     user_id = request.user_id
+    account_id = request.account_id
     user = None
 
     if user_id:
@@ -187,6 +208,13 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             yield "Please sign in to speak with The Executive."
         return StreamingResponse(error_gen(), media_type="text/plain")
 
+    if account_id:
+        account = db.query(Account).filter(Account.id == account_id, Account.user_id == user.id).first()
+        if not account:
+            def account_error_gen():
+                yield "That account could not be found on your profile."
+            return StreamingResponse(account_error_gen(), media_type="text/plain")
+
     allowed, limit_message = check_chat_limit(user, db)
     if not allowed:
         def limit_gen():
@@ -196,7 +224,7 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
     messages = [m.dict() for m in request.messages]
     last_message = messages[-1]["content"] if messages else ""
 
-    handle_posted_after_update(last_message, user, db)
+    handle_posted_after_update(last_message, user, account_id, db)
 
     cached = get_cached_response(last_message, db)
     if cached:
@@ -207,8 +235,8 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
     model = get_model_for_user(user)
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
-    history_summary = build_history_summary(user, db)
-    gap_context = get_gap_context(user, db)
+    history_summary = build_history_summary(user, account_id, db)
+    gap_context = get_gap_context(user, account_id, db)
     if gap_context:
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
 
@@ -240,6 +268,7 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
         verdict = Verdict(
             id=str(uuid.uuid4()),
             user_id=user.id,
+            account_id=account_id,
             content=final_reply,
             assignment=assignment_summary,
             created_at=datetime.utcnow()
