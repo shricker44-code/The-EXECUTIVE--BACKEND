@@ -55,8 +55,10 @@ async def create_account(request: CreateAccountRequest, db: Session = Depends(ge
 
 @router.get("/{user_id}")
 async def list_accounts(user_id: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
     accounts = db.query(Account).filter(Account.user_id == user_id).order_by(Account.created_at).all()
     return {
+        "has_multi_account": user.has_multi_account if user else False,
         "accounts": [
             {
                 "id": a.id,
