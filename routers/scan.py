@@ -2,7 +2,7 @@ from fastapi import APIRouter, UploadFile, File, Form, Depends
 from typing import Optional
 from sqlalchemy.orm import Session
 from database import get_db
-from models import User, Verdict
+from models import User, Verdict, Account
 from services.scanner import scan_content
 from middleware import check_verdict_limit
 import uuid
@@ -14,6 +14,7 @@ router = APIRouter()
 @router.post("/")
 async def scan(
     user_id: Optional[str] = Form(None),
+    account_id: Optional[str] = Form(None),
     tiktok_url: Optional[str] = Form(None),
     manual_input: Optional[str] = Form(None),
     screenshot: Optional[UploadFile] = File(None),
@@ -30,17 +31,28 @@ async def scan(
     if not allowed:
         return {"verdict": limit_message, "limited": True}
 
+    account = None
+    if account_id:
+        account = db.query(Account).filter(Account.id == account_id, Account.user_id == user.id).first()
+        if not account:
+            return {"verdict": "That account could not be found on your profile.", "limited": True}
+
+    # Use the account's tracked numbers if one was selected, otherwise fall back
+    # to the user's own numbers (single-account, non-multi-account users)
+    record = account if account else user
+
     result = await scan_content(
         tiktok_url=tiktok_url,
         manual_input=manual_input,
         screenshot=screenshot,
-        user=user,
+        record=record,
         db=db,
     )
 
     verdict = Verdict(
         id=str(uuid.uuid4()),
         user_id=user.id,
+        account_id=account.id if account else None,
         content=result,
         created_at=datetime.utcnow()
     )

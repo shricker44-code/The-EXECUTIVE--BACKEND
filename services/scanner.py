@@ -69,7 +69,7 @@ async def scan_content(
     tiktok_url: Optional[str] = None,
     manual_input: Optional[str] = None,
     screenshot: Optional[UploadFile] = None,
-    user=None,
+    record=None,
     db=None,
 ) -> str:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
@@ -87,16 +87,16 @@ What is working. What is dead weight. What needs to change. Now."""
         image_data = await screenshot.read()
         media_type = screenshot.content_type or "image/jpeg"
 
-        if user is not None and db is not None:
+        if record is not None and db is not None:
             new_numbers = await extract_analytics_numbers(image_data, media_type)
 
-            if is_unchanged(new_numbers, user.last_follower_count, user.last_engagement_rate):
+            if is_unchanged(new_numbers, record.last_follower_count, record.last_engagement_rate):
                 return random.choice(NOTHING_CHANGED_MESSAGES)
 
             if new_numbers.get("follower_count") is not None:
-                user.last_follower_count = new_numbers["follower_count"]
+                record.last_follower_count = new_numbers["follower_count"]
             if new_numbers.get("engagement_rate") is not None:
-                user.last_engagement_rate = new_numbers["engagement_rate"]
+                record.last_engagement_rate = new_numbers["engagement_rate"]
             db.commit()
 
         b64_image = base64.standard_b64encode(image_data).decode("utf-8")
