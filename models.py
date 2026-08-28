@@ -20,6 +20,7 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     stripe_customer_id = Column(String, nullable=True)
     stripe_subscription_id = Column(String, nullable=True)
+    multi_account_subscription_id = Column(String, nullable=True)
     subscription_status = Column(String, nullable=True)  # active, canceled, past_due, etc.
     session_token = Column(String, nullable=True)
     session_device = Column(String, nullable=True)
