@@ -53,6 +53,8 @@ class Verdict(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
     user = relationship("User", back_populates="verdicts")
     account_id = Column(String, ForeignKey("accounts.id"), nullable=True)
+    follower_count_snapshot = Column(Integer, nullable=True)
+    engagement_rate_snapshot = Column(Float, nullable=True)
 
 class ChatSession(Base):
     __tablename__ = "chat_sessions"

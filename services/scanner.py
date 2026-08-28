@@ -1,6 +1,7 @@
 ﻿import os
 import json
 import base64
+import random
 import anthropic
 from typing import Optional
 from fastapi import UploadFile
@@ -20,8 +21,6 @@ NOTHING_CHANGED_MESSAGES = [
     "Same numbers as last time. I already gave you your assignment. Execute it, then come back with proof it worked.",
     "These numbers are identical to your last upload. That tells me one thing — you haven't done the work yet. Go do it.",
 ]
-
-import random
 
 
 async def extract_analytics_numbers(image_data: bytes, media_type: str) -> dict:
@@ -71,9 +70,11 @@ async def scan_content(
     screenshot: Optional[UploadFile] = None,
     record=None,
     db=None,
-) -> str:
+    extra_context: str = "",
+) -> tuple[str, Optional[dict]]:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     messages = []
+    extracted_numbers = None
 
     if tiktok_url:
         prompt = f"""Scan this TikTok profile/video and deliver your boardroom verdict.
@@ -91,13 +92,15 @@ What is working. What is dead weight. What needs to change. Now."""
             new_numbers = await extract_analytics_numbers(image_data, media_type)
 
             if is_unchanged(new_numbers, record.last_follower_count, record.last_engagement_rate):
-                return random.choice(NOTHING_CHANGED_MESSAGES)
+                return random.choice(NOTHING_CHANGED_MESSAGES), None
 
             if new_numbers.get("follower_count") is not None:
                 record.last_follower_count = new_numbers["follower_count"]
             if new_numbers.get("engagement_rate") is not None:
                 record.last_engagement_rate = new_numbers["engagement_rate"]
             db.commit()
+
+            extracted_numbers = new_numbers
 
         b64_image = base64.standard_b64encode(image_data).decode("utf-8")
         messages.append({
@@ -121,12 +124,16 @@ What is working. What is dead weight. What needs to change. No fluff."""
         messages.append({"role": "user", "content": prompt})
 
     else:
-        return "No content submitted. The Executive does not work with nothing. Give me something to analyze."
+        return "No content submitted. The Executive does not work with nothing. Give me something to analyze.", None
+
+    system = SYSTEM_PROMPT
+    if extra_context:
+        system += f"\n\n{extra_context}"
 
     response = client.messages.create(
         model="claude-opus-4-8",
         max_tokens=1024,
-        system=SYSTEM_PROMPT,
+        system=system,
         messages=messages,
     )
-    return response.content[0].text
+    return response.content[0].text, extracted_numbers

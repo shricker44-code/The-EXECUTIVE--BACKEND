@@ -5,6 +5,9 @@ from routers import trial, queue, auth, notifications
 from routers import accounts
 from database import engine
 import models
+from routers import score
+# ...
+app.include_router(score.router, prefix="/api/score", tags=["score"])
 
 models.Base.metadata.create_all(bind=engine)
 
