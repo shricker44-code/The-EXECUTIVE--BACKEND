@@ -9,8 +9,7 @@ from services.claude import get_executive_response, get_executive_response_strea
 from services.tts import synthesize_speech
 from middleware import (
     check_chat_limit, increment_chat_count,
-    check_trial_message, get_cached_response, cache_response,
-    get_model_for_user
+    check_trial_message, get_model_for_user
 )
 import uuid
 from datetime import datetime
@@ -143,10 +142,6 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
 
     handle_posted_after_update(last_message, user, account_id, db)
 
-    cached = get_cached_response(last_message, db)
-    if cached:
-        return {"reply": cached, "cached": True}
-
     model = get_model_for_user(user)
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
@@ -156,8 +151,6 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
 
     reply, tokens_used = await get_executive_response(messages, model=model, history_summary=history_summary)
-
-    cache_response(last_message, reply, db)
 
     increment_chat_count(user, db, tokens_used=tokens_used)
 
@@ -226,12 +219,6 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
 
     handle_posted_after_update(last_message, user, account_id, db)
 
-    cached = get_cached_response(last_message, db)
-    if cached:
-        def cached_gen():
-            yield cached
-        return StreamingResponse(cached_gen(), media_type="text/plain")
-
     model = get_model_for_user(user)
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
@@ -249,7 +236,6 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
 
         tokens_used = usage_tracker.get("tokens", 0)
 
-        cache_response(last_message, full_reply, db)
         increment_chat_count(user, db, tokens_used=tokens_used)
 
         trial_message = check_trial_message(user)
