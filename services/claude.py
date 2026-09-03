@@ -231,13 +231,23 @@ NEVER leave them with just the problem. Always pair diagnosis with a specific ac
 
 async def get_executive_response(messages: list, model: str = "claude-opus-4-8", history_summary: str = "") -> tuple[str, int]:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-    system = SYSTEM_PROMPT
+    system_blocks = [
+        {
+            "type": "text",
+            "text": SYSTEM_PROMPT,
+            "cache_control": {"type": "ephemeral"},
+        }
+    ]
     if history_summary:
-        system += f"\n\nCREATOR HISTORY (reference this to show progress over time):\n{history_summary}"
+        system_blocks.append({
+            "type": "text",
+            "text": f"CREATOR HISTORY (reference this to show progress over time):\n{history_summary}",
+        })
+
     response = client.messages.create(
         model=model,
         max_tokens=1024,
-        system=system,
+        system=system_blocks,
         messages=messages,
     )
     total_tokens = response.usage.input_tokens + response.usage.output_tokens
@@ -245,13 +255,23 @@ async def get_executive_response(messages: list, model: str = "claude-opus-4-8",
 
 async def get_executive_response_stream(messages: list, usage_tracker: dict = None, model: str = "claude-opus-4-8", history_summary: str = ""):
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
-    system = SYSTEM_PROMPT
+    system_blocks = [
+        {
+            "type": "text",
+            "text": SYSTEM_PROMPT,
+            "cache_control": {"type": "ephemeral"},
+        }
+    ]
     if history_summary:
-        system += f"\n\nCREATOR HISTORY (reference this to show progress over time):\n{history_summary}"
+        system_blocks.append({
+            "type": "text",
+            "text": f"CREATOR HISTORY (reference this to show progress over time):\n{history_summary}",
+        })
+
     with client.messages.stream(
         model=model,
         max_tokens=1024,
-        system=system,
+        system=system_blocks,
         messages=messages,
     ) as stream:
         for text in stream.text_stream:
