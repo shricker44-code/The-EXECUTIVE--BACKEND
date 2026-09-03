@@ -72,3 +72,19 @@ async def delete_account(account_id: str, user_id: str, db: Session = Depends(ge
     db.commit()
 
     return {"success": True}
+
+class RenameAccountRequest(BaseModel):
+    user_id: str
+    label: str
+
+
+@router.patch("/{account_id}")
+async def rename_account(account_id: str, request: RenameAccountRequest, db: Session = Depends(get_db)):
+    account = db.query(Account).filter(Account.id == account_id, Account.user_id == request.user_id).first()
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+
+    account.label = request.label
+    db.commit()
+
+    return {"success": True, "account": {"id": account.id, "label": account.label}}
