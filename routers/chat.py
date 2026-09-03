@@ -178,11 +178,10 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     db.commit()
 
     audio_base64 = None
-    if user.is_paid:
-        try:
-            audio_base64 = synthesize_speech(reply, user.voice_preference or 1)
-        except Exception as e:
-            print(f"TTS generation failed: {e}")
+    try:
+        audio_base64 = synthesize_speech(reply, user.voice_preference or 1)
+    except Exception as e:
+        print(f"TTS generation failed: {e}")
 
     return {"reply": reply, "limited": False, "audio": audio_base64}
 
@@ -275,8 +274,8 @@ class TTSRequest(BaseModel):
 @router.post("/tts")
 async def generate_tts(request: TTSRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == request.user_id).first()
-    if not user or not user.is_paid:
-        return {"audio": None, "error": "TTS is a paid feature"}
+    if not user:
+        return {"audio": None, "error": "User not found"}
 
     try:
         audio_base64 = synthesize_speech(request.text, user.voice_preference or 1)
