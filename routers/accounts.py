@@ -8,8 +8,6 @@ from datetime import datetime
 
 router = APIRouter()
 
-MAX_ACCOUNTS = 3
-
 
 class CreateAccountRequest(BaseModel):
     user_id: str
@@ -22,17 +20,10 @@ async def create_account(request: CreateAccountRequest, db: Session = Depends(ge
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    if not user.has_multi_account:
+    if not user.is_paid:
         raise HTTPException(
             status_code=403,
-            detail="Multi-account access requires the Executive Multi-Account plan."
-        )
-
-    existing_count = db.query(Account).filter(Account.user_id == user.id).count()
-    if existing_count >= MAX_ACCOUNTS:
-        raise HTTPException(
-            status_code=403,
-            detail=f"You've reached the {MAX_ACCOUNTS}-account limit for your plan."
+            detail="Multi-account access is included with the Executive plan. Upgrade to add accounts."
         )
 
     account = Account(
@@ -58,7 +49,7 @@ async def list_accounts(user_id: str, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
     accounts = db.query(Account).filter(Account.user_id == user_id).order_by(Account.created_at).all()
     return {
-        "has_multi_account": user.has_multi_account if user else False,
+        "has_multi_account": user.is_paid if user else False,
         "accounts": [
             {
                 "id": a.id,
