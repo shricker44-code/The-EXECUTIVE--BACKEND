@@ -9,7 +9,7 @@ from services.claude import get_executive_response, get_executive_response_strea
 from services.tts import synthesize_speech
 from middleware import (
     check_chat_limit, increment_chat_count,
-    check_trial_message, get_model_for_user
+    check_trial_message, get_model_for_user, can_use_tts
 )
 import uuid
 from datetime import datetime
@@ -178,10 +178,11 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     db.commit()
 
     audio_base64 = None
-    try:
-        audio_base64 = synthesize_speech(reply, user.voice_preference or 1)
-    except Exception as e:
-        print(f"TTS generation failed: {e}")
+    if can_use_tts(user):
+        try:
+            audio_base64 = synthesize_speech(reply, user.voice_preference or 1)
+        except Exception as e:
+            print(f"TTS generation failed: {e}")
 
     return {"reply": reply, "limited": False, "audio": audio_base64}
 
@@ -276,6 +277,9 @@ async def generate_tts(request: TTSRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == request.user_id).first()
     if not user:
         return {"audio": None, "error": "User not found"}
+
+    if not can_use_tts(user):
+        return {"audio": None, "error": "Voice preview is available on your first day. Upgrade to unlock it permanently."}
 
     try:
         audio_base64 = synthesize_speech(request.text, user.voice_preference or 1)
