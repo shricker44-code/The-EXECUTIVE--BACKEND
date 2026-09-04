@@ -286,3 +286,24 @@ async def generate_tts(request: TTSRequest, db: Session = Depends(get_db)):
         return {"audio": audio_base64}
     except Exception as e:
         return {"audio": None, "error": str(e)}
+
+@router.get("/history")
+async def get_chat_history(user_id: str, account_id: str = None, limit: int = 20, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return {"messages": []}
+
+    verdicts = (
+        get_verdict_query(user, account_id, db)
+        .order_by(Verdict.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+    messages = []
+    for v in reversed(verdicts):
+        if v.user_message:
+            messages.append({"role": "user", "content": v.user_message})
+        messages.append({"role": "assistant", "content": v.content})
+
+    return {"messages": messages}

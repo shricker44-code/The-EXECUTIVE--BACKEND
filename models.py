@@ -56,6 +56,7 @@ class Verdict(Base):
     account_id = Column(String, ForeignKey("accounts.id"), nullable=True)
     follower_count_snapshot = Column(Integer, nullable=True)
     engagement_rate_snapshot = Column(Float, nullable=True)
+    user_message = Column(Text, nullable=True)
 
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
