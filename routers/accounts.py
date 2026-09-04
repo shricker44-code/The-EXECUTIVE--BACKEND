@@ -5,6 +5,7 @@ from database import get_db
 from models import User, Account
 import uuid
 from datetime import datetime
+from models import User, Account, Verdict
 
 router = APIRouter()
 
@@ -69,6 +70,7 @@ async def delete_account(account_id: str, user_id: str, db: Session = Depends(ge
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
 
+    db.query(Verdict).filter(Verdict.account_id == account_id).delete()
     db.delete(account)
     db.commit()
 
