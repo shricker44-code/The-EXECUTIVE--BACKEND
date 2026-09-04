@@ -50,6 +50,7 @@ async def list_accounts(user_id: str, db: Session = Depends(get_db)):
     accounts = db.query(Account).filter(Account.user_id == user_id).order_by(Account.created_at).all()
     return {
         "has_multi_account": user.is_paid if user else False,
+        "default_label": (user.default_account_label if user else None) or "Default",
         "accounts": [
             {
                 "id": a.id,
@@ -88,3 +89,19 @@ async def rename_account(account_id: str, request: RenameAccountRequest, db: Ses
     db.commit()
 
     return {"success": True, "account": {"id": account.id, "label": account.label}}
+
+class RenameDefaultRequest(BaseModel):
+    user_id: str
+    label: str
+
+
+@router.patch("/default/rename")
+async def rename_default_account(request: RenameDefaultRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.default_account_label = request.label
+    db.commit()
+
+    return {"success": True, "label": user.default_account_label}
