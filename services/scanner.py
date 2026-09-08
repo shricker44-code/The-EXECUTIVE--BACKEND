@@ -7,15 +7,17 @@ from typing import Optional
 from fastapi import UploadFile
 from services.claude import SYSTEM_PROMPT
 
-EXTRACTION_PROMPT = """Look at this TikTok analytics screenshot. Extract ONLY these two numbers if visible:
+EXTRACTION_PROMPT = """Look at this TikTok analytics screenshot. Extract ONLY these numbers if visible:
 - follower_count (as a plain integer, no commas or symbols)
 - engagement_rate (as a plain number representing a percentage, e.g. 4.2 for 4.2%)
+- watch_time (average watch time as a percentage, e.g. 62.5 for 62.5% average watch time — NOT total watch time hours)
+- completion_rate (video completion rate as a percentage, e.g. 45.0)
+- profile_visits (as a plain integer)
 
 Respond with ONLY a JSON object in this exact format, nothing else, no markdown, no explanation:
-{"follower_count": <integer or null>, "engagement_rate": <number or null>}
+{"follower_count": <integer or null>, "engagement_rate": <number or null>, "watch_time": <number or null>, "completion_rate": <number or null>, "profile_visits": <integer or null>}
 
 If a number isn't visible or determinable, use null for that field."""
-
 NOTHING_CHANGED_MESSAGES = [
     "Nothing has changed since your last check-in. Go execute your assignment. Come back when the numbers move.",
     "Same numbers as last time. I already gave you your assignment. Execute it, then come back with proof it worked.",
@@ -29,7 +31,7 @@ async def extract_analytics_numbers(image_data: bytes, media_type: str) -> tuple
 
     response = client.messages.create(
         model="claude-sonnet-5",
-        max_tokens=150,
+        max_tokens=200,
         messages=[{
             "role": "user",
             "content": [
@@ -47,9 +49,15 @@ async def extract_analytics_numbers(image_data: bytes, media_type: str) -> tuple
         return {
             "follower_count": data.get("follower_count"),
             "engagement_rate": data.get("engagement_rate"),
+            "watch_time": data.get("watch_time"),
+            "completion_rate": data.get("completion_rate"),
+            "profile_visits": data.get("profile_visits"),
         }, tokens
     except (json.JSONDecodeError, AttributeError):
-        return {"follower_count": None, "engagement_rate": None}, tokens
+        return {
+            "follower_count": None, "engagement_rate": None,
+            "watch_time": None, "completion_rate": None, "profile_visits": None,
+        }, tokens
 
 
 def is_unchanged(new_numbers: dict, last_follower_count, last_engagement_rate) -> bool:
