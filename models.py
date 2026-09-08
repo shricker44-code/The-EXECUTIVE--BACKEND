@@ -35,9 +35,6 @@ class User(Base):
     chat_sessions = relationship("ChatSession", back_populates="user")
     default_account_label = Column(String, nullable=True)
     trial_tokens_used = Column(Integer, default=0)
-    watch_time_snapshot = Column(Float, nullable=True)
-    completion_rate_snapshot = Column(Float, nullable=True)
-    profile_visits_snapshot = Column(Integer, nullable=True)
 
 class Account(Base):
     __tablename__ = "accounts"
@@ -60,6 +57,9 @@ class Verdict(Base):
     account_id = Column(String, ForeignKey("accounts.id"), nullable=True)
     follower_count_snapshot = Column(Integer, nullable=True)
     engagement_rate_snapshot = Column(Float, nullable=True)
+    watch_time_snapshot = Column(Float, nullable=True)
+    completion_rate_snapshot = Column(Float, nullable=True)
+    profile_visits_snapshot = Column(Integer, nullable=True)
     user_message = Column(Text, nullable=True)
 
 class ChatSession(Base):
