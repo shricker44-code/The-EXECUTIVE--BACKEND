@@ -111,7 +111,7 @@ async def scan(
     outcome_context = build_assignment_outcome_context(user, account_id, db)
     extra_context = "\n\n".join(filter(None, [growth_trend, outcome_context]))
 
-    result, extracted_numbers = await scan_content(
+    result, extracted_numbers, tokens_used = await scan_content(
         tiktok_url=tiktok_url,
         manual_input=manual_input,
         screenshot=screenshot,
@@ -130,10 +130,13 @@ async def scan(
         created_at=datetime.utcnow()
     )
     db.add(verdict)
+
+    if not user.is_paid:
+        user.trial_tokens_used = (user.trial_tokens_used or 0) + tokens_used
+
     db.commit()
 
     return {"verdict": result, "limited": False}
-
 
 class QuickScanRequest(BaseModel):
     niche: str

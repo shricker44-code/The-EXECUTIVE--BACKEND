@@ -23,7 +23,7 @@ NOTHING_CHANGED_MESSAGES = [
 ]
 
 
-async def extract_analytics_numbers(image_data: bytes, media_type: str) -> dict:
+async def extract_analytics_numbers(image_data: bytes, media_type: str) -> tuple[dict, int]:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     b64_image = base64.standard_b64encode(image_data).decode("utf-8")
 
@@ -39,15 +39,17 @@ async def extract_analytics_numbers(image_data: bytes, media_type: str) -> dict:
         }],
     )
 
+    tokens = response.usage.input_tokens + response.usage.output_tokens
+
     raw = response.content[0].text.strip()
     try:
         data = json.loads(raw)
         return {
             "follower_count": data.get("follower_count"),
             "engagement_rate": data.get("engagement_rate"),
-        }
+        }, tokens
     except (json.JSONDecodeError, AttributeError):
-        return {"follower_count": None, "engagement_rate": None}
+        return {"follower_count": None, "engagement_rate": None}, tokens
 
 
 def is_unchanged(new_numbers: dict, last_follower_count, last_engagement_rate) -> bool:
@@ -71,10 +73,11 @@ async def scan_content(
     record=None,
     db=None,
     extra_context: str = "",
-) -> tuple[str, Optional[dict]]:
+) -> tuple[str, Optional[dict], int]:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     messages = []
     extracted_numbers = None
+    total_tokens = 0
 
     if tiktok_url:
         prompt = f"""Scan this TikTok profile/video and deliver your boardroom verdict.
@@ -89,10 +92,11 @@ What is working. What is dead weight. What needs to change. Now."""
         media_type = screenshot.content_type or "image/jpeg"
 
         if record is not None and db is not None:
-            new_numbers = await extract_analytics_numbers(image_data, media_type)
+            new_numbers, extraction_tokens = await extract_analytics_numbers(image_data, media_type)
+            total_tokens += extraction_tokens
 
             if is_unchanged(new_numbers, record.last_follower_count, record.last_engagement_rate):
-                return random.choice(NOTHING_CHANGED_MESSAGES), None
+                return random.choice(NOTHING_CHANGED_MESSAGES), None, total_tokens
 
             if new_numbers.get("follower_count") is not None:
                 record.last_follower_count = new_numbers["follower_count"]
@@ -124,7 +128,7 @@ What is working. What is dead weight. What needs to change. No fluff."""
         messages.append({"role": "user", "content": prompt})
 
     else:
-        return "No content submitted. The Executive does not work with nothing. Give me something to analyze.", None
+        return "No content submitted. The Executive does not work with nothing. Give me something to analyze.", None, 0
 
     system = SYSTEM_PROMPT
     if extra_context:
@@ -136,4 +140,5 @@ What is working. What is dead weight. What needs to change. No fluff."""
         system=system,
         messages=messages,
     )
-    return response.content[0].text, extracted_numbers
+    total_tokens += response.usage.input_tokens + response.usage.output_tokens
+    return response.content[0].text, extracted_numbers, total_tokens

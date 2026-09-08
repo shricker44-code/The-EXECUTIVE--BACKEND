@@ -9,6 +9,8 @@ FREE_MONTHLY_VERDICT_LIMIT = 3
 FREE_SESSION_TOKEN_CAP = 15000  # raised from 1000 — system prompt alone can exceed the old cap
 PAID_SESSION_TOKEN_CAP = 75000  # generous ceiling so no normal user hits it, but caps worst-case spend
 TRIAL_DURATION_DAYS = 14
+TRIAL_TOTAL_TOKEN_CAP = 80000
+TRIAL_CAP_MESSAGE = "You've used your full trial allocation. That was enough to prove whether this works for you. Upgrade to keep the boardroom open."
 
 THROTTLE_MESSAGE = "High demand on The Executive right now. Your next session will be available in a few hours. In the meantime review your last verdict and implement before we reconvene."
 
@@ -58,6 +60,9 @@ def check_chat_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if not user.is_paid and check_trial_expired(user):
         return False, TRIAL_EXPIRED_MESSAGE
 
+    if not user.is_paid and (user.trial_tokens_used or 0) >= TRIAL_TOTAL_TOKEN_CAP:
+        return False, TRIAL_CAP_MESSAGE
+
     today = str(date.today())
     session = db.query(ChatSession).filter(
         ChatSession.user_id == user.id,
@@ -100,8 +105,11 @@ def increment_chat_count(user: User, db: Session, tokens_used: int = 0):
             tokens_used=tokens_used,
         )
         db.add(session)
-    db.commit()
 
+    if not user.is_paid:
+        user.trial_tokens_used = (user.trial_tokens_used or 0) + tokens_used
+
+    db.commit()
 def get_session_tokens_remaining(user: User, db: Session) -> int | None:
     today = str(date.today())
     session = db.query(ChatSession).filter(
@@ -122,6 +130,9 @@ def check_verdict_limit(user: User, db: Session) -> tuple[bool, str | None]:
 
     if check_trial_expired(user):
         return False, TRIAL_EXPIRED_MESSAGE
+
+    if (user.trial_tokens_used or 0) >= TRIAL_TOTAL_TOKEN_CAP:
+        return False, TRIAL_CAP_MESSAGE
 
     month_start = datetime.utcnow().replace(day=1, hour=0, minute=0, second=0)
     verdict_count = db.query(Verdict).filter(
