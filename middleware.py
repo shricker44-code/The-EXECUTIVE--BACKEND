@@ -110,6 +110,7 @@ def increment_chat_count(user: User, db: Session, tokens_used: int = 0):
         user.trial_tokens_used = (user.trial_tokens_used or 0) + tokens_used
 
     db.commit()
+
 def get_session_tokens_remaining(user: User, db: Session) -> int | None:
     today = str(date.today())
     session = db.query(ChatSession).filter(
@@ -123,6 +124,11 @@ def get_session_tokens_remaining(user: User, db: Session) -> int | None:
         return cap
 
     return max(0, cap - session.tokens_used)
+
+def get_trial_tokens_remaining(user: User) -> int | None:
+    if user.is_paid:
+        return None
+    return max(0, TRIAL_TOTAL_TOKEN_CAP - (user.trial_tokens_used or 0))
 
 def check_verdict_limit(user: User, db: Session) -> tuple[bool, str | None]:
     if user.is_paid:

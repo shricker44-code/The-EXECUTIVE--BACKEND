@@ -9,7 +9,9 @@ from services.claude import get_executive_response, get_executive_response_strea
 from services.tts import synthesize_speech
 from middleware import (
     check_chat_limit, increment_chat_count,
-    check_trial_message, get_model_for_user, can_use_tts
+    check_trial_message, get_model_for_user, can_use_tts,
+    get_session_tokens_remaining, get_trial_tokens_remaining,
+    PAID_SESSION_TOKEN_CAP, FREE_SESSION_TOKEN_CAP, TRIAL_TOTAL_TOKEN_CAP
 )
 import uuid
 from datetime import datetime
@@ -171,6 +173,7 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
         user_id=user.id,
         account_id=account_id,
         content=reply,
+        user_message=last_message,
         assignment=assignment_summary,
         created_at=datetime.utcnow()
     )
@@ -256,6 +259,7 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             user_id=user.id,
             account_id=account_id,
             content=final_reply,
+            user_message=last_message,
             assignment=assignment_summary,
             created_at=datetime.utcnow()
         )
@@ -307,3 +311,20 @@ async def get_chat_history(user_id: str, account_id: str = None, limit: int = 20
         messages.append({"role": "assistant", "content": v.content})
 
     return {"messages": messages}
+
+@router.get("/usage")
+async def get_usage(user_id: str, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return {"error": "User not found"}
+
+    daily_remaining = get_session_tokens_remaining(user, db)
+    cap = PAID_SESSION_TOKEN_CAP if user.is_paid else FREE_SESSION_TOKEN_CAP
+
+    return {
+        "daily_remaining": daily_remaining,
+        "daily_cap": cap,
+        "trial_remaining": get_trial_tokens_remaining(user),
+        "trial_cap": None if user.is_paid else TRIAL_TOTAL_TOKEN_CAP,
+        "is_paid": user.is_paid,
+    }
