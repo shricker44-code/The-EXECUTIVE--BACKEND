@@ -8,7 +8,7 @@ from supabase import create_client
 from database import get_db
 from sqlalchemy.orm import Session
 from fastapi import Depends
-from models import User
+from models import User, Account
 from datetime import datetime
 
 router = APIRouter()
@@ -54,6 +54,15 @@ async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
             session_device=request.device_fingerprint,
         )
         db.add(new_user)
+        db.commit()
+
+        default_account = Account(
+            id=str(uuid.uuid4()),
+            user_id=user_id,
+            label="Main",
+            created_at=datetime.utcnow(),
+        )
+        db.add(default_account)
         db.commit()
 
         return {

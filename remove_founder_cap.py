@@ -17,7 +17,7 @@ with engine.connect() as conn:
         UPDATE chat_sessions
         SET tokens_used = 0
         WHERE user_id = (SELECT id FROM users WHERE email = :email)
-        AND date = CURRENT_DATE
+        AND date = CAST(CURRENT_DATE AS TEXT)
     """), {"email": FOUNDER_EMAIL})
 
     conn.commit()

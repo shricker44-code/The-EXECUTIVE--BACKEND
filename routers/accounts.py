@@ -2,10 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from database import get_db
-from models import User, Account
+from models import User, Account, Verdict
 import uuid
 from datetime import datetime
-from models import User, Account, Verdict
 
 router = APIRouter()
 
@@ -21,10 +20,12 @@ async def create_account(request: CreateAccountRequest, db: Session = Depends(ge
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    if not user.is_paid:
+    existing_count = db.query(Account).filter(Account.user_id == user.id).count()
+
+    if existing_count >= 1 and not user.is_paid:
         raise HTTPException(
             status_code=403,
-            detail="Multi-account access is included with the Executive plan. Upgrade to add accounts."
+            detail="Multiple accounts are included with the Executive plan. Upgrade to add more."
         )
 
     account = Account(
@@ -51,7 +52,6 @@ async def list_accounts(user_id: str, db: Session = Depends(get_db)):
     accounts = db.query(Account).filter(Account.user_id == user_id).order_by(Account.created_at).all()
     return {
         "has_multi_account": user.is_paid if user else False,
-        "default_label": (user.default_account_label if user else None) or "Default",
         "accounts": [
             {
                 "id": a.id,
@@ -74,7 +74,24 @@ async def delete_account(account_id: str, user_id: str, db: Session = Depends(ge
     db.delete(account)
     db.commit()
 
-    return {"success": True}
+    remaining = db.query(Account).filter(Account.user_id == user_id).count()
+
+    new_account = None
+    if remaining == 0:
+        new_account = Account(
+            id=str(uuid.uuid4()),
+            user_id=user_id,
+            label="Main",
+            created_at=datetime.utcnow(),
+        )
+        db.add(new_account)
+        db.commit()
+
+    return {
+        "success": True,
+        "new_account": {"id": new_account.id, "label": new_account.label} if new_account else None
+    }
+
 
 class RenameAccountRequest(BaseModel):
     user_id: str
@@ -91,19 +108,3 @@ async def rename_account(account_id: str, request: RenameAccountRequest, db: Ses
     db.commit()
 
     return {"success": True, "account": {"id": account.id, "label": account.label}}
-
-class RenameDefaultRequest(BaseModel):
-    user_id: str
-    label: str
-
-
-@router.patch("/default/rename")
-async def rename_default_account(request: RenameDefaultRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.id == request.user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    user.default_account_label = request.label
-    db.commit()
-
-    return {"success": True, "label": user.default_account_label}

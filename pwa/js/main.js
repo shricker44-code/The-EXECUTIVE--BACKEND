@@ -13,7 +13,6 @@ let currentTab = 'boardroom';
 let currentScanTab = 'url';
 let isMuted = false;
 let currentAutoAudio = null;
-let defaultLabel = 'Default';
 let audioUnlocked = false;
 let usageWarningShown = false;
 
@@ -96,7 +95,6 @@ async function playSplashThenInit() {
 
   anim.addEventListener('complete', finishSplash);
 
-  // Safety fallback in case the animation fails to load or fire 'complete'
   setTimeout(finishSplash, 8000);
 }
 
@@ -140,12 +138,16 @@ function showApp(user) {
   if (user && user.user_id) {
     subscribeToPush(user.user_id);
     startSessionCheck(user.user_id);
-    loadAccountSwitcher();
-    loadInitialHistory();
+    initAccountsAndHistory();
   }
 }
 
-async function loadInitialHistory() {
+async function initAccountsAndHistory() {
+  await loadAccountSwitcher();
+  await loadCurrentAccountHistory();
+}
+
+async function loadCurrentAccountHistory() {
   const messages = document.getElementById('messages');
   messages.style.scrollBehavior = 'auto';
 
@@ -325,7 +327,6 @@ function checkVerdictTracking() {
   if (!lastVerdict) {
     localStorage.setItem('last_verdict_time', Date.now());
     return;
-    
   }
 
   const hoursSince = (Date.now() - parseInt(lastVerdict)) / (1000 * 60 * 60);
@@ -432,6 +433,7 @@ function addPlaybackButton(bubbleEl, text, existingAudioBase64 = null) {
   bubbleEl.appendChild(document.createElement('br'));
   bubbleEl.appendChild(btn);
 }
+
 async function sendToExecutive(text) {
   addMessage('user', text);
   document.getElementById('typing').classList.remove('hidden');
@@ -480,19 +482,16 @@ async function sendToExecutive(text) {
       finalText = fullText;
     });
 
-    // Strip any leftover action tags like *leans back in chair* — but never touch **bold** markdown
     finalText = finalText.replace(/(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)/g, '').replace(/\s{2,}/g, ' ').trim();
 
     if (isFirstMessage && currentUser && currentUser.first_name) {
       finalText = `${currentUser.first_name}. ${finalText}`;
     }
 
-    // Full text is ready. Skip audio entirely when muted — saves the TTS call.
     let audioBase64 = null;
     if (!isMuted) {
       try {
         audioBase64 = await generateSpeech(finalText);
-        console.log('audioBase64 received in sendToExecutive, length:', audioBase64?.length);
       } catch (e) {
         console.log('TTS generation failed:', e);
       }
@@ -506,13 +505,8 @@ async function sendToExecutive(text) {
     bubbleEl = wrapper.querySelector('.bubble');
 
     if (audioBase64) {
-      console.log('Creating audio element');
       currentAutoAudio = new Audio(`data:audio/mp3;base64,${audioBase64}`);
-      currentAutoAudio.play()
-        .then(() => console.log('Playback started, duration:', currentAutoAudio.duration))
-        .catch(e => console.log('Auto-play blocked:', e));
-    } else {
-      console.log('audioBase64 was falsy, skipping playback block entirely');
+      currentAutoAudio.play().catch(e => console.log('Auto-play blocked:', e));
     }
     revealNextChar(finalText);
 
@@ -811,18 +805,17 @@ async function loadAccountSwitcher() {
   const result = await getAccounts();
   hasMultiAccount = result.hasMultiAccount;
   userAccounts = result.accounts;
-  defaultLabel = result.defaultLabel;
+
+  if (!currentAccountId && userAccounts.length > 0) {
+    currentAccountId = userAccounts[0].id;
+  }
+
   renderAccountSwitcher();
 }
 
 function renderAccountSwitcher() {
   const container = document.getElementById('account-switcher');
   if (!container) return;
-
-  if (!hasMultiAccount) {
-    container.classList.add('hidden');
-    return;
-  }
 
   container.classList.remove('hidden');
 
@@ -837,16 +830,10 @@ function renderAccountSwitcher() {
     `;
   }).join('');
 
-  const defaultActive = !currentAccountId ? 'active' : '';
-
   container.innerHTML = `
-  <span class="account-pill-wrap">
-    <button class="account-pill ${defaultActive}" onclick="switchAccount(null)">${defaultLabel}</button>
-    <button class="account-rename-x" onclick="handleRenameDefault()" title="Rename">✎</button>
-  </span>
-  ${options}
-  <button class="account-pill account-add" onclick="handleAddAccount()">+ Add</button>
-`;
+    ${options}
+    <button class="account-pill account-add" onclick="handleAddAccount()">+ Add</button>
+  `;
   renderSidebarAccounts();
 }
 
@@ -908,9 +895,12 @@ async function handleDeleteAccount(accountId, label) {
   const result = await deleteAccount(accountId);
   if (result.success) {
     if (currentAccountId === accountId) {
-      switchAccount(null);
+      currentAccountId = result.new_account ? result.new_account.id : null;
+      await loadAccountSwitcher();
+      switchAccount(currentAccountId);
+    } else {
+      await loadAccountSwitcher();
     }
-    await loadAccountSwitcher();
   } else {
     alert(result.detail || 'Could not delete account.');
   }
@@ -925,18 +915,6 @@ function clearChat() {
   addInitialMessage();
   const qp = document.getElementById('quick-prompts');
   if (qp) qp.style.display = 'flex';
-}
-
-async function handleRenameDefault() {
-  const newLabel = prompt('Rename this account:', defaultLabel);
-  if (!newLabel || !newLabel.trim() || newLabel.trim() === defaultLabel) return;
-
-  const result = await renameDefaultAccount(newLabel.trim());
-  if (result.success) {
-    await loadAccountSwitcher();
-  } else {
-    alert(result.detail || 'Could not rename.');
-  }
 }
 
 function toggleSidebar() {
@@ -968,11 +946,6 @@ function renderSidebarAccounts() {
   const container = document.getElementById('sidebar-accounts');
   if (!container) return;
 
-  if (!hasMultiAccount) {
-    container.innerHTML = '';
-    return;
-  }
-
   const rows = userAccounts.map(acc => {
     const active = acc.id === currentAccountId ? 'active' : '';
     return `
@@ -984,14 +957,8 @@ function renderSidebarAccounts() {
     `;
   }).join('');
 
-  const defaultActive = !currentAccountId ? 'active' : '';
-
   container.innerHTML = `
     <div class="sidebar-section-label">CHATS</div>
-    <div class="sidebar-account-row ${defaultActive}">
-      <button class="sidebar-account-name" onclick="sidebarSwitchAccount(null)">${defaultLabel}</button>
-      <button class="sidebar-account-icon" onclick="handleRenameDefault()" title="Rename">✎</button>
-    </div>
     ${rows}
     <button class="sidebar-add-account" onclick="handleAddAccount()">+ Add Account</button>
   `;
