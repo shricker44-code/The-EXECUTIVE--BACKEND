@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#D4AF37" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="The Executive" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="/images/icon-192.png" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <title>The Executive</title>
+</head>
+<body>
+
+  <!-- Splash Screen -->
+  <div id="splash" class="splash">
+    <div id="splash-lottie" class="splash-lottie"></div>
+    <h1 class="splash-title">THE EXECUTIVE</h1>
+    <p class="splash-sub">Your TikTok Boardroom Advisor</p>
+  </div>
+
+  <!-- Auth Screen -->
+  <div id="auth-screen" class="auth-screen hidden">
+    <div class="auth-container">
+      <img src="/images/logo.png" alt="The Executive" class="auth-seal-img" />
+      <div class="auth-title" id="auth-title">THE EXECUTIVE</div>
+      <div class="auth-subtitle" id="auth-subtitle">YOUR 14-DAY TRIAL STARTS NOW</div>
+      <div class="auth-divider"></div>
+      <div class="auth-form">
+        <div id="auth-firstname-group" class="auth-field">
+          <label class="auth-label">FIRST NAME</label>
+          <input id="auth-firstname" class="auth-input" type="text" placeholder="Your first name" />
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">EMAIL</label>
+          <input id="auth-email" class="auth-input" type="email" placeholder="your@email.com" />
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">PASSWORD</label>
+          <input id="auth-password" class="auth-input" type="password" placeholder="••••••••" />
+        </div>
+        <button id="auth-submit-btn" class="auth-submit" onclick="handleSignUp()">ENTER THE BOARDROOM</button>
+        <button id="auth-toggle" class="auth-toggle" onclick="toggleAuthMode()">Already have an account? Sign in</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blocked Screen -->
+<div id="blocked-screen" class="auth-screen hidden">
+  <div class="auth-container">
+    <div class="auth-seal">
+      <span class="auth-seal-letter">E</span>
+      <span class="auth-seal-sub">EXEC</span>
+    </div>
+    <div class="auth-title">WELCOME BACK</div>
+    <div class="auth-divider"></div>
+    <div id="blocked-message" class="blocked-message"></div>
+    <button class="auth-submit" onclick="showSignIn()">SIGN IN TO MY ACCOUNT</button>
+    <div style="margin-top: 12px; color: rgba(212,175,55,0.3); font-size: 11px; text-align: center; letter-spacing: 1px;">OR</div>
+    <button class="auth-toggle" onclick="upgradeToBasePlan()">Upgrade to Executive Plan →</button>
+  </div>
+</div>
+
+  <!-- App Shell -->
+  <div id="app" class="app hidden">
+
+    <!-- MOBILE-ONLY: Sidebar trigger -->
+    <button id="mobile-menu-btn" class="mobile-menu-btn" onclick="toggleSidebar()">E</button>
+
+    <!-- Boardroom Tab -->
+    <div id="tab-boardroom" class="tab-content active">
+
+      <!-- Left Panel — Character -->
+      <div class="boardroom-left">
+        <div class="header">
+          <div class="divider"></div>
+          <div class="header-content">
+            <img src="/images/logo.png" alt="The Executive" class="seal-img" />
+            <div class="header-text">
+  <div class="header-title">THE EXECUTIVE</div>
+  <div class="header-sub">TIKTOK BOARDROOM ADVISOR</div>
+</div>
+<div class="live-badge">● LIVE</div>
+<button class="clear-chat-btn" onclick="clearChat()" title="Clear conversation">🗑️</button>
+          </div>
+          <div class="divider"></div>
+        </div>
+        <div id="account-switcher" class="account-switcher hidden"></div>
+        <div id="expression-container" class="expression-container">
+          <img id="expression-img" class="expression-img" src="/images/expressions/neutral.jpeg" alt="The Executive" />
+        </div>
+      </div>
+
+      <!-- Right Panel — Chat -->
+      <div class="boardroom-right">
+        <div id="messages" class="messages"></div>
+<button id="scroll-bottom-btn" class="scroll-bottom-btn" onclick="scrollToBottom()">↓</button>
+        <div id="typing" class="typing hidden">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <span class="typing-text">The Executive is deliberating...</span>
+        </div>
+        <div id="quick-prompts" class="quick-prompts">
+          <div class="quick-prompts-label">PRESENT YOUR CASE</div>
+          <div class="quick-prompts-grid">
+            <button class="prompt-btn" onclick="sendQuickPrompt('Evaluate my content strategy')">Evaluate my content strategy</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Why aren\'t my views growing?')">Why aren't my views growing?</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('What\'s my winning formula?')">What's my winning formula?</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('How do I dominate my niche?')">How do I dominate my niche?</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Fire my worst habit')">Fire my worst habit</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Am I wasting my posting time?')">Am I wasting my posting time?</button>
+          </div>
+        </div>
+        <div class="input-container">
+          <div class="input-divider"></div>
+          <div class="input-row">
+            <button id="mute-btn" class="mute-btn" onclick="toggleMute()" title="Mute voice">🔊</button>
+            <textarea
+              id="user-input"
+              class="user-input"
+              placeholder="State your case to The Executive..."
+              rows="1"
+              onkeydown="handleKeyDown(event)"
+              oninput="autoResize(this)"
+            ></textarea>
+            <button id="send-btn" class="send-btn" onclick="handleSend()">↑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div id="tab-profile" class="tab-content hidden">
+      <div class="header">
+        <div class="divider"></div>
+        <div class="header-title-center">CREATOR PROFILE</div>
+        <div id="usage-display" style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 8px 20px; letter-spacing: 0.5px;"></div>
+        <div class="header-sub-center">YOUR DOSSIER. THE EXECUTIVE NEEDS THE FACTS.</div>
+        <div class="divider"></div>
+      </div>
+      <div class="field-card">
+       <label class="field-label">EXECUTIVE PLAN</label>
+       <button class="verdict-btn" onclick="upgradeToBasePlan()">UPGRADE TO EXECUTIVE PLAN — $15/MO</button>
+      </div>
+      <div class="tab-scroll">
+        <div class="profile-form">
+          <div class="field-card">
+            <label class="field-label">WHAT SHOULD THE EXECUTIVE CALL YOU?</label>
+            <input class="field-input" id="p-displayname" type="text" placeholder="Your name" />
+            <button class="save-btn" style="margin-top: 10px;" onclick="handleUpdateName()">UPDATE NAME</button>
+          </div>
+          <div class="field-card">
+            <label class="field-label">TIKTOK USERNAME</label>
+            <input class="field-input" id="p-username" type="text" placeholder="@yourhandle" />
+          </div>
+          <div class="field-card">
+            <label class="field-label">YOUR NICHE</label>
+            <input class="field-input" id="p-niche" type="text" placeholder="e.g. fitness, comedy, cooking" />
+          </div>
+          <div class="field-card">
+            <label class="field-label">FOLLOWER COUNT</label>
+            <input class="field-input" id="p-followers" type="text" placeholder="e.g. 2,400" />
+          </div>
+          <div class="field-card">
+            <label class="field-label">AVERAGE VIEWS</label>
+            <input class="field-input" id="p-views" type="text" placeholder="e.g. 800" />
+          </div>
+          <div class="field-card">
+            <label class="field-label">POSTING FREQUENCY</label>
+            <input class="field-input" id="p-freq" type="text" placeholder="e.g. 3x per week" />
+          </div>
+          <div class="field-card">
+            <label class="field-label">YOUR GOAL</label>
+            <input class="field-input" id="p-goal" type="text" placeholder="e.g. reach 10k followers" />
+          </div>
+                    <div class="field-card">
+            <label class="field-label">DAILY CHECK-IN TIME</label>
+            <input class="field-input" id="p-checkin-time" type="time" />
+            <button class="verdict-btn" onclick="handleSetCheckInTime()">SET REPORTING TIME</button>
+          </div>
+          <button class="save-btn" onclick="saveProfile()">SAVE PROFILE</button>
+          <button class="verdict-btn" onclick="getProfileVerdict()">GET MY EXECUTIVE ANALYSIS →</button>
+          <button class="auth-toggle" onclick="handleSignOut()" style="margin-top: 16px; color: #FF4444;">SIGN OUT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scan Tab -->
+    <div id="tab-scan" class="tab-content hidden">
+      <div class="header">
+        <div class="divider"></div>
+        <div class="header-title-center">CONTENT SCAN</div>
+        <div class="header-sub-center">SUBMIT YOUR CONTENT. RECEIVE THE VERDICT.</div>
+        <div class="divider"></div>
+      </div>
+      <div class="tab-scroll">
+        <div class="field-card" style="border-color: var(--gold);">
+          <label class="field-label">📸 FIND YOUR TIKTOK ANALYTICS</label>
+          <div style="color: var(--text-primary); font-size: 13px; line-height: 1.8; margin-top: 8px;">
+            1. Open TikTok<br>
+            2. Go to Profile<br>
+            3. Tap the three lines (top right)<br>
+            4. Tap Creator Tools<br>
+            5. Tap Analytics<br>
+            6. Screenshot the Overview tab<br>
+            7. Upload it below
+          </div>
+        </div>
+        <div class="field-card">
+          <label class="field-label">⚡ QUICK SCAN — GET AN INSTANT REACTION</label>
+          <input class="field-input" id="qs-niche" type="text" placeholder="Your niche (e.g. fitness)" />
+          <input class="field-input" id="qs-followers" type="text" placeholder="Follower count" style="margin-top: 10px;" />
+          <input class="field-input" id="qs-views" type="text" placeholder="Average views" style="margin-top: 10px;" />
+          <button class="verdict-btn" style="margin-top: 10px;" onclick="requestQuickScan()">GET INSTANT REACTION</button>
+          <div id="quick-scan-result" class="verdict-card hidden"></div>
+        </div>
+        <div class="divider" style="margin: 20px 0;"></div>
+        <div id="scan-manual" class="scan-section">
+          <label class="field-label">DESCRIBE YOUR ACCOUNT</label>
+          <textarea class="field-input field-textarea" id="scan-manual-input" placeholder="Niche, followers, avg views, posting frequency, best post, what's flopping..."></textarea>
+        </div>
+        <button class="verdict-btn" onclick="requestScanVerdict()">REQUEST THE VERDICT</button>
+        <div id="scan-result" class="verdict-card hidden"></div>
+      </div>
+    </div>
+
+    <!-- Score Tab -->
+    <div id="tab-score" class="tab-content hidden">
+      <div class="header">
+        <div class="divider"></div>
+        <div class="header-title-center">EXECUTIVE SCORE</div>
+        <div class="header-sub-center">TRACK YOUR GROWTH. EARN YOUR RANK.</div>
+        <div class="divider"></div>
+      </div>
+      <div class="tab-scroll">
+        <div class="score-card">
+          <div id="score-total" class="score-big">0</div>
+          <div class="score-max">/100</div>
+          <div id="score-label" class="score-label">YOU'RE FIRED</div>
+          <div class="score-bar"><div id="score-fill" class="score-fill"></div></div>
+        </div>
+        <div class="score-categories" id="score-categories"></div>
+        <button class="verdict-btn" onclick="getScoreVerdict()">GET VERDICT ON MY SCORE →</button>
+      </div>
+    </div>
+
+    <!-- Verdicts Tab -->
+    <div id="tab-verdicts" class="tab-content hidden">
+      <div class="header">
+        <div class="divider"></div>
+        <div class="header-title-center">THE EXECUTIVE'S RULINGS</div>
+        <div class="header-sub-center">TAP ANY RULING TO DISCUSS IN BOARDROOM</div>
+        <div class="divider"></div>
+      </div>
+      <div class="tab-scroll" id="verdicts-list"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-btn active" onclick="switchTab('boardroom')">
+        <span class="nav-icon">💼</span>
+        <span class="nav-label">Boardroom</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('profile')">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('scan')">
+        <span class="nav-icon">🔲</span>
+        <span class="nav-label">Scan</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('score')">
+        <span class="nav-icon">🏆</span>
+        <span class="nav-label">Score</span>
+      </button>
+      <button class="nav-btn" onclick="switchTab('verdicts')">
+        <span class="nav-icon">📄</span>
+        <span class="nav-label">Verdicts</span>
+      </button>
+    </nav>
+
+    <!-- MOBILE-ONLY: Slide-in Sidebar -->
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
+    <div id="mobile-sidebar" class="mobile-sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-title">THE EXECUTIVE</div>
+        <button class="sidebar-close" onclick="closeSidebar()">×</button>
+      </div>
+      <div class="sidebar-nav">
+        <button class="sidebar-nav-item" onclick="sidebarNavigate('boardroom')"><span class="sidebar-nav-icon">💼</span>Boardroom</button>
+        <button class="sidebar-nav-item" onclick="sidebarNavigate('scan')"><span class="sidebar-nav-icon">🔲</span>Scan</button>
+        <button class="sidebar-nav-item" onclick="sidebarNavigate('profile')"><span class="sidebar-nav-icon">👤</span>Profile</button>
+        <button class="sidebar-nav-item" onclick="sidebarNavigate('score')"><span class="sidebar-nav-icon">🏆</span>Score</button>
+        <button class="sidebar-nav-item" onclick="sidebarNavigate('verdicts')"><span class="sidebar-nav-icon">📄</span>Verdicts</button>
+        <button class="sidebar-nav-item" onclick="sidebarClearChat()"><span class="sidebar-nav-icon">🗑️</span>Clear Chat</button>
+      </div>
+      <div class="sidebar-divider"></div>
+      <div id="sidebar-accounts" class="sidebar-accounts"></div>
+    </div>
+
+  </div>
+
+  <script src="/js/expressions.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/main.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
+</body>
+</html>
