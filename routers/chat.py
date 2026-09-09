@@ -33,6 +33,18 @@ class ChatRequest(BaseModel):
     user_id: Optional[str] = None
     account_id: Optional[str] = None
 
+MAX_HISTORY_MESSAGES = 12
+
+def trim_history(messages: list) -> list:
+    """
+    Caps how many raw messages get resent to Claude per request — the biggest
+    driver of compounding token cost in long conversations. Permanent memory
+    (growth trends, assignments) lives in history_summary and is untouched by this.
+    """
+    if len(messages) <= MAX_HISTORY_MESSAGES:
+        return messages
+    return messages[-MAX_HISTORY_MESSAGES:]
+
 
 def get_verdict_query(user, account_id, db):
     """
@@ -140,10 +152,10 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
         return {"reply": limit_message, "limited": True}
 
     messages = [m.dict() for m in request.messages]
+    messages = trim_history(messages)
     last_message = messages[-1]["content"] if messages else ""
 
     handle_posted_after_update(last_message, user, account_id, db)
-
     model = get_model_for_user(user)
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
@@ -218,6 +230,7 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
         return StreamingResponse(limit_gen(), media_type="text/plain")
 
     messages = [m.dict() for m in request.messages]
+    messages = trim_history(messages)
     last_message = messages[-1]["content"] if messages else ""
 
     handle_posted_after_update(last_message, user, account_id, db)
@@ -328,3 +341,4 @@ async def get_usage(user_id: str, db: Session = Depends(get_db)):
         "trial_cap": None if user.is_paid else TRIAL_TOTAL_TOKEN_CAP,
         "is_paid": user.is_paid,
     }
+
