@@ -16,6 +16,93 @@ let currentAutoAudio = new Audio();
 let audioUnlocked = false;
 let usageWarningShown = false;
 
+const UI_TRANSLATIONS = {
+  en: {
+    "splash-title": "THE EXECUTIVE",
+    "splash-sub": "Your TikTok Boardroom Advisor",
+    "header-sub": "TIKTOK BOARDROOM ADVISOR",
+    "quick-prompts-label": "PRESENT YOUR CASE",
+    "input-placeholder": "State your case to The Executive...",
+    "nav-boardroom": "Boardroom",
+    "nav-profile": "Profile",
+    "nav-scan": "Scan",
+    "nav-score": "Score",
+    "nav-verdicts": "Verdicts",
+    "sidebar-title": "THE EXECUTIVE",
+    "sidebar-clear-chat": "Clear Chat",
+    "profile-header-title": "CREATOR PROFILE",
+    "profile-header-sub": "YOUR DOSSIER. THE EXECUTIVE NEEDS THE FACTS.",
+    "scan-header-title": "CONTENT SCAN",
+    "scan-header-sub": "SUBMIT YOUR CONTENT. RECEIVE THE VERDICT.",
+    "score-header-title": "EXECUTIVE SCORE",
+    "score-header-sub": "TRACK YOUR GROWTH. EARN YOUR RANK.",
+    "verdicts-header-title": "THE EXECUTIVE'S RULINGS",
+    "verdicts-header-sub": "TAP ANY RULING TO DISCUSS IN BOARDROOM",
+    "field-language": "LANGUAGE",
+  },
+  fr: {
+    "splash-title": "THE EXECUTIVE",
+    "splash-sub": "Votre conseiller TikTok",
+    "header-sub": "CONSEILLER TIKTOK",
+    "quick-prompts-label": "PRÉSENTE TON DOSSIER",
+    "input-placeholder": "Présente ton dossier à The Executive...",
+    "nav-boardroom": "Bureau",
+    "nav-profile": "Profil",
+    "nav-scan": "Scan",
+    "nav-score": "Score",
+    "nav-verdicts": "Verdicts",
+    "sidebar-title": "THE EXECUTIVE",
+    "sidebar-clear-chat": "Effacer la conversation",
+    "profile-header-title": "PROFIL CRÉATEUR",
+    "profile-header-sub": "TON DOSSIER. THE EXECUTIVE A BESOIN DES FAITS.",
+    "scan-header-title": "ANALYSE DE CONTENU",
+    "scan-header-sub": "SOUMETS TON CONTENU. REÇOIS LE VERDICT.",
+    "score-header-title": "SCORE EXECUTIVE",
+    "score-header-sub": "SUIS TA CROISSANCE. GAGNE TON RANG.",
+    "verdicts-header-title": "LES JUGEMENTS DE THE EXECUTIVE",
+    "verdicts-header-sub": "TOUCHE UN JUGEMENT POUR EN DISCUTER AU BUREAU",
+    "field-language": "LANGUE",
+  },
+  pt: {
+    "splash-title": "THE EXECUTIVE",
+    "splash-sub": "Seu conselheiro do TikTok",
+    "header-sub": "CONSELHEIRO DO TIKTOK",
+    "quick-prompts-label": "APRESENTE SEU CASO",
+    "input-placeholder": "Apresente seu caso a The Executive...",
+    "nav-boardroom": "Escritório",
+    "nav-profile": "Perfil",
+    "nav-scan": "Scan",
+    "nav-score": "Score",
+    "nav-verdicts": "Vereditos",
+    "sidebar-title": "THE EXECUTIVE",
+    "sidebar-clear-chat": "Limpar conversa",
+    "profile-header-title": "PERFIL DO CRIADOR",
+    "profile-header-sub": "SEU DOSSIÊ. THE EXECUTIVE PRECISA DOS FATOS.",
+    "scan-header-title": "ANÁLISE DE CONTEÚDO",
+    "scan-header-sub": "ENVIE SEU CONTEÚDO. RECEBA O VEREDITO.",
+    "score-header-title": "SCORE EXECUTIVE",
+    "score-header-sub": "ACOMPANHE SEU CRESCIMENTO. GANHE SEU RANK.",
+    "verdicts-header-title": "OS VEREDITOS DE THE EXECUTIVE",
+    "verdicts-header-sub": "TOQUE EM QUALQUER VEREDITO PARA DISCUTIR NO ESCRITÓRIO",
+    "field-language": "IDIOMA",
+  },
+};
+
+function applyUITranslations() {
+  const lang = (currentUser && currentUser.language) || 'en';
+  const dict = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS.en;
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) el.textContent = dict[key];
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (dict[key]) el.placeholder = dict[key];
+  });
+}
+
 window.addEventListener('load', () => {
   renderVerdicts();
   loadProfile();
@@ -141,6 +228,7 @@ function showApp(user) {
   document.getElementById('blocked-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   updateUpgradeButtonVisibility();
+  applyUITranslations();
   if (user && user.user_id) {
     subscribeToPush(user.user_id);
     startSessionCheck(user.user_id);
@@ -1015,6 +1103,7 @@ async function setLanguage(language) {
     currentUser.language = language;
     localStorage.setItem('executive_user', JSON.stringify(currentUser));
     updateLanguageButtons();
+    applyUITranslations();
   } else {
     alert(result.detail || 'Could not update language.');
   }
