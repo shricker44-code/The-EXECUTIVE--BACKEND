@@ -195,10 +195,9 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     audio_base64 = None
     if can_use_tts(user):
         try:
-            audio_base64 = synthesize_speech(reply, user.voice_preference or 1)
+            audio_base64 = synthesize_speech(reply, user.voice_preference or 1, language=user.language or "en")
         except Exception as e:
             print(f"TTS generation failed: {e}")
-
     return {"reply": reply, "limited": False, "audio": audio_base64}
 
 
@@ -299,7 +298,7 @@ async def generate_tts(request: TTSRequest, db: Session = Depends(get_db)):
         return {"audio": None, "error": "Voice preview is available on your first day. Upgrade to unlock it permanently."}
 
     try:
-        audio_base64 = synthesize_speech(request.text, user.voice_preference or 1)
+        audio_base64 = synthesize_speech(request.text, user.voice_preference or 1, language=user.language or "en")
         return {"audio": audio_base64}
     except Exception as e:
         return {"audio": None, "error": str(e)}
