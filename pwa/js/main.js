@@ -12,7 +12,7 @@ const VERDICTS = [
 let currentTab = 'boardroom';
 let currentScanTab = 'url';
 let isMuted = false;
-let currentAutoAudio = null;
+let currentAutoAudio = new Audio();
 let audioUnlocked = false;
 let usageWarningShown = false;
 
@@ -56,9 +56,15 @@ function updateScrollButton() {
 
 function unlockAudio() {
   if (audioUnlocked) return;
-  const silent = new Audio("data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC7keyLxgNBgIsIzYtRUYzTB4NKLKXBFERUdmegLkGmMwHkyxdMdV/JOG20HZeKUuYJdSb+MgU5WKmNL/ODaB0LrGgHZL8G16DEEoQ7AKAgHF5cQqm2iP3ITqhBhTVUuTa9qQQb+O5aCgSJKQjRnfCwaZjF5RUcJfLtqDdOsFCsq/L/8yBTBUlYQBFGeWAAAAAAAAB+AaAAAA");
-  silent.play().catch(() => {});
-  audioUnlocked = true;
+  currentAutoAudio.src = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC7keyLxgNBgIsIzYtRUYzTB4NKLKXBFERUdmegLkGmMwHkyxdMdV/JOG20HZeKUuYJdSb+MgU5WKmNL/ODaB0LrGgHZL8G16DEEoQ7AKAgHF5cQqm2iP3ITqhBhTVUuTa9qQQb+O5aCgSJKQjRnfCwaZjF5RUcJfLtqDdOsFCsq/L/8yBTBUlYQBFGeWAAAAAAAAB+AaAAAA";
+  currentAutoAudio.play()
+    .then(() => {
+      currentAutoAudio.pause();
+      audioUnlocked = true;
+    })
+    .catch(() => {
+      audioUnlocked = true;
+    });
 }
 
 const SPLASH_MIN_DURATION_MS = 3000;
@@ -505,7 +511,8 @@ async function sendToExecutive(text) {
     bubbleEl = wrapper.querySelector('.bubble');
 
     if (audioBase64) {
-      currentAutoAudio = new Audio(`data:audio/mp3;base64,${audioBase64}`);
+      currentAutoAudio.src = `data:audio/mp3;base64,${audioBase64}`;
+      currentAutoAudio.currentTime = 0;
       currentAutoAudio.play().catch(e => console.log('Auto-play blocked:', e));
     }
     revealNextChar(finalText);
