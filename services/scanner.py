@@ -5,7 +5,7 @@ import random
 import anthropic
 from typing import Optional
 from fastapi import UploadFile
-from services.claude import SYSTEM_PROMPT
+from services.claude import SYSTEM_PROMPT_EN as SYSTEM_PROMPT
 
 EXTRACTION_PROMPT = """Look at this TikTok analytics screenshot. Extract ONLY these numbers if visible:
 - follower_count (as a plain integer, no commas or symbols)
