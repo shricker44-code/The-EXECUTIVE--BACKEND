@@ -292,7 +292,10 @@ function switchTab(tab) {
   if (idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
   currentTab = tab;
   if (tab === 'score') loadComputedScore();
-  if (tab === 'profile') loadUsageDisplay();
+    if (tab === 'profile') {
+    loadUsageDisplay();
+    updateLanguageButtons();
+  }
 }
 
 function addInitialMessage() {
@@ -1004,4 +1007,23 @@ async function checkUsageWarning() {
       document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
     }
   }
+}
+
+async function setLanguage(language) {
+  const result = await setUserLanguage(language);
+  if (result.success) {
+    currentUser.language = language;
+    localStorage.setItem('executive_user', JSON.stringify(currentUser));
+    updateLanguageButtons();
+  } else {
+    alert(result.detail || 'Could not update language.');
+  }
+}
+
+function updateLanguageButtons() {
+  const lang = (currentUser && currentUser.language) || 'en';
+  ['en', 'fr', 'pt'].forEach(code => {
+    const btn = document.getElementById(`lang-${code}`);
+    if (btn) btn.classList.toggle('active', code === lang);
+  });
 }

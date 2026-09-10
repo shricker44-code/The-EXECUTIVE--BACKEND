@@ -164,7 +164,7 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     if gap_context:
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
 
-    reply, tokens_used = await get_executive_response(messages, model=model, history_summary=history_summary)
+        reply, tokens_used = await get_executive_response(messages, model=model, history_summary=history_summary, language=user.language or "en")
 
     increment_chat_count(user, db, tokens_used=tokens_used)
 
@@ -246,7 +246,7 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
     async def generate():
         full_reply = ""
         usage_tracker = {}
-        async for chunk in get_executive_response_stream(messages, usage_tracker, model=model, history_summary=history_summary):
+        async for chunk in get_executive_response_stream(messages, usage_tracker, model=model, history_summary=history_summary, language=user.language or "en"):
             full_reply += chunk
             yield chunk
 

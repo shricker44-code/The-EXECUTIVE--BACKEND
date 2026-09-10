@@ -72,6 +72,7 @@ async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
             "is_paid": False,
             "trial_active": True,
             "session_token": session_token,
+            "language": "en",
         }
 
     except Exception as e:
@@ -102,6 +103,7 @@ async def signin(request: SignInRequest, db: Session = Depends(get_db)):
             "is_paid": user.is_paid,
             "trial_active": user.trial_active,
             "session_token": session_token,
+            "language": user.language or "en",
         }
 
     except Exception as e:
@@ -139,3 +141,21 @@ async def update_name(request: UpdateNameRequest, db: Session = Depends(get_db))
     db.commit()
 
     return {"success": True, "first_name": user.first_name}
+
+class UpdateLanguageRequest(BaseModel):
+    user_id: str
+    language: str
+
+@router.post("/update-language")
+async def update_language(request: UpdateLanguageRequest, db: Session = Depends(get_db)):
+    if request.language not in ("en", "fr", "pt"):
+        raise HTTPException(status_code=400, detail="Unsupported language")
+
+    user = db.query(User).filter(User.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.language = request.language
+    db.commit()
+
+    return {"success": True, "language": user.language}

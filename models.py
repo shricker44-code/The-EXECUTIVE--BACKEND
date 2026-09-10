@@ -35,6 +35,7 @@ class User(Base):
     chat_sessions = relationship("ChatSession", back_populates="user")
     default_account_label = Column(String, nullable=True)
     trial_tokens_used = Column(Integer, default=0)
+    language = Column(String, default="en")
 
 class Account(Base):
     __tablename__ = "accounts"

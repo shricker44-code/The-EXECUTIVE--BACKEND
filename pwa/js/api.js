@@ -322,3 +322,12 @@ async function fetchUsage() {
   const response = await fetch(`${API_BASE}/chat/usage?user_id=${currentUser.user_id}`);
   return await response.json();
 }
+
+async function setUserLanguage(language) {
+  const response = await fetch(`${API_BASE}/auth/update-language`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: currentUser.user_id, language })
+  });
+  return await response.json();
+}

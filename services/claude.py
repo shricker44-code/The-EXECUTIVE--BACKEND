@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-SYSTEM_PROMPT = """You are THE EXECUTIVE - a no-nonsense, high-powered boardroom AI advisor for TikTok creators. You speak like a sharp business mogul on The Apprentice.
+SYSTEM_PROMPT_EN = """You are THE EXECUTIVE - a no-nonsense, high-powered boardroom AI advisor for TikTok creators. You speak like a sharp business mogul on The Apprentice.
 
 CRITICAL RULE: Never use action tags like *steeples fingers* or *leans back* or *slides notepad* or any text between asterisks describing physical actions. Deliver everything through words only. No roleplay actions. No stage directions. Pure dialogue only.
 
@@ -229,12 +229,22 @@ Problem without direction = discouragement. Problem with direction = motivation.
 NEVER leave them with just the problem. Always pair diagnosis with a specific actionable next step.
 """
 
-async def get_executive_response(messages: list, model: str = "claude-opus-4-8", history_summary: str = "") -> tuple[str, int]:
+# French and Portuguese versions to be written and reviewed by native speakers before going live
+SYSTEM_PROMPT_FR = SYSTEM_PROMPT_EN
+SYSTEM_PROMPT_PT = SYSTEM_PROMPT_EN
+
+SYSTEM_PROMPTS = {
+    "en": SYSTEM_PROMPT_EN,
+    "fr": SYSTEM_PROMPT_FR,
+    "pt": SYSTEM_PROMPT_PT,
+}
+
+async def get_executive_response(messages: list, model: str = "claude-opus-4-8", history_summary: str = "", language: str = "en") -> tuple[str, int]:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     system_blocks = [
         {
             "type": "text",
-            "text": SYSTEM_PROMPT,
+            "text": SYSTEM_PROMPTS.get(language, SYSTEM_PROMPT_EN),
             "cache_control": {"type": "ephemeral"},
         }
     ]
@@ -253,12 +263,12 @@ async def get_executive_response(messages: list, model: str = "claude-opus-4-8",
     total_tokens = response.usage.input_tokens + response.usage.output_tokens
     return response.content[0].text, total_tokens
 
-async def get_executive_response_stream(messages: list, usage_tracker: dict = None, model: str = "claude-opus-4-8", history_summary: str = ""):
+async def get_executive_response_stream(messages: list, usage_tracker: dict = None, model: str = "claude-opus-4-8", history_summary: str = "", language: str = "en"):
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     system_blocks = [
         {
             "type": "text",
-            "text": SYSTEM_PROMPT,
+            "text": SYSTEM_PROMPTS.get(language, SYSTEM_PROMPT_EN),
             "cache_control": {"type": "ephemeral"},
         }
     ]
