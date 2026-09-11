@@ -26,24 +26,24 @@
   <div id="auth-screen" class="auth-screen hidden">
     <div class="auth-container">
       <img src="/images/logo.png" alt="The Executive" class="auth-seal-img" />
-      <div class="auth-title" id="auth-title">THE EXECUTIVE</div>
-      <div class="auth-subtitle" id="auth-subtitle">YOUR 14-DAY TRIAL STARTS NOW</div>
+      <div class="auth-title" id="auth-title" data-i18n="auth-title-signup">THE EXECUTIVE</div>
+      <div class="auth-subtitle" id="auth-subtitle" data-i18n="auth-subtitle-signup">YOUR 14-DAY TRIAL STARTS NOW</div>
       <div class="auth-divider"></div>
       <div class="auth-form">
         <div id="auth-firstname-group" class="auth-field">
-          <label class="auth-label">FIRST NAME</label>
-          <input id="auth-firstname" class="auth-input" type="text" placeholder="Your first name" />
+          <label class="auth-label" data-i18n="auth-label-firstname">FIRST NAME</label>
+          <input id="auth-firstname" class="auth-input" type="text" placeholder="Your first name" data-i18n-placeholder="auth-placeholder-firstname" />
         </div>
         <div class="auth-field">
-          <label class="auth-label">EMAIL</label>
+          <label class="auth-label" data-i18n="auth-label-email">EMAIL</label>
           <input id="auth-email" class="auth-input" type="email" placeholder="your@email.com" />
         </div>
         <div class="auth-field">
-          <label class="auth-label">PASSWORD</label>
+          <label class="auth-label" data-i18n="auth-label-password">PASSWORD</label>
           <input id="auth-password" class="auth-input" type="password" placeholder="••••••••" />
         </div>
-        <button id="auth-submit-btn" class="auth-submit" onclick="handleSignUp()">ENTER THE BOARDROOM</button>
-        <button id="auth-toggle" class="auth-toggle" onclick="toggleAuthMode()">Already have an account? Sign in</button>
+        <button id="auth-submit-btn" class="auth-submit" onclick="handleSignUp()" data-i18n="auth-submit-btn">ENTER THE BOARDROOM</button>
+        <button id="auth-toggle" class="auth-toggle" onclick="toggleAuthMode()" data-i18n="auth-toggle-signup">Already have an account? Sign in</button>
       </div>
     </div>
   </div>
@@ -55,12 +55,12 @@
       <span class="auth-seal-letter">E</span>
       <span class="auth-seal-sub">EXEC</span>
     </div>
-    <div class="auth-title">WELCOME BACK</div>
+    <div class="auth-title" data-i18n="blocked-welcome-back">WELCOME BACK</div>
     <div class="auth-divider"></div>
     <div id="blocked-message" class="blocked-message"></div>
-    <button class="auth-submit" onclick="showSignIn()">SIGN IN TO MY ACCOUNT</button>
+    <button class="auth-submit" onclick="showSignIn()" data-i18n="blocked-signin-btn">SIGN IN TO MY ACCOUNT</button>
     <div style="margin-top: 12px; color: rgba(212,175,55,0.3); font-size: 11px; text-align: center; letter-spacing: 1px;">OR</div>
-    <button class="auth-toggle" onclick="upgradeToBasePlan()">Upgrade to Executive Plan →</button>
+    <button class="auth-toggle" onclick="upgradeToBasePlan()" data-i18n="blocked-upgrade-btn">Upgrade to Executive Plan →</button>
   </div>
 </div>
 
@@ -102,17 +102,17 @@
           <div class="typing-dot"></div>
           <div class="typing-dot"></div>
           <div class="typing-dot"></div>
-          <span class="typing-text">The Executive is deliberating...</span>
+          <span class="typing-text" data-i18n="typing-text">The Executive is deliberating...</span>
         </div>
         <div id="quick-prompts" class="quick-prompts">
           <div class="quick-prompts-label" data-i18n="quick-prompts-label">PRESENT YOUR CASE</div>
           <div class="quick-prompts-grid">
-            <button class="prompt-btn" onclick="sendQuickPrompt('Evaluate my content strategy')">Evaluate my content strategy</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Why aren\'t my views growing?')">Why aren't my views growing?</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('What\'s my winning formula?')">What's my winning formula?</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('How do I dominate my niche?')">How do I dominate my niche?</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Fire my worst habit')">Fire my worst habit</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Am I wasting my posting time?')">Am I wasting my posting time?</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Evaluate my content strategy')" data-i18n="qp-1">Evaluate my content strategy</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Why aren\'t my views growing?')" data-i18n="qp-2">Why aren't my views growing?</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('What\'s my winning formula?')" data-i18n="qp-3">What's my winning formula?</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('How do I dominate my niche?')" data-i18n="qp-4">How do I dominate my niche?</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Fire my worst habit')" data-i18n="qp-5">Fire my worst habit</button>
+            <button class="prompt-btn" onclick="sendQuickPrompt('Am I wasting my posting time?')" data-i18n="qp-6">Am I wasting my posting time?</button>
           </div>
         </div>
         <div class="input-container">
@@ -144,8 +144,8 @@
         <div class="divider"></div>
       </div>
       <div class="field-card">
-       <label class="field-label">EXECUTIVE PLAN</label>
-       <button class="verdict-btn" onclick="upgradeToBasePlan()">UPGRADE TO EXECUTIVE PLAN — $15/MO</button>
+       <label class="field-label" data-i18n="field-plan">EXECUTIVE PLAN</label>
+       <button class="verdict-btn" onclick="upgradeToBasePlan()" data-i18n="upgrade-btn">UPGRADE TO EXECUTIVE PLAN — $15/MO</button>
       </div>
       <div class="field-card">
   <label class="field-label" data-i18n="field-language">LANGUAGE</label>
@@ -158,42 +158,42 @@
       <div class="tab-scroll">
         <div class="profile-form">
           <div class="field-card">
-            <label class="field-label">WHAT SHOULD THE EXECUTIVE CALL YOU?</label>
-            <input class="field-input" id="p-displayname" type="text" placeholder="Your name" />
-            <button class="save-btn" style="margin-top: 10px;" onclick="handleUpdateName()">UPDATE NAME</button>
+            <label class="field-label" data-i18n="field-callyou">WHAT SHOULD THE EXECUTIVE CALL YOU?</label>
+            <input class="field-input" id="p-displayname" type="text" placeholder="Your name" data-i18n-placeholder="ph-name" />
+            <button class="save-btn" style="margin-top: 10px;" onclick="handleUpdateName()" data-i18n="btn-update-name">UPDATE NAME</button>
           </div>
           <div class="field-card">
-            <label class="field-label">TIKTOK USERNAME</label>
+            <label class="field-label" data-i18n="field-username">TIKTOK USERNAME</label>
             <input class="field-input" id="p-username" type="text" placeholder="@yourhandle" />
           </div>
           <div class="field-card">
-            <label class="field-label">YOUR NICHE</label>
-            <input class="field-input" id="p-niche" type="text" placeholder="e.g. fitness, comedy, cooking" />
+            <label class="field-label" data-i18n="field-niche">YOUR NICHE</label>
+            <input class="field-input" id="p-niche" type="text" placeholder="e.g. fitness, comedy, cooking" data-i18n-placeholder="ph-niche" />
           </div>
           <div class="field-card">
-            <label class="field-label">FOLLOWER COUNT</label>
+            <label class="field-label" data-i18n="field-followers">FOLLOWER COUNT</label>
             <input class="field-input" id="p-followers" type="text" placeholder="e.g. 2,400" />
           </div>
           <div class="field-card">
-            <label class="field-label">AVERAGE VIEWS</label>
+            <label class="field-label" data-i18n="field-views">AVERAGE VIEWS</label>
             <input class="field-input" id="p-views" type="text" placeholder="e.g. 800" />
           </div>
           <div class="field-card">
-            <label class="field-label">POSTING FREQUENCY</label>
-            <input class="field-input" id="p-freq" type="text" placeholder="e.g. 3x per week" />
+            <label class="field-label" data-i18n="field-freq">POSTING FREQUENCY</label>
+            <input class="field-input" id="p-freq" type="text" placeholder="e.g. 3x per week" data-i18n-placeholder="ph-freq" />
           </div>
           <div class="field-card">
-            <label class="field-label">YOUR GOAL</label>
-            <input class="field-input" id="p-goal" type="text" placeholder="e.g. reach 10k followers" />
+            <label class="field-label" data-i18n="field-goal">YOUR GOAL</label>
+            <input class="field-input" id="p-goal" type="text" placeholder="e.g. reach 10k followers" data-i18n-placeholder="ph-goal" />
           </div>
                     <div class="field-card">
-            <label class="field-label">DAILY CHECK-IN TIME</label>
+            <label class="field-label" data-i18n="field-checkin">DAILY CHECK-IN TIME</label>
             <input class="field-input" id="p-checkin-time" type="time" />
-            <button class="verdict-btn" onclick="handleSetCheckInTime()">SET REPORTING TIME</button>
+            <button class="verdict-btn" onclick="handleSetCheckInTime()" data-i18n="btn-set-checkin">SET REPORTING TIME</button>
           </div>
-          <button class="save-btn" onclick="saveProfile()">SAVE PROFILE</button>
-          <button class="verdict-btn" onclick="getProfileVerdict()">GET MY EXECUTIVE ANALYSIS →</button>
-          <button class="auth-toggle" onclick="handleSignOut()" style="margin-top: 16px; color: #FF4444;">SIGN OUT</button>
+          <button class="save-btn" onclick="saveProfile()" data-i18n="btn-save-profile">SAVE PROFILE</button>
+          <button class="verdict-btn" onclick="getProfileVerdict()" data-i18n="btn-get-analysis">GET MY EXECUTIVE ANALYSIS →</button>
+          <button class="auth-toggle" onclick="handleSignOut()" style="margin-top: 16px; color: #FF4444;" data-i18n="btn-sign-out">SIGN OUT</button>
         </div>
       </div>
     </div>
@@ -208,8 +208,8 @@
       </div>
       <div class="tab-scroll">
         <div class="field-card" style="border-color: var(--gold);">
-          <label class="field-label">📸 FIND YOUR TIKTOK ANALYTICS</label>
-          <div style="color: var(--text-primary); font-size: 13px; line-height: 1.8; margin-top: 8px;">
+          <label class="field-label" data-i18n="scan-find-label">📸 FIND YOUR TIKTOK ANALYTICS</label>
+          <div style="color: var(--text-primary); font-size: 13px; line-height: 1.8; margin-top: 8px;" data-i18n="scan-instructions">
             1. Open TikTok<br>
             2. Go to Profile<br>
             3. Tap the three lines (top right)<br>
@@ -220,19 +220,19 @@
           </div>
         </div>
         <div class="field-card">
-          <label class="field-label">⚡ QUICK SCAN — GET AN INSTANT REACTION</label>
-          <input class="field-input" id="qs-niche" type="text" placeholder="Your niche (e.g. fitness)" />
-          <input class="field-input" id="qs-followers" type="text" placeholder="Follower count" style="margin-top: 10px;" />
-          <input class="field-input" id="qs-views" type="text" placeholder="Average views" style="margin-top: 10px;" />
-          <button class="verdict-btn" style="margin-top: 10px;" onclick="requestQuickScan()">GET INSTANT REACTION</button>
+          <label class="field-label" data-i18n="scan-quick-label">⚡ QUICK SCAN — GET AN INSTANT REACTION</label>
+          <input class="field-input" id="qs-niche" type="text" placeholder="Your niche (e.g. fitness)" data-i18n-placeholder="ph-niche" />
+          <input class="field-input" id="qs-followers" type="text" placeholder="Follower count" style="margin-top: 10px;" data-i18n-placeholder="ph-follower-count" />
+          <input class="field-input" id="qs-views" type="text" placeholder="Average views" style="margin-top: 10px;" data-i18n-placeholder="ph-avg-views" />
+          <button class="verdict-btn" style="margin-top: 10px;" onclick="requestQuickScan()" data-i18n="btn-instant-reaction">GET INSTANT REACTION</button>
           <div id="quick-scan-result" class="verdict-card hidden"></div>
         </div>
         <div class="divider" style="margin: 20px 0;"></div>
         <div id="scan-manual" class="scan-section">
-          <label class="field-label">DESCRIBE YOUR ACCOUNT</label>
-          <textarea class="field-input field-textarea" id="scan-manual-input" placeholder="Niche, followers, avg views, posting frequency, best post, what's flopping..."></textarea>
+          <label class="field-label" data-i18n="scan-describe-label">DESCRIBE YOUR ACCOUNT</label>
+          <textarea class="field-input field-textarea" id="scan-manual-input" placeholder="Niche, followers, avg views, posting frequency, best post, what's flopping..." data-i18n-placeholder="ph-describe-account"></textarea>
         </div>
-        <button class="verdict-btn" onclick="requestScanVerdict()">REQUEST THE VERDICT</button>
+        <button class="verdict-btn" onclick="requestScanVerdict()" data-i18n="btn-request-verdict">REQUEST THE VERDICT</button>
         <div id="scan-result" class="verdict-card hidden"></div>
       </div>
     </div>
@@ -253,7 +253,7 @@
           <div class="score-bar"><div id="score-fill" class="score-fill"></div></div>
         </div>
         <div class="score-categories" id="score-categories"></div>
-        <button class="verdict-btn" onclick="getScoreVerdict()">GET VERDICT ON MY SCORE →</button>
+        <button class="verdict-btn" onclick="getScoreVerdict()" data-i18n="btn-get-score-verdict">GET VERDICT ON MY SCORE →</button>
       </div>
     </div>
 

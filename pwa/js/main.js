@@ -1,12 +1,12 @@
 const VERDICTS = [
-  { icon: '📊', title: 'THE HOOK VERDICT', desc: '3 seconds. That\'s all you get. If your opener doesn\'t stop the scroll, you\'re finished before you started.' },
-  { icon: '⏰', title: 'THE CONSISTENCY DECREE', desc: '3-5 posts per week, minimum. Treat it like showing up to work. No excuses, no exceptions.' },
-  { icon: '🎵', title: 'THE SOUND STRATEGY', desc: 'Use trending sounds on the RISE, not the peak. Early movers win. Late movers get buried.' },
-  { icon: '💬', title: 'THE ENGAGEMENT RULE', desc: 'Reply to every comment in the first 60 minutes. Non-negotiable. This is your job now.' },
-  { icon: '🎯', title: 'THE NICHE DIRECTIVE', desc: 'Pick 3 content pillars and own them. Scattered creators lose. Focused creators win. Period.' },
-  { icon: '📈', title: 'THE NUMBERS BOARDROOM', desc: 'Watch your completion rate above everything. If they\'re not finishing your video, you\'re fired.' },
-  { icon: '🔁', title: 'THE LOOP RULING', desc: 'Videos that loop seamlessly get rewatched. Boost your completion rate. Engineer the loop.' },
-  { icon: '💰', title: 'THE MONETIZATION VERDICT', desc: 'Views don\'t pay bills. Conversions do. Every video needs a purpose beyond the view count.' },
+  { id: 'hook', icon: '📊' },
+  { id: 'consistency', icon: '⏰' },
+  { id: 'sound', icon: '🎵' },
+  { id: 'engagement', icon: '💬' },
+  { id: 'niche', icon: '🎯' },
+  { id: 'numbers', icon: '📈' },
+  { id: 'loop', icon: '🔁' },
+  { id: 'monetization', icon: '💰' },
 ];
 
 let currentTab = 'boardroom';
@@ -21,7 +21,14 @@ const UI_TRANSLATIONS = {
     "splash-title": "THE EXECUTIVE",
     "splash-sub": "Your TikTok Boardroom Advisor",
     "header-sub": "TIKTOK BOARDROOM ADVISOR",
+    "typing-text": "The Executive is deliberating...",
     "quick-prompts-label": "PRESENT YOUR CASE",
+    "qp-1": "Evaluate my content strategy",
+    "qp-2": "Why aren't my views growing?",
+    "qp-3": "What's my winning formula?",
+    "qp-4": "How do I dominate my niche?",
+    "qp-5": "Fire my worst habit",
+    "qp-6": "Am I wasting my posting time?",
     "input-placeholder": "State your case to The Executive...",
     "nav-boardroom": "Boardroom",
     "nav-profile": "Profile",
@@ -30,21 +37,68 @@ const UI_TRANSLATIONS = {
     "nav-verdicts": "Verdicts",
     "sidebar-title": "THE EXECUTIVE",
     "sidebar-clear-chat": "Clear Chat",
+    "auth-title-signup": "THE EXECUTIVE",
+    "auth-subtitle-signup": "YOUR 14-DAY TRIAL STARTS NOW",
+    "auth-label-firstname": "FIRST NAME",
+    "auth-placeholder-firstname": "Your first name",
+    "auth-label-email": "EMAIL",
+    "auth-label-password": "PASSWORD",
+    "auth-submit-btn": "ENTER THE BOARDROOM",
+    "auth-toggle-signup": "Already have an account? Sign in",
+    "blocked-welcome-back": "WELCOME BACK",
+    "blocked-signin-btn": "SIGN IN TO MY ACCOUNT",
+    "blocked-upgrade-btn": "Upgrade to Executive Plan →",
     "profile-header-title": "CREATOR PROFILE",
     "profile-header-sub": "YOUR DOSSIER. THE EXECUTIVE NEEDS THE FACTS.",
+    "field-plan": "EXECUTIVE PLAN",
+    "upgrade-btn": "UPGRADE TO EXECUTIVE PLAN — $15/MO",
+    "field-language": "LANGUAGE",
+    "field-callyou": "WHAT SHOULD THE EXECUTIVE CALL YOU?",
+    "ph-name": "Your name",
+    "btn-update-name": "UPDATE NAME",
+    "field-username": "TIKTOK USERNAME",
+    "field-niche": "YOUR NICHE",
+    "ph-niche": "e.g. fitness, comedy, cooking",
+    "field-followers": "FOLLOWER COUNT",
+    "field-views": "AVERAGE VIEWS",
+    "field-freq": "POSTING FREQUENCY",
+    "ph-freq": "e.g. 3x per week",
+    "field-goal": "YOUR GOAL",
+    "ph-goal": "e.g. reach 10k followers",
+    "field-checkin": "DAILY CHECK-IN TIME",
+    "btn-set-checkin": "SET REPORTING TIME",
+    "btn-save-profile": "SAVE PROFILE",
+    "btn-get-analysis": "GET MY EXECUTIVE ANALYSIS →",
+    "btn-sign-out": "SIGN OUT",
     "scan-header-title": "CONTENT SCAN",
     "scan-header-sub": "SUBMIT YOUR CONTENT. RECEIVE THE VERDICT.",
+    "scan-find-label": "📸 FIND YOUR TIKTOK ANALYTICS",
+    "scan-instructions": "1. Open TikTok<br>2. Go to Profile<br>3. Tap the three lines (top right)<br>4. Tap Creator Tools<br>5. Tap Analytics<br>6. Screenshot the Overview tab<br>7. Upload it below",
+    "scan-quick-label": "⚡ QUICK SCAN — GET AN INSTANT REACTION",
+    "ph-follower-count": "Follower count",
+    "ph-avg-views": "Average views",
+    "btn-instant-reaction": "GET INSTANT REACTION",
+    "scan-describe-label": "DESCRIBE YOUR ACCOUNT",
+    "ph-describe-account": "Niche, followers, avg views, posting frequency, best post, what's flopping...",
+    "btn-request-verdict": "REQUEST THE VERDICT",
     "score-header-title": "EXECUTIVE SCORE",
     "score-header-sub": "TRACK YOUR GROWTH. EARN YOUR RANK.",
+    "btn-get-score-verdict": "GET VERDICT ON MY SCORE →",
     "verdicts-header-title": "THE EXECUTIVE'S RULINGS",
     "verdicts-header-sub": "TAP ANY RULING TO DISCUSS IN BOARDROOM",
-    "field-language": "LANGUAGE",
   },
   fr: {
     "splash-title": "THE EXECUTIVE",
     "splash-sub": "Votre conseiller TikTok",
     "header-sub": "CONSEILLER TIKTOK",
+    "typing-text": "The Executive délibère...",
     "quick-prompts-label": "PRÉSENTE TON DOSSIER",
+    "qp-1": "Évalue ma stratégie de contenu",
+    "qp-2": "Pourquoi mes vues ne progressent pas ?",
+    "qp-3": "C'est quoi ma formule gagnante ?",
+    "qp-4": "Comment dominer ma niche ?",
+    "qp-5": "Vire ma pire habitude",
+    "qp-6": "Est-ce que je gaspille mon temps de publication ?",
     "input-placeholder": "Présente ton dossier à The Executive...",
     "nav-boardroom": "Bureau",
     "nav-profile": "Profil",
@@ -53,21 +107,68 @@ const UI_TRANSLATIONS = {
     "nav-verdicts": "Verdicts",
     "sidebar-title": "THE EXECUTIVE",
     "sidebar-clear-chat": "Effacer la conversation",
+    "auth-title-signup": "THE EXECUTIVE",
+    "auth-subtitle-signup": "TON ESSAI DE 14 JOURS COMMENCE MAINTENANT",
+    "auth-label-firstname": "PRÉNOM",
+    "auth-placeholder-firstname": "Ton prénom",
+    "auth-label-email": "COURRIEL",
+    "auth-label-password": "MOT DE PASSE",
+    "auth-submit-btn": "ENTRE DANS LE BUREAU",
+    "auth-toggle-signup": "Déjà un compte ? Connecte-toi",
+    "blocked-welcome-back": "BON RETOUR",
+    "blocked-signin-btn": "CONNECTE-TOI À MON COMPTE",
+    "blocked-upgrade-btn": "Passer au plan Executive →",
     "profile-header-title": "PROFIL CRÉATEUR",
     "profile-header-sub": "TON DOSSIER. THE EXECUTIVE A BESOIN DES FAITS.",
+    "field-plan": "PLAN EXECUTIVE",
+    "upgrade-btn": "PASSER AU PLAN EXECUTIVE — 15$/MOIS",
+    "field-language": "LANGUE",
+    "field-callyou": "COMMENT THE EXECUTIVE DOIT-IL T'APPELER ?",
+    "ph-name": "Ton nom",
+    "btn-update-name": "METTRE À JOUR LE NOM",
+    "field-username": "NOM D'UTILISATEUR TIKTOK",
+    "field-niche": "TA NICHE",
+    "ph-niche": "ex. fitness, humour, cuisine",
+    "field-followers": "NOMBRE D'ABONNÉS",
+    "field-views": "VUES MOYENNES",
+    "field-freq": "FRÉQUENCE DE PUBLICATION",
+    "ph-freq": "ex. 3x par semaine",
+    "field-goal": "TON OBJECTIF",
+    "ph-goal": "ex. atteindre 10k abonnés",
+    "field-checkin": "HEURE DE POINT QUOTIDIEN",
+    "btn-set-checkin": "DÉFINIR L'HEURE DE RAPPORT",
+    "btn-save-profile": "ENREGISTRER LE PROFIL",
+    "btn-get-analysis": "OBTENIR MON ANALYSE EXECUTIVE →",
+    "btn-sign-out": "SE DÉCONNECTER",
     "scan-header-title": "ANALYSE DE CONTENU",
     "scan-header-sub": "SOUMETS TON CONTENU. REÇOIS LE VERDICT.",
+    "scan-find-label": "📸 TROUVE TES ANALYTICS TIKTOK",
+    "scan-instructions": "1. Ouvre TikTok<br>2. Va sur Profil<br>3. Touche les trois lignes (en haut à droite)<br>4. Touche Outils créateur<br>5. Touche Analytics<br>6. Capture l'onglet Aperçu<br>7. Téléverse-la ci-dessous",
+    "scan-quick-label": "⚡ SCAN RAPIDE — OBTIENS UNE RÉACTION INSTANTANÉE",
+    "ph-follower-count": "Nombre d'abonnés",
+    "ph-avg-views": "Vues moyennes",
+    "btn-instant-reaction": "OBTENIR UNE RÉACTION INSTANTANÉE",
+    "scan-describe-label": "DÉCRIS TON COMPTE",
+    "ph-describe-account": "Niche, abonnés, vues moyennes, fréquence de publication, meilleure publication, ce qui flop...",
+    "btn-request-verdict": "DEMANDER LE VERDICT",
     "score-header-title": "SCORE EXECUTIVE",
     "score-header-sub": "SUIS TA CROISSANCE. GAGNE TON RANG.",
+    "btn-get-score-verdict": "OBTENIR UN VERDICT SUR MON SCORE →",
     "verdicts-header-title": "LES JUGEMENTS DE THE EXECUTIVE",
     "verdicts-header-sub": "TOUCHE UN JUGEMENT POUR EN DISCUTER AU BUREAU",
-    "field-language": "LANGUE",
   },
   pt: {
     "splash-title": "THE EXECUTIVE",
     "splash-sub": "Seu conselheiro do TikTok",
     "header-sub": "CONSELHEIRO DO TIKTOK",
+    "typing-text": "The Executive está deliberando...",
     "quick-prompts-label": "APRESENTE SEU CASO",
+    "qp-1": "Avalie minha estratégia de conteúdo",
+    "qp-2": "Por que minhas visualizações não crescem?",
+    "qp-3": "Qual é minha fórmula vencedora?",
+    "qp-4": "Como domino meu nicho?",
+    "qp-5": "Demita meu pior hábito",
+    "qp-6": "Estou desperdiçando meu tempo de postagem?",
     "input-placeholder": "Apresente seu caso a The Executive...",
     "nav-boardroom": "Escritório",
     "nav-profile": "Perfil",
@@ -76,31 +177,134 @@ const UI_TRANSLATIONS = {
     "nav-verdicts": "Vereditos",
     "sidebar-title": "THE EXECUTIVE",
     "sidebar-clear-chat": "Limpar conversa",
+    "auth-title-signup": "THE EXECUTIVE",
+    "auth-subtitle-signup": "SEU TESTE DE 14 DIAS COMEÇA AGORA",
+    "auth-label-firstname": "PRIMEIRO NOME",
+    "auth-placeholder-firstname": "Seu primeiro nome",
+    "auth-label-email": "EMAIL",
+    "auth-label-password": "SENHA",
+    "auth-submit-btn": "ENTRE NO ESCRITÓRIO",
+    "auth-toggle-signup": "Já tem uma conta? Entre",
+    "blocked-welcome-back": "BEM-VINDO DE VOLTA",
+    "blocked-signin-btn": "ENTRAR NA MINHA CONTA",
+    "blocked-upgrade-btn": "Fazer upgrade para o plano Executive →",
     "profile-header-title": "PERFIL DO CRIADOR",
     "profile-header-sub": "SEU DOSSIÊ. THE EXECUTIVE PRECISA DOS FATOS.",
+    "field-plan": "PLANO EXECUTIVE",
+    "upgrade-btn": "FAZER UPGRADE PARA O PLANO EXECUTIVE — $15/MÊS",
+    "field-language": "IDIOMA",
+    "field-callyou": "COMO THE EXECUTIVE DEVE TE CHAMAR?",
+    "ph-name": "Seu nome",
+    "btn-update-name": "ATUALIZAR NOME",
+    "field-username": "USUÁRIO DO TIKTOK",
+    "field-niche": "SEU NICHO",
+    "ph-niche": "ex. fitness, comédia, culinária",
+    "field-followers": "NÚMERO DE SEGUIDORES",
+    "field-views": "VISUALIZAÇÕES MÉDIAS",
+    "field-freq": "FREQUÊNCIA DE POSTAGEM",
+    "ph-freq": "ex. 3x por semana",
+    "field-goal": "SEU OBJETIVO",
+    "ph-goal": "ex. alcançar 10 mil seguidores",
+    "field-checkin": "HORÁRIO DE CHECK-IN DIÁRIO",
+    "btn-set-checkin": "DEFINIR HORÁRIO DE RELATÓRIO",
+    "btn-save-profile": "SALVAR PERFIL",
+    "btn-get-analysis": "OBTER MINHA ANÁLISE EXECUTIVE →",
+    "btn-sign-out": "SAIR DA CONTA",
     "scan-header-title": "ANÁLISE DE CONTEÚDO",
     "scan-header-sub": "ENVIE SEU CONTEÚDO. RECEBA O VEREDITO.",
+    "scan-find-label": "📸 ENCONTRE SEUS ANALYTICS DO TIKTOK",
+    "scan-instructions": "1. Abra o TikTok<br>2. Vá em Perfil<br>3. Toque nas três linhas (canto superior direito)<br>4. Toque em Ferramentas do Criador<br>5. Toque em Analytics<br>6. Capture a aba Visão Geral<br>7. Envie abaixo",
+    "scan-quick-label": "⚡ SCAN RÁPIDO — RECEBA UMA REAÇÃO INSTANTÂNEA",
+    "ph-follower-count": "Número de seguidores",
+    "ph-avg-views": "Visualizações médias",
+    "btn-instant-reaction": "OBTER REAÇÃO INSTANTÂNEA",
+    "scan-describe-label": "DESCREVA SUA CONTA",
+    "ph-describe-account": "Nicho, seguidores, visualizações médias, frequência de postagem, melhor postagem, o que não está funcionando...",
+    "btn-request-verdict": "SOLICITAR O VEREDITO",
     "score-header-title": "SCORE EXECUTIVE",
     "score-header-sub": "ACOMPANHE SEU CRESCIMENTO. GANHE SEU RANK.",
+    "btn-get-score-verdict": "OBTER VEREDITO SOBRE MEU SCORE →",
     "verdicts-header-title": "OS VEREDITOS DE THE EXECUTIVE",
     "verdicts-header-sub": "TOQUE EM QUALQUER VEREDITO PARA DISCUTIR NO ESCRITÓRIO",
-    "field-language": "IDIOMA",
   },
 };
 
+const VERDICT_TRANSLATIONS = {
+  en: {
+    hook: { title: "THE HOOK VERDICT", desc: "3 seconds. That's all you get. If your opener doesn't stop the scroll, you're finished before you started." },
+    consistency: { title: "THE CONSISTENCY DECREE", desc: "3-5 posts per week, minimum. Treat it like showing up to work. No excuses, no exceptions." },
+    sound: { title: "THE SOUND STRATEGY", desc: "Use trending sounds on the RISE, not the peak. Early movers win. Late movers get buried." },
+    engagement: { title: "THE ENGAGEMENT RULE", desc: "Reply to every comment in the first 60 minutes. Non-negotiable. This is your job now." },
+    niche: { title: "THE NICHE DIRECTIVE", desc: "Pick 3 content pillars and own them. Scattered creators lose. Focused creators win. Period." },
+    numbers: { title: "THE NUMBERS BOARDROOM", desc: "Watch your completion rate above everything. If they're not finishing your video, you're fired." },
+    loop: { title: "THE LOOP RULING", desc: "Videos that loop seamlessly get rewatched. Boost your completion rate. Engineer the loop." },
+    monetization: { title: "THE MONETIZATION VERDICT", desc: "Views don't pay bills. Conversions do. Every video needs a purpose beyond the view count." },
+  },
+  fr: {
+    hook: { title: "LE VERDICT DE L'ACCROCHE", desc: "3 secondes. C'est tout ce que tu as. Si ton ouverture n'arrête pas le défilement, c'est fini avant même d'avoir commencé." },
+    consistency: { title: "LE DÉCRET DE CONSTANCE", desc: "3 à 5 publications par semaine, minimum. Traite ça comme un emploi. Aucune excuse, aucune exception." },
+    sound: { title: "LA STRATÉGIE SONORE", desc: "Utilise les sons tendance EN MONTÉE, pas au sommet. Les premiers arrivés gagnent. Les retardataires sont enterrés." },
+    engagement: { title: "LA RÈGLE D'ENGAGEMENT", desc: "Réponds à chaque commentaire dans les 60 premières minutes. Non négociable. C'est ton travail maintenant." },
+    niche: { title: "LA DIRECTIVE DE NICHE", desc: "Choisis 3 piliers de contenu et maîtrise-les. Les créateurs dispersés perdent. Les créateurs concentrés gagnent. Point final." },
+    numbers: { title: "LE BUREAU DES CHIFFRES", desc: "Surveille ton taux de complétion avant tout. Si les gens ne terminent pas ta vidéo, tu es renvoyé." },
+    loop: { title: "LE JUGEMENT DE LA BOUCLE", desc: "Les vidéos qui bouclent parfaitement sont revisionnées. Augmente ton taux de complétion. Conçois la boucle." },
+    monetization: { title: "LE VERDICT DE MONÉTISATION", desc: "Les vues ne paient pas les factures. Les conversions, oui. Chaque vidéo doit avoir un but au-delà du nombre de vues." },
+  },
+  pt: {
+    hook: { title: "O VEREDITO DO GANCHO", desc: "3 segundos. É só isso que você tem. Se sua abertura não parar a rolagem, você já perdeu antes de começar." },
+    consistency: { title: "O DECRETO DA CONSISTÊNCIA", desc: "3 a 5 posts por semana, no mínimo. Trate como ir ao trabalho. Sem desculpas, sem exceções." },
+    sound: { title: "A ESTRATÉGIA DE SOM", desc: "Use sons em ALTA, não no pico. Quem entra cedo ganha. Quem entra tarde é enterrado." },
+    engagement: { title: "A REGRA DE ENGAJAMENTO", desc: "Responda a todo comentário nos primeiros 60 minutos. Inegociável. Este é seu trabalho agora." },
+    niche: { title: "A DIRETRIZ DE NICHO", desc: "Escolha 3 pilares de conteúdo e domine-os. Criadores dispersos perdem. Criadores focados ganham. Ponto final." },
+    numbers: { title: "O ESCRITÓRIO DOS NÚMEROS", desc: "Observe sua taxa de conclusão acima de tudo. Se não estão terminando seu vídeo, você está demitido." },
+    loop: { title: "O JULGAMENTO DO LOOP", desc: "Vídeos que fazem loop perfeito são revistos. Aumente sua taxa de conclusão. Projete o loop." },
+    monetization: { title: "O VEREDITO DA MONETIZAÇÃO", desc: "Visualizações não pagam contas. Conversões, sim. Todo vídeo precisa de um propósito além da contagem de views." },
+  },
+};
+
+function getLang() {
+  return (currentUser && currentUser.language) || 'en';
+}
+
+function t(key, vars) {
+  const dict = UI_TRANSLATIONS[getLang()] || UI_TRANSLATIONS.en;
+  let str = dict[key] !== undefined ? dict[key] : (UI_TRANSLATIONS.en[key] !== undefined ? UI_TRANSLATIONS.en[key] : key);
+  if (vars) {
+    Object.keys(vars).forEach(k => {
+      str = str.replace(new RegExp('\\{' + k + '\\}', 'g'), vars[k]);
+    });
+  }
+  return str;
+}
+
 function applyUITranslations() {
-  const lang = (currentUser && currentUser.language) || 'en';
+  const lang = getLang();
   const dict = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS.en;
 
   document.querySelectorAll('[data-i18n]').forEach(el => {
+    if (el.id === 'score-label' && window.currentScoreData) return; // already showing a live score label
     const key = el.getAttribute('data-i18n');
     if (dict[key]) el.textContent = dict[key];
+  });
+
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (dict[key]) el.innerHTML = dict[key];
   });
 
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
     if (dict[key]) el.placeholder = dict[key];
   });
+
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    if (dict[key]) el.title = dict[key];
+  });
+
+  renderVerdicts();
+  renderAccountSwitcher();
+  renderSidebarAccounts();
 }
 
 window.addEventListener('load', () => {
@@ -285,12 +489,12 @@ async function handleSignUp() {
   const firstName = document.getElementById('auth-firstname').value.trim();
 
   if (!email || !password || !firstName) {
-    alert('Fill in all fields.');
+    alert(t('fill-all-fields-alert'));
     return;
   }
 
   const btn = document.getElementById('auth-submit-btn');
-  btn.textContent = 'ENTERING BOARDROOM...';
+  btn.textContent = t('auth-submit-entering');
   btn.disabled = true;
 
   try {
@@ -302,13 +506,13 @@ async function handleSignUp() {
     if (result.success) {
       showApp(result);
     } else {
-      alert('Signup failed. Try again.');
-      btn.textContent = 'ENTER THE BOARDROOM';
+      alert(t('signup-failed-alert'));
+      btn.textContent = t('auth-submit-btn');
       btn.disabled = false;
     }
   } catch {
-    alert('Connection failed. Try again.');
-    btn.textContent = 'ENTER THE BOARDROOM';
+    alert(t('connection-failed-alert'));
+    btn.textContent = t('auth-submit-btn');
     btn.disabled = false;
   }
 }
@@ -318,12 +522,12 @@ async function handleSignIn() {
   const password = document.getElementById('auth-password').value.trim();
 
   if (!email || !password) {
-    alert('Enter your email and password.');
+    alert(t('enter-email-password-alert'));
     return;
   }
 
   const btn = document.getElementById('auth-submit-btn');
-  btn.textContent = 'ENTERING BOARDROOM...';
+  btn.textContent = t('auth-submit-entering');
   btn.disabled = true;
 
   try {
@@ -331,13 +535,13 @@ async function handleSignIn() {
     if (result.success) {
       showApp(result);
     } else {
-      alert('Sign in failed. Check your credentials.');
-      btn.textContent = 'ENTER THE BOARDROOM';
+      alert(t('signin-failed-alert'));
+      btn.textContent = t('auth-submit-btn');
       btn.disabled = false;
     }
   } catch {
-    alert('Connection failed. Try again.');
-    btn.textContent = 'ENTER THE BOARDROOM';
+    alert(t('connection-failed-alert'));
+    btn.textContent = t('auth-submit-btn');
     btn.disabled = false;
   }
 }
@@ -346,29 +550,29 @@ function toggleAuthMode() {
   const isSignUp = document.getElementById('auth-firstname-group').style.display !== 'none';
   if (isSignUp) {
     document.getElementById('auth-firstname-group').style.display = 'none';
-    document.getElementById('auth-title').textContent = 'WELCOME BACK';
-    document.getElementById('auth-subtitle').textContent = 'THE BOARDROOM IS WAITING';
-    document.getElementById('auth-submit-btn').textContent = 'ENTER THE BOARDROOM';
+    document.getElementById('auth-title').textContent = t('auth-title-welcome-back');
+    document.getElementById('auth-subtitle').textContent = t('auth-subtitle-boardroom-waiting');
+    document.getElementById('auth-submit-btn').textContent = t('auth-submit-btn');
     document.getElementById('auth-submit-btn').onclick = handleSignIn;
-    document.getElementById('auth-toggle').textContent = "New here? Start your free trial";
+    document.getElementById('auth-toggle').textContent = t('auth-toggle-to-signup');
   } else {
     document.getElementById('auth-firstname-group').style.display = 'block';
-    document.getElementById('auth-title').textContent = 'THE BOARDROOM';
-    document.getElementById('auth-subtitle').textContent = 'YOUR 14-DAY TRIAL STARTS NOW';
-    document.getElementById('auth-submit-btn').textContent = 'ENTER THE BOARDROOM';
+    document.getElementById('auth-title').textContent = t('auth-title-signup');
+    document.getElementById('auth-subtitle').textContent = t('auth-subtitle-default');
+    document.getElementById('auth-submit-btn').textContent = t('auth-submit-btn');
     document.getElementById('auth-submit-btn').onclick = handleSignUp;
-    document.getElementById('auth-toggle').textContent = "Already have an account? Sign in";
+    document.getElementById('auth-toggle').textContent = t('auth-toggle-to-signin');
   }
 }
 function showSignIn() {
   document.getElementById('blocked-screen').classList.add('hidden');
   document.getElementById('auth-screen').classList.remove('hidden');
   document.getElementById('auth-firstname-group').style.display = 'none';
-  document.getElementById('auth-title').textContent = 'THE EXECUTIVE';
-  document.getElementById('auth-subtitle').textContent = 'WELCOME BACK';
-  document.getElementById('auth-submit-btn').textContent = 'ENTER THE BOARDROOM';
+  document.getElementById('auth-title').textContent = t('auth-title-brand');
+  document.getElementById('auth-subtitle').textContent = t('auth-title-welcome-back');
+  document.getElementById('auth-submit-btn').textContent = t('auth-submit-btn');
   document.getElementById('auth-submit-btn').onclick = handleSignIn;
-  document.getElementById('auth-toggle').textContent = "New here? Start your free trial";
+  document.getElementById('auth-toggle').textContent = t('auth-toggle-to-signup');
 }
 
 function switchTab(tab) {
@@ -391,8 +595,8 @@ function addInitialMessage() {
   const bubble = document.createElement('div');
   bubble.className = 'message assistant';
   const greeting = currentUser && currentUser.first_name
-    ? `${currentUser.first_name}. Sit down. My office is open. Start talking.`
-    : `Sit down. My office is open. Start talking.`;
+    ? t('greeting-named', { name: currentUser.first_name })
+    : t('greeting-anon');
   const formatted = greeting
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*[^*].*?\*/g, '')
@@ -433,10 +637,10 @@ function checkVerdictTracking() {
       const prompt = document.createElement('div');
       prompt.className = 'verdict-tracking-prompt';
       prompt.innerHTML = `
-        <div class="tracking-message">Have you posted since your last verdict?</div>
+        <div class="tracking-message">${t('posted-question')}</div>
         <div class="tracking-buttons">
-          <button class="tracking-yes" onclick="verdictTrackingResponse(true)">YES, I POSTED</button>
-          <button class="tracking-no" onclick="verdictTrackingResponse(false)">NOT YET</button>
+          <button class="tracking-yes" onclick="verdictTrackingResponse(true)">${t('posted-yes')}</button>
+          <button class="tracking-no" onclick="verdictTrackingResponse(false)">${t('posted-no')}</button>
         </div>
       `;
       document.getElementById('messages').appendChild(prompt);
@@ -483,11 +687,16 @@ async function sendQuickPrompt(prompt) {
   await sendToExecutive(prompt);
 }
 
+async function sendQuickPromptKey(key) {
+  await sendQuickPrompt(t(key));
+}
+
 function toggleMute() {
   unlockAudio();
   isMuted = !isMuted;
   const btn = document.getElementById('mute-btn');
   btn.textContent = isMuted ? '🔇' : '🔊';
+  btn.title = isMuted ? t('unmute-title') : t('mute-title');
   btn.classList.toggle('muted', isMuted);
 
   if (isMuted && currentAutoAudio && !currentAutoAudio.paused) {
@@ -499,31 +708,31 @@ function toggleMute() {
 function addPlaybackButton(bubbleEl, text, existingAudioBase64 = null) {
   const btn = document.createElement('button');
   btn.className = 'playback-btn';
-  btn.innerHTML = '🔊 Play';
+  btn.innerHTML = t('play-btn');
   btn.onclick = async () => {
     if (isMuted) {
-      alert('Voice is muted. Unmute to play.');
+      alert(t('voice-muted-alert'));
       return;
     }
     btn.disabled = true;
-    btn.innerHTML = '⏳ Loading...';
+    btn.innerHTML = t('loading-btn');
     try {
       const audioBase64 = existingAudioBase64 || await generateSpeech(text);
       if (audioBase64) {
         const audio = new Audio(`data:audio/mp3;base64,${audioBase64}`);
-        btn.innerHTML = '🔊 Playing...';
+        btn.innerHTML = t('playing-btn');
         audio.play();
         audio.onended = () => {
-          btn.innerHTML = '🔊 Play';
+          btn.innerHTML = t('play-btn');
           btn.disabled = false;
         };
       } else {
-        btn.innerHTML = '🔊 Play';
+        btn.innerHTML = t('play-btn');
         btn.disabled = false;
       }
     } catch (e) {
       console.log('TTS playback failed:', e);
-      btn.innerHTML = '🔊 Play';
+      btn.innerHTML = t('play-btn');
       btn.disabled = false;
     }
   };
@@ -631,7 +840,7 @@ async function sendToExecutive(text) {
   } catch (e) {
     console.error('sendToExecutive error:', e);
     document.getElementById('typing').classList.add('hidden');
-    addMessage('assistant', "Connection failed. In business, that's unacceptable. Check your network and try again.");
+    addMessage('assistant', t('connection-failed-chat'));
   } finally {
     document.getElementById('send-btn').disabled = false;
     messages.style.scrollBehavior = '';
@@ -648,7 +857,7 @@ function saveProfile() {
     goal: document.getElementById('p-goal').value,
   };
   localStorage.setItem('executive_profile', JSON.stringify(profile));
-  alert('Profile saved. Now I know who I am dealing with.');
+  alert(t('profile-saved-alert'));
 }
 
 function loadProfile() {
@@ -672,42 +881,42 @@ function loadDisplayName() {
 
 async function handleUpdateName() {
   const newName = document.getElementById('p-displayname').value.trim();
-  if (!newName) { alert('Enter a name first.'); return; }
+  if (!newName) { alert(t('enter-name-alert')); return; }
   const btn = event.target;
   const originalText = btn.textContent;
   btn.disabled = true;
   try {
     const result = await updateDisplayName(newName);
     if (result.success) {
-      btn.textContent = '✓ UPDATED';
+      btn.textContent = t('update-name-updated');
       setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
     } else {
-      btn.textContent = 'FAILED — TRY AGAIN';
+      btn.textContent = t('update-name-failed');
       setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
     }
   } catch (e) {
-    btn.textContent = 'FAILED — TRY AGAIN';
+    btn.textContent = t('update-name-failed');
     setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
   }
 }
 
 async function handleSetCheckInTime() {
   const time = document.getElementById('p-checkin-time').value;
-  if (!time) { alert('Pick a time first.'); return; }
+  if (!time) { alert(t('pick-time-alert')); return; }
   const btn = event.target;
   const originalText = btn.textContent;
   btn.disabled = true;
   try {
     const result = await setCheckInTime(time);
     if (result.success) {
-      btn.textContent = '✓ SET';
+      btn.textContent = t('checkin-set');
       setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
     } else {
-      btn.textContent = 'FAILED — TRY AGAIN';
+      btn.textContent = t('update-name-failed');
       setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
     }
   } catch (e) {
-    btn.textContent = 'FAILED — TRY AGAIN';
+    btn.textContent = t('update-name-failed');
     setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
   }
 }
@@ -722,7 +931,7 @@ async function getProfileVerdict() {
     goal: document.getElementById('p-goal').value,
   };
   const summary = Object.entries(profile).filter(function(e) { return e[1]; }).map(function(e) { return e[0] + ': ' + e[1]; }).join('\n');
-  if (!summary) { alert('Fill in your profile first.'); return; }
+  if (!summary) { alert(t('fill-profile-alert')); return; }
   switchTab('boardroom');
   await sendToExecutive('Here is my complete creator profile:\n\n' + summary + '\n\nGive me a full boardroom analysis of where I stand and exactly what I need to do to reach my goal.');
 }
@@ -733,14 +942,14 @@ async function requestScanVerdict() {
   resultEl.textContent = '';
 
   const input = document.getElementById('scan-manual-input').value.trim();
-  if (!input) { alert('Describe your account first.'); return; }
+  if (!input) { alert(t('describe-account-alert')); return; }
 
   try {
     const verdict = await scanContent('manual', input);
     resultEl.textContent = verdict;
     resultEl.classList.remove('hidden');
   } catch (e) {
-    alert('Connection failed. Try again.');
+    alert(t('connection-failed-alert'));
   }
 }
 
@@ -750,7 +959,7 @@ async function requestQuickScan() {
   const views = document.getElementById('qs-views').value.trim();
 
   if (!niche || !followers || !views) {
-    alert('Fill in all three fields.');
+    alert(t('fill-three-fields-alert'));
     return;
   }
 
@@ -767,11 +976,11 @@ async function requestQuickScan() {
 
     resultEl.innerHTML = `
       <div style="font-style: italic; margin-bottom: 12px;">${data.hook}</div>
-      <button class="verdict-btn" onclick="enterBoardroomFromQuickScan('${niche.replace(/'/g, "\\'")}', '${followers.replace(/'/g, "\\'")}', '${views.replace(/'/g, "\\'")}')">ENTER THE BOARDROOM →</button>
+      <button class="verdict-btn" onclick="enterBoardroomFromQuickScan('${niche.replace(/'/g, "\\'")}', '${followers.replace(/'/g, "\\'")}', '${views.replace(/'/g, "\\'")}')">${t('enter-boardroom-btn')}</button>
     `;
     resultEl.classList.remove('hidden');
   } catch (e) {
-    alert('Connection failed. Try again.');
+    alert(t('connection-failed-alert'));
   }
 }
 
@@ -782,14 +991,14 @@ async function enterBoardroomFromQuickScan(niche, followers, views) {
 
 async function loadComputedScore() {
   const container = document.getElementById('score-categories');
-  container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-secondary);">Calculating your score...</div>';
+  container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-secondary);">${t('calculating-score')}</div>`;
 
   const data = await fetchScore();
   if (!data || data.error) {
-    container.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-secondary);">Not enough data yet. Submit a scan to get scored.</div>';
+    container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-secondary);">${t('not-enough-data')}</div>`;
     document.getElementById('score-total').textContent = '0';
     document.getElementById('score-fill').style.width = '0%';
-    document.getElementById('score-label').textContent = 'NO DATA YET';
+    document.getElementById('score-label').textContent = t('no-data-label');
     return;
   }
 
@@ -803,10 +1012,10 @@ async function loadComputedScore() {
   labelEl.style.color = colors[data.label] || '#888';
 
   const cats = [
-    { key: 'consistency', label: 'CONSISTENCY', icon: '⏰' },
-    { key: 'hooks', label: 'HOOK STRENGTH', icon: '🎣' },
-    { key: 'engagement', label: 'ENGAGEMENT', icon: '💬' },
-    { key: 'strategy', label: 'STRATEGY', icon: '🎯' },
+    { key: 'consistency', label: t('cat-consistency'), icon: '⏰' },
+    { key: 'hooks', label: t('cat-hooks'), icon: '🎣' },
+    { key: 'engagement', label: t('cat-engagement'), icon: '💬' },
+    { key: 'strategy', label: t('cat-strategy'), icon: '🎯' },
   ];
   container.innerHTML = cats.map(c => `
     <div class="category-card">
@@ -821,15 +1030,18 @@ async function loadComputedScore() {
 
 async function getScoreVerdict() {
   const data = window.currentScoreData;
-  if (!data) { alert('Load your score first.'); return; }
+  if (!data) { alert(t('load-score-alert')); return; }
   switchTab('boardroom');
   await sendToExecutive(`My computed Executive Score is ${data.total}/100. Consistency: ${data.consistency}/25, Hooks: ${data.hooks}/25, Engagement: ${data.engagement}/25, Strategy: ${data.strategy}/25. What is my biggest weakness and what do I fix first?`);
 }
 
 function renderVerdicts() {
   const list = document.getElementById('verdicts-list');
+  if (!list) return;
+  const dict = VERDICT_TRANSLATIONS[getLang()] || VERDICT_TRANSLATIONS.en;
   list.innerHTML = VERDICTS.map(function(v) {
-    return '<div class="verdict-ruling" onclick="discussVerdict(\'' + v.title.replace(/'/g, "\\'") + '\')"><div class="verdict-icon-box">' + v.icon + '</div><div class="verdict-body"><div class="verdict-title">' + v.title + '</div><div class="verdict-desc">' + v.desc + '</div></div><div class="verdict-arrow">›</div></div>';
+    const text = dict[v.id] || VERDICT_TRANSLATIONS.en[v.id];
+    return '<div class="verdict-ruling" onclick="discussVerdict(\'' + text.title.replace(/'/g, "\\'") + '\')"><div class="verdict-icon-box">' + v.icon + '</div><div class="verdict-body"><div class="verdict-title">' + text.title + '</div><div class="verdict-desc">' + text.desc + '</div></div><div class="verdict-arrow">›</div></div>';
   }).join('');
 }
 
@@ -922,21 +1134,21 @@ function renderAccountSwitcher() {
     return `
       <span class="account-pill-wrap">
         <button class="account-pill ${active}" onclick="switchAccount('${acc.id}')">${acc.label}</button>
-        <button class="account-rename-x" onclick="handleRenameAccount('${acc.id}', '${acc.label.replace(/'/g, "\\'")}')" title="Rename account">✎</button>
-        <button class="account-delete-x" onclick="handleDeleteAccount('${acc.id}', '${acc.label.replace(/'/g, "\\'")}')" title="Delete account">×</button>
+        <button class="account-rename-x" onclick="handleRenameAccount('${acc.id}', '${acc.label.replace(/'/g, "\\'")}')" title="${t('rename-account-title')}">✎</button>
+        <button class="account-delete-x" onclick="handleDeleteAccount('${acc.id}', '${acc.label.replace(/'/g, "\\'")}')" title="${t('delete-account-title')}">×</button>
       </span>
     `;
   }).join('');
 
   container.innerHTML = `
     ${options}
-    <button class="account-pill account-add" onclick="handleAddAccount()">+ Add</button>
+    <button class="account-pill account-add" onclick="handleAddAccount()">${t('account-add-btn')}</button>
   `;
   renderSidebarAccounts();
 }
 
 async function handleAddAccount() {
-  const label = prompt('Name this account (e.g. @yourhandle):');
+  const label = prompt(t('account-name-prompt'));
   if (!label || !label.trim()) return;
 
   const result = await createAccount(label.trim());
@@ -944,7 +1156,7 @@ async function handleAddAccount() {
     await loadAccountSwitcher();
     switchAccount(result.account.id);
   } else {
-    alert(result.detail || 'Could not add account.');
+    alert(result.detail || t('account-add-failed'));
   }
 }
 
@@ -975,19 +1187,19 @@ async function switchAccount(accountId) {
 }
 
 async function handleRenameAccount(accountId, currentLabel) {
-  const newLabel = prompt('Rename account:', currentLabel);
+  const newLabel = prompt(t('account-rename-prompt'), currentLabel);
   if (!newLabel || !newLabel.trim() || newLabel.trim() === currentLabel) return;
 
   const result = await renameAccount(accountId, newLabel.trim());
   if (result.success) {
     await loadAccountSwitcher();
   } else {
-    alert(result.detail || 'Could not rename account.');
+    alert(result.detail || t('account-rename-failed'));
   }
 }
 
 async function handleDeleteAccount(accountId, label) {
-  const confirmed = confirm(`Delete "${label}"? This removes its entire history permanently.`);
+  const confirmed = confirm(t('account-delete-confirm', { label }));
   if (!confirmed) return;
 
   const result = await deleteAccount(accountId);
@@ -1000,12 +1212,12 @@ async function handleDeleteAccount(accountId, label) {
       await loadAccountSwitcher();
     }
   } else {
-    alert(result.detail || 'Could not delete account.');
+    alert(result.detail || t('account-delete-failed'));
   }
 }
 
 function clearChat() {
-  const confirmed = confirm('Clear this conversation? This cannot be undone.');
+  const confirmed = confirm(t('clear-chat-confirm'));
   if (!confirmed) return;
 
   clearHistory();
@@ -1049,16 +1261,16 @@ function renderSidebarAccounts() {
     return `
       <div class="sidebar-account-row ${active}">
         <button class="sidebar-account-name" onclick="sidebarSwitchAccount('${acc.id}')">${acc.label}</button>
-        <button class="sidebar-account-icon" onclick="handleRenameAccount('${acc.id}', '${acc.label.replace(/'/g, "\\'")}')" title="Rename">✎</button>
-        <button class="sidebar-account-icon" onclick="handleDeleteAccount('${acc.id}', '${acc.label.replace(/'/g, "\\'")}')" title="Delete">×</button>
+        <button class="sidebar-account-icon" onclick="handleRenameAccount('${acc.id}', '${acc.label.replace(/'/g, "\\'")}')" title="${t('rename-title')}">✎</button>
+        <button class="sidebar-account-icon" onclick="handleDeleteAccount('${acc.id}', '${acc.label.replace(/'/g, "\\'")}')" title="${t('delete-title')}">×</button>
       </div>
     `;
   }).join('');
 
   container.innerHTML = `
-    <div class="sidebar-section-label">CHATS</div>
+    <div class="sidebar-section-label">${t('sidebar-chats-label')}</div>
     ${rows}
-    <button class="sidebar-add-account" onclick="handleAddAccount()">+ Add Account</button>
+    <button class="sidebar-add-account" onclick="handleAddAccount()">${t('sidebar-add-account')}</button>
   `;
 }
 
@@ -1073,9 +1285,12 @@ async function loadUsageDisplay() {
   }
 
   if (data.is_paid) {
-    el.innerHTML = `Daily usage: ${data.daily_cap - data.daily_remaining} / ${data.daily_cap} tokens today`;
+    el.innerHTML = t('usage-daily', { used: data.daily_cap - data.daily_remaining, cap: data.daily_cap });
   } else {
-    el.innerHTML = `Daily: ${data.daily_cap - data.daily_remaining} / ${data.daily_cap} tokens today<br>Trial total: ${data.trial_cap - data.trial_remaining} / ${data.trial_cap} tokens used`;
+    el.innerHTML = t('usage-daily-trial', {
+      used: data.daily_cap - data.daily_remaining, cap: data.daily_cap,
+      trialUsed: data.trial_cap - data.trial_remaining, trialCap: data.trial_cap
+    });
   }
 }
 
@@ -1089,7 +1304,7 @@ async function checkUsageWarning() {
     usageWarningShown = true;
     const banner = document.createElement('div');
     banner.className = 'verdict-tracking-prompt';
-    banner.innerHTML = `<div class="tracking-message">⚠️ You're close to your daily token limit (${data.daily_cap - data.daily_remaining}/${data.daily_cap}). It resets at midnight UTC.</div>`;
+    banner.innerHTML = `<div class="tracking-message">${t('usage-warning', { used: data.daily_cap - data.daily_remaining, cap: data.daily_cap })}</div>`;
     document.getElementById('messages').appendChild(banner);
     if (isNearBottom(document.getElementById('messages'))) {
       document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
@@ -1105,7 +1320,7 @@ async function setLanguage(language) {
     updateLanguageButtons();
     applyUITranslations();
   } else {
-    alert(result.detail || 'Could not update language.');
+    alert(result.detail || t('language-update-failed'));
   }
 }
 
