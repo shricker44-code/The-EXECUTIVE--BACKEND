@@ -685,12 +685,19 @@ SYSTEM_PROMPTS = {
     "pt": SYSTEM_PROMPT_PT,
 }
 
+LANGUAGE_ENFORCEMENT = {
+    "en": "",
+    "fr": "\n\nRÈGLE DE LANGUE ABSOLUE : Réponds TOUJOURS en français, peu importe la langue dans laquelle le créateur t'écrit. Même s'il t'écrit en anglais ou dans une autre langue, ta réponse doit être entièrement en français, sans exception.",
+    "pt": "\n\nREGRA ABSOLUTA DE IDIOMA: Responda SEMPRE em português, não importa em qual idioma o criador escreva para você. Mesmo que ele escreva em inglês ou outro idioma, sua resposta deve ser inteiramente em português, sem exceção.",
+}
+
 async def get_executive_response(messages: list, model: str = "claude-opus-4-8", history_summary: str = "", language: str = "en") -> tuple[str, int]:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    system_text = SYSTEM_PROMPTS.get(language, SYSTEM_PROMPT_EN) + LANGUAGE_ENFORCEMENT.get(language, "")
     system_blocks = [
         {
             "type": "text",
-            "text": SYSTEM_PROMPTS.get(language, SYSTEM_PROMPT_EN),
+            "text": system_text,
             "cache_control": {"type": "ephemeral"},
         }
     ]
@@ -711,10 +718,11 @@ async def get_executive_response(messages: list, model: str = "claude-opus-4-8",
 
 async def get_executive_response_stream(messages: list, usage_tracker: dict = None, model: str = "claude-opus-4-8", history_summary: str = "", language: str = "en"):
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    system_text = SYSTEM_PROMPTS.get(language, SYSTEM_PROMPT_EN) + LANGUAGE_ENFORCEMENT.get(language, "")
     system_blocks = [
         {
             "type": "text",
-            "text": SYSTEM_PROMPTS.get(language, SYSTEM_PROMPT_EN),
+            "text": system_text,
             "cache_control": {"type": "ephemeral"},
         }
     ]
