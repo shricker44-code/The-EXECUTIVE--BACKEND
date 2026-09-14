@@ -148,7 +148,7 @@ class UpdateLanguageRequest(BaseModel):
 
 @router.post("/update-language")
 async def update_language(request: UpdateLanguageRequest, db: Session = Depends(get_db)):
-    if request.language not in ("en", "fr", "pt"):
+    if request.language not in ("en", "fr", "pt", "hi"):
         raise HTTPException(status_code=400, detail="Unsupported language")
 
     user = db.query(User).filter(User.id == request.user_id).first()
