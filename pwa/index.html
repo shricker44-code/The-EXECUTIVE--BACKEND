@@ -148,45 +148,6 @@
        <label class="field-label" data-i18n="field-plan">EXECUTIVE PLAN</label>
        <button class="verdict-btn" onclick="upgradeToBasePlan()" data-i18n="upgrade-btn">UPGRADE TO EXECUTIVE PLAN — $15/MO</button>
       </div>
-      <div class="field-card">
-  <label class="field-label" data-i18n="field-language">LANGUAGE</label>
-  <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
-    <button class="score-btn" id="lang-en" onclick="setLanguage('en')">English</button>
-    <button class="score-btn" id="lang-fr" onclick="setLanguage('fr')">Français</button>
-    <button class="score-btn" id="lang-pt" onclick="setLanguage('pt')">Português</button>
-    <button class="score-btn" id="lang-hi" onclick="setLanguage('hi')">हिन्दी</button>
-  </div>
-</div>
-      <div class="field-card">
-  <label class="field-label">THEME</label>
-  <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-size: 12px; color: var(--text-muted);">Accent Color</span>
-      <input type="color" id="theme-accent" value="#D4AF37" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-    </div>
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-size: 12px; color: var(--text-muted);">Background Color</span>
-      <input type="color" id="theme-background" value="#080600" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-    </div>
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-size: 12px; color: var(--text-muted);">Primary Text Color</span>
-      <input type="color" id="theme-text-primary" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-    </div>
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-size: 12px; color: var(--text-muted);">Secondary Text Color</span>
-      <input type="color" id="theme-text-secondary" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-    </div>
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-size: 12px; color: var(--text-muted);">Your Message Color</span>
-      <input type="color" id="theme-bubble-user" value="#D4AF37" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-    </div>
-    <div style="display: flex; align-items: center; justify-content: space-between;">
-      <span style="font-size: 12px; color: var(--text-muted);">Executive Message Color</span>
-      <input type="color" id="theme-bubble-assistant" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-    </div>
-    <button class="save-btn" style="margin-top: 4px;" onclick="resetTheme()">RESET TO DEFAULT</button>
-  </div>
-</div>
       <div class="tab-scroll">
         <div class="profile-form">
           <div class="field-card">
@@ -223,8 +184,54 @@
             <input class="field-input" id="p-checkin-time" type="time" />
             <button class="verdict-btn" onclick="handleSetCheckInTime()" data-i18n="btn-set-checkin">SET REPORTING TIME</button>
           </div>
-          <button class="save-btn" onclick="saveProfile()" data-i18n="btn-save-profile">SAVE PROFILE</button>
+                    <button class="save-btn" onclick="saveProfile()" data-i18n="btn-save-profile">SAVE PROFILE</button>
           <button class="verdict-btn" onclick="getProfileVerdict()" data-i18n="btn-get-analysis">GET MY EXECUTIVE ANALYSIS →</button>
+
+          <div class="field-card" style="margin-top: 16px;">
+            <button class="save-btn" onclick="toggleSettingsSection()" style="display: flex; align-items: center; justify-content: space-between;">
+              <span>SETTINGS</span>
+              <span id="settings-arrow">▼</span>
+            </button>
+            <div id="settings-content" class="hidden" style="margin-top: 14px;">
+              <label class="field-label" data-i18n="field-language">LANGUAGE</label>
+              <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                <button class="score-btn" id="lang-en" onclick="setLanguage('en')">English</button>
+                <button class="score-btn" id="lang-fr" onclick="setLanguage('fr')">Français</button>
+                <button class="score-btn" id="lang-pt" onclick="setLanguage('pt')">Português</button>
+                <button class="score-btn" id="lang-hi" onclick="setLanguage('hi')">हिन्दी</button>
+              </div>
+
+              <label class="field-label" style="margin-top: 20px; display: block;">THEME</label>
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 12px; color: var(--text-muted);">Accent Color</span>
+                  <input type="color" id="theme-accent" value="#D4AF37" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 12px; color: var(--text-muted);">Background Color</span>
+                  <input type="color" id="theme-background" value="#080600" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 12px; color: var(--text-muted);">Primary Text Color</span>
+                  <input type="color" id="theme-text-primary" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 12px; color: var(--text-muted);">Secondary Text Color</span>
+                  <input type="color" id="theme-text-secondary" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 12px; color: var(--text-muted);">Your Message Color</span>
+                  <input type="color" id="theme-bubble-user" value="#D4AF37" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 12px; color: var(--text-muted);">Executive Message Color</span>
+                  <input type="color" id="theme-bubble-assistant" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+                </div>
+                <button class="save-btn" style="margin-top: 4px;" onclick="resetTheme()">RESET TO DEFAULT</button>
+              </div>
+            </div>
+          </div>
+
           <button class="auth-toggle" onclick="handleSignOut()" style="margin-top: 16px; color: #FF4444;" data-i18n="btn-sign-out">SIGN OUT</button>
         </div>
       </div>

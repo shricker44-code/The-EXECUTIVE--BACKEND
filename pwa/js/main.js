@@ -1531,3 +1531,10 @@ function setVolume(value) {
   localStorage.setItem('executive_volume', currentVolume);
   if (currentAutoAudio) currentAutoAudio.volume = currentVolume;
 }
+
+function toggleSettingsSection() {
+  const content = document.getElementById('settings-content');
+  const arrow = document.getElementById('settings-arrow');
+  content.classList.toggle('hidden');
+  arrow.textContent = content.classList.contains('hidden') ? '▼' : '▲';
+}
