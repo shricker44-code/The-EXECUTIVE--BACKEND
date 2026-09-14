@@ -1558,3 +1558,11 @@ html, body {
 .scroll-bottom-btn.visible {
   display: flex;
 }
+
+.volume-slider {
+  width: 60px;
+  height: 4px;
+  accent-color: var(--gold);
+  cursor: pointer;
+  flex-shrink: 0;
+}

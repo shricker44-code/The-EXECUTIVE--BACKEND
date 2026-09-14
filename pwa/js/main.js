@@ -15,6 +15,7 @@ let isMuted = false;
 let currentAutoAudio = new Audio();
 let audioUnlocked = false;
 let usageWarningShown = false;
+let currentVolume = parseFloat(localStorage.getItem('executive_volume')) || 1.0;
 
 const UI_TRANSLATIONS = {
   en: {
@@ -452,6 +453,8 @@ window.addEventListener('load', () => {
   loadProfile();
   loadDisplayName();
   playSplashThenInit();
+  const volSlider = document.getElementById('volume-slider');
+  if (volSlider) volSlider.value = currentVolume;
 });
 
 window.addEventListener('load', () => {
@@ -488,6 +491,7 @@ function updateScrollButton() {
 function unlockAudio() {
   if (audioUnlocked) return;
   currentAutoAudio.src = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//tQxAADB8AhSmxhIIEVCSiJrDCQBTcu3UrAIwUdkRgQbFAZC7keyLxgNBgIsIzYtRUYzTB4NKLKXBFERUdmegLkGmMwHkyxdMdV/JOG20HZeKUuYJdSb+MgU5WKmNL/ODaB0LrGgHZL8G16DEEoQ7AKAgHF5cQqm2iP3ITqhBhTVUuTa9qQQb+O5aCgSJKQjRnfCwaZjF5RUcJfLtqDdOsFCsq/L/8yBTBUlYQBFGeWAAAAAAAAB+AaAAAA";
+  currentAutoAudio.volume = currentVolume;
   currentAutoAudio.play()
     .then(() => {
       currentAutoAudio.pause();
@@ -861,6 +865,7 @@ function addPlaybackButton(bubbleEl, text, existingAudioBase64 = null) {
       const audioBase64 = existingAudioBase64 || await generateSpeech(text);
       if (audioBase64) {
         const audio = new Audio(`data:audio/mp3;base64,${audioBase64}`);
+        audio.volume = currentVolume;
         btn.innerHTML = t('playing-btn');
         audio.play();
         audio.onended = () => {
@@ -954,6 +959,7 @@ async function sendToExecutive(text) {
     if (audioBase64) {
       currentAutoAudio.src = `data:audio/mp3;base64,${audioBase64}`;
       currentAutoAudio.currentTime = 0;
+      currentAutoAudio.volume = currentVolume;
       currentAutoAudio.play().catch(e => console.log('Auto-play blocked:', e));
     }
     revealNextChar(finalText);
@@ -1518,4 +1524,10 @@ function loadThemeInputs() {
   if (t.text_secondary) document.getElementById('theme-text-secondary').value = t.text_secondary;
   if (t.bubble_user) document.getElementById('theme-bubble-user').value = t.bubble_user;
   if (t.bubble_assistant) document.getElementById('theme-bubble-assistant').value = t.bubble_assistant;
+}
+
+function setVolume(value) {
+  currentVolume = parseFloat(value);
+  localStorage.setItem('executive_volume', currentVolume);
+  if (currentAutoAudio) currentAutoAudio.volume = currentVolume;
 }
