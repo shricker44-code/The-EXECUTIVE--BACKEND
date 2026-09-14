@@ -573,6 +573,7 @@ function showApp(user) {
   document.getElementById('app').classList.remove('hidden');
   updateUpgradeButtonVisibility();
   applyUITranslations();
+  applyTheme(user.theme);
   if (user && user.user_id) {
     subscribeToPush(user.user_id);
     startSessionCheck(user.user_id);
@@ -1470,4 +1471,51 @@ function updateLanguageButtons() {
     const btn = document.getElementById(`lang-${code}`);
     if (btn) btn.classList.toggle('active', code === lang);
   });
+}
+
+function applyTheme(theme) {
+  if (!theme) return;
+  const root = document.documentElement;
+  if (theme.accent) root.style.setProperty('--gold', theme.accent);
+  if (theme.background) root.style.setProperty('--black', theme.background);
+  if (theme.text_primary) root.style.setProperty('--text-primary', theme.text_primary);
+  if (theme.text_secondary) root.style.setProperty('--text-muted', theme.text_secondary);
+  if (theme.bubble_user) root.style.setProperty('--bubble-user-color', theme.bubble_user);
+  if (theme.bubble_assistant) root.style.setProperty('--bubble-assistant-color', theme.bubble_assistant);
+}
+
+async function handleThemeChange() {
+  const theme = {
+    accent: document.getElementById('theme-accent').value,
+    background: document.getElementById('theme-background').value,
+    text_primary: document.getElementById('theme-text-primary').value,
+    text_secondary: document.getElementById('theme-text-secondary').value,
+    bubble_user: document.getElementById('theme-bubble-user').value,
+    bubble_assistant: document.getElementById('theme-bubble-assistant').value,
+  };
+  applyTheme(theme);
+  await setUserTheme(theme);
+}
+
+function resetTheme() {
+  const root = document.documentElement;
+  root.style.removeProperty('--gold');
+  root.style.removeProperty('--black');
+  root.style.removeProperty('--text-primary');
+  root.style.removeProperty('--text-muted');
+  root.style.removeProperty('--bubble-user-color');
+  root.style.removeProperty('--bubble-assistant-color');
+  setUserTheme({});
+  loadThemeInputs();
+}
+
+function loadThemeInputs() {
+  if (!currentUser || !currentUser.theme) return;
+  const t = currentUser.theme;
+  if (t.accent) document.getElementById('theme-accent').value = t.accent;
+  if (t.background) document.getElementById('theme-background').value = t.background;
+  if (t.text_primary) document.getElementById('theme-text-primary').value = t.text_primary;
+  if (t.text_secondary) document.getElementById('theme-text-secondary').value = t.text_secondary;
+  if (t.bubble_user) document.getElementById('theme-bubble-user').value = t.bubble_user;
+  if (t.bubble_assistant) document.getElementById('theme-bubble-assistant').value = t.bubble_assistant;
 }

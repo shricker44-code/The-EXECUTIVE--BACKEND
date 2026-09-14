@@ -225,14 +225,14 @@ html, body {
 .bubble.user {
   background: rgba(212,175,55,0.1);
   border: none;
-  color: var(--gold);
+  color: var(--bubble-user-color, var(--gold));
   padding: 12px 18px;
   border-radius: 20px;
 }
 .bubble.assistant {
   background: transparent;
   border: none;
-  color: var(--text-primary);
+  color: var(--bubble-assistant-color, var(--text-primary));
   padding: 4px 0;
   max-width: 100%;
 }
@@ -1299,12 +1299,13 @@ html, body {
     background: transparent;
     padding: 4px 0;
     font-weight: 600;
-    color: var(--gold);
+    color: var(--bubble-user-color, var(--gold));
   }
 
   .bubble.assistant {
     background: transparent;
     padding: 4px 0;
+    color: var(--bubble-assistant-color, var(--text-primary));
   }
 
   .quick-prompts, .input-container {

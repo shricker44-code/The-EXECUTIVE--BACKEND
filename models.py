@@ -36,6 +36,12 @@ class User(Base):
     default_account_label = Column(String, nullable=True)
     trial_tokens_used = Column(Integer, default=0)
     language = Column(String, default="en")
+    theme_accent = Column(String, nullable=True)
+    theme_background = Column(String, nullable=True)
+    theme_text_primary = Column(String, nullable=True)
+    theme_text_secondary = Column(String, nullable=True)
+    theme_bubble_user = Column(String, nullable=True)
+    theme_bubble_assistant = Column(String, nullable=True)
 
 class Account(Base):
     __tablename__ = "accounts"

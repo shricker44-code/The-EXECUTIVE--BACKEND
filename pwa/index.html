@@ -156,6 +156,36 @@
     <button class="score-btn" id="lang-hi" onclick="setLanguage('hi')">हिन्दी</button>
   </div>
 </div>
+      <div class="field-card">
+  <label class="field-label">THEME</label>
+  <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 12px; color: var(--text-muted);">Accent Color</span>
+      <input type="color" id="theme-accent" value="#D4AF37" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 12px; color: var(--text-muted);">Background Color</span>
+      <input type="color" id="theme-background" value="#080600" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 12px; color: var(--text-muted);">Primary Text Color</span>
+      <input type="color" id="theme-text-primary" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 12px; color: var(--text-muted);">Secondary Text Color</span>
+      <input type="color" id="theme-text-secondary" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 12px; color: var(--text-muted);">Your Message Color</span>
+      <input type="color" id="theme-bubble-user" value="#D4AF37" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+    </div>
+    <div style="display: flex; align-items: center; justify-content: space-between;">
+      <span style="font-size: 12px; color: var(--text-muted);">Executive Message Color</span>
+      <input type="color" id="theme-bubble-assistant" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
+    </div>
+    <button class="save-btn" style="margin-top: 4px;" onclick="resetTheme()">RESET TO DEFAULT</button>
+  </div>
+</div>
       <div class="tab-scroll">
         <div class="profile-form">
           <div class="field-card">

@@ -104,6 +104,14 @@ async def signin(request: SignInRequest, db: Session = Depends(get_db)):
             "trial_active": user.trial_active,
             "session_token": session_token,
             "language": user.language or "en",
+            "theme": {
+                "accent": user.theme_accent,
+                "background": user.theme_background,
+                "text_primary": user.theme_text_primary,
+                "text_secondary": user.theme_text_secondary,
+                "bubble_user": user.theme_bubble_user,
+                "bubble_assistant": user.theme_bubble_assistant,
+            },
         }
 
     except Exception as e:
@@ -159,3 +167,38 @@ async def update_language(request: UpdateLanguageRequest, db: Session = Depends(
     db.commit()
 
     return {"success": True, "language": user.language}
+
+class UpdateThemeRequest(BaseModel):
+    user_id: str
+    theme_accent: Optional[str] = None
+    theme_background: Optional[str] = None
+    theme_text_primary: Optional[str] = None
+    theme_text_secondary: Optional[str] = None
+    theme_bubble_user: Optional[str] = None
+    theme_bubble_assistant: Optional[str] = None
+
+@router.post("/update-theme")
+async def update_theme(request: UpdateThemeRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.theme_accent = request.theme_accent
+    user.theme_background = request.theme_background
+    user.theme_text_primary = request.theme_text_primary
+    user.theme_text_secondary = request.theme_text_secondary
+    user.theme_bubble_user = request.theme_bubble_user
+    user.theme_bubble_assistant = request.theme_bubble_assistant
+    db.commit()
+
+    return {
+        "success": True,
+        "theme": {
+            "accent": user.theme_accent,
+            "background": user.theme_background,
+            "text_primary": user.theme_text_primary,
+            "text_secondary": user.theme_text_secondary,
+            "bubble_user": user.theme_bubble_user,
+            "bubble_assistant": user.theme_bubble_assistant,
+        }
+    }

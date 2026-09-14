@@ -331,3 +331,20 @@ async function setUserLanguage(language) {
   });
   return await response.json();
 }
+
+async function setUserTheme(theme) {
+  const response = await fetch(`${API_BASE}/auth/update-theme`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      user_id: currentUser.user_id,
+      theme_accent: theme.accent,
+      theme_background: theme.background,
+      theme_text_primary: theme.text_primary,
+      theme_text_secondary: theme.text_secondary,
+      theme_bubble_user: theme.bubble_user,
+      theme_bubble_assistant: theme.bubble_assistant,
+    })
+  });
+  return await response.json();
+}
