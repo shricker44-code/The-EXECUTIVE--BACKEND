@@ -348,3 +348,21 @@ async function setUserTheme(theme) {
   });
   return await response.json();
 }
+
+async function cancelSubscription() {
+  const response = await fetch(`${API_BASE}/billing/cancel-subscription`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: currentUser.user_id })
+  });
+  return await response.json();
+}
+
+async function deleteAccountPermanently() {
+  const response = await fetch(`${API_BASE}/auth/delete-account`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: currentUser.user_id })
+  });
+  return await response.json();
+}

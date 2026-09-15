@@ -42,6 +42,8 @@ class User(Base):
     theme_text_secondary = Column(String, nullable=True)
     theme_bubble_user = Column(String, nullable=True)
     theme_bubble_assistant = Column(String, nullable=True)
+    is_deleted = Column(Boolean, default=False)
+    deleted_at = Column(DateTime, nullable=True)
 
 class Account(Base):
     __tablename__ = "accounts"

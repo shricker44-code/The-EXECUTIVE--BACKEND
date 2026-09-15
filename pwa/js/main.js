@@ -1542,3 +1542,35 @@ function toggleSettingsSection() {
   content.classList.toggle('hidden');
   arrow.textContent = content.classList.contains('hidden') ? '▼' : '▲';
 }
+
+async function handleCancelSubscription() {
+  const confirmed = confirm('Cancel your Executive Plan subscription? You will lose paid access immediately.');
+  if (!confirmed) return;
+
+  const result = await cancelSubscription();
+  if (result.success) {
+    alert('Subscription canceled.');
+    currentUser.is_paid = false;
+    localStorage.setItem('executive_user', JSON.stringify(currentUser));
+    location.reload();
+  } else {
+    alert(result.detail || 'Could not cancel subscription.');
+  }
+}
+
+async function handleDeleteAccount() {
+  const confirmed = confirm('Permanently delete your account? This cannot be undone after 30 days. Type nothing else to confirm — press OK to proceed.');
+  if (!confirmed) return;
+
+  const doubleConfirmed = confirm('Are you absolutely sure? This will delete all your data.');
+  if (!doubleConfirmed) return;
+
+  const result = await deleteAccountPermanently();
+  if (result.success) {
+    alert('Your account has been deleted.');
+    signOut();
+    location.reload();
+  } else {
+    alert(result.detail || 'Could not delete account.');
+  }
+}

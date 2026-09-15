@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends
 from models import User, Account
 from datetime import datetime
+import stripe
 
 router = APIRouter()
 
@@ -90,6 +91,9 @@ async def signin(request: SignInRequest, db: Session = Depends(get_db)):
 
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
+
+        if user.is_deleted:
+            raise HTTPException(status_code=403, detail="This account has been deleted.")
 
         session_token = str(uuid.uuid4())
         user.session_token = session_token
@@ -202,3 +206,26 @@ async def update_theme(request: UpdateThemeRequest, db: Session = Depends(get_db
             "bubble_assistant": user.theme_bubble_assistant,
         }
     }
+
+class DeleteAccountRequest(BaseModel):
+    user_id: str
+
+@router.post("/delete-account")
+async def delete_account_request(request: DeleteAccountRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if user.stripe_subscription_id and user.is_paid:
+        try:
+            stripe.Subscription.delete(user.stripe_subscription_id)
+        except Exception:
+            pass
+
+    user.is_deleted = True
+    user.deleted_at = datetime.utcnow()
+    user.is_paid = False
+    user.session_token = None
+    db.commit()
+
+    return {"success": True}

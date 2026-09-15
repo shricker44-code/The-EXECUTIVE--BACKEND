@@ -99,3 +99,26 @@ async def subscription_status(user_id: str, db: Session = Depends(get_db)):
         "trial_active": user.trial_active,
         "has_multi_account": user.is_paid,
     }
+
+class CancelSubscriptionRequest(BaseModel):
+    user_id: str
+
+@router.post("/cancel-subscription")
+async def cancel_subscription(request: CancelSubscriptionRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if not user.stripe_subscription_id:
+        raise HTTPException(status_code=400, detail="No active subscription found")
+
+    try:
+        stripe.Subscription.delete(user.stripe_subscription_id)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    user.is_paid = False
+    user.subscription_status = "canceled"
+    db.commit()
+
+    return {"success": True}
