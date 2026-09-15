@@ -87,6 +87,8 @@ const UI_TRANSLATIONS = {
     "btn-get-score-verdict": "GET VERDICT ON MY SCORE →",
     "verdicts-header-title": "THE EXECUTIVE'S RULINGS",
     "verdicts-header-sub": "TAP ANY RULING TO DISCUSS IN BOARDROOM",
+    "usage-daily": "Daily usage: {used} / {cap} tokens today",
+    "usage-daily-trial": "Daily: {used} / {cap} tokens today<br>Trial total: {trialUsed} / {trialCap} tokens used",
   },
   fr: {
     "splash-title": "THE EXECUTIVE",
@@ -157,6 +159,8 @@ const UI_TRANSLATIONS = {
     "btn-get-score-verdict": "OBTENIR UN VERDICT SUR MON SCORE →",
     "verdicts-header-title": "LES JUGEMENTS DE THE EXECUTIVE",
     "verdicts-header-sub": "TOUCHE UN JUGEMENT POUR EN DISCUTER AU BUREAU",
+    "usage-daily": "Utilisation quotidienne : {used} / {cap} tokens aujourd'hui",
+    "usage-daily-trial": "Quotidien : {used} / {cap} tokens aujourd'hui<br>Total essai : {trialUsed} / {trialCap} tokens utilisés",
   },
   pt: {
     "splash-title": "THE EXECUTIVE",
@@ -227,6 +231,8 @@ const UI_TRANSLATIONS = {
     "btn-get-score-verdict": "OBTER VEREDITO SOBRE MEU SCORE →",
     "verdicts-header-title": "OS VEREDITOS DE THE EXECUTIVE",
     "verdicts-header-sub": "TOQUE EM QUALQUER VEREDITO PARA DISCUTIR NO ESCRITÓRIO",
+    "usage-daily": "Uso diário: {used} / {cap} tokens hoje",
+    "usage-daily-trial": "Diário: {used} / {cap} tokens hoje<br>Total do teste: {trialUsed} / {trialCap} tokens usados",
   },
   hi: {
     "splash-title": "THE EXECUTIVE",
@@ -400,6 +406,8 @@ const VERDICT_TRANSLATIONS = {
     "btn-get-score-verdict": "मेरे स्कोर पर फैसला पाएं →",
     "verdicts-header-title": "एग्ज़िक्यूटिव के फैसले",
     "verdicts-header-sub": "बोर्डरूम में चर्चा करने के लिए किसी भी फैसले पर टैप करें",
+    "usage-daily": "आज का उपयोग: {used} / {cap} tokens",
+    "usage-daily-trial": "आज: {used} / {cap} tokens<br>कुल ट्रायल: {trialUsed} / {trialCap} tokens इस्तेमाल हुए",
   },
 };
 
