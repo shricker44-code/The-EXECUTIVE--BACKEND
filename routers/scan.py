@@ -148,6 +148,7 @@ async def scan(
         user_id=user.id,
         account_id=account.id if account else None,
         content=result,
+        user_message="[Screenshot uploaded]",
         follower_count_snapshot=extracted_numbers.get("follower_count") if extracted_numbers else None,
         engagement_rate_snapshot=extracted_numbers.get("engagement_rate") if extracted_numbers else None,
         watch_time_snapshot=extracted_numbers.get("watch_time") if extracted_numbers else None,

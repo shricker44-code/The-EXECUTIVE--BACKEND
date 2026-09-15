@@ -10,7 +10,6 @@ const VERDICTS = [
 ];
 
 let currentTab = 'boardroom';
-let currentScanTab = 'url';
 let isMuted = false;
 let currentAutoAudio = new Audio();
 let audioUnlocked = false;
@@ -732,7 +731,7 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.remove('hidden');
-  const tabs = ['boardroom', 'profile', 'scan', 'score', 'verdicts'];
+    const tabs = ['boardroom', 'profile', 'score', 'verdicts'];
   const idx = tabs.indexOf(tab);
   if (idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
   currentTab = tab;
@@ -1089,59 +1088,6 @@ async function getProfileVerdict() {
   if (!summary) { alert(t('fill-profile-alert')); return; }
   switchTab('boardroom');
   await sendToExecutive('Here is my complete creator profile:\n\n' + summary + '\n\nGive me a full boardroom analysis of where I stand and exactly what I need to do to reach my goal.');
-}
-
-async function requestScanVerdict() {
-  const resultEl = document.getElementById('scan-result');
-  resultEl.classList.add('hidden');
-  resultEl.textContent = '';
-
-  const input = document.getElementById('scan-manual-input').value.trim();
-  if (!input) { alert(t('describe-account-alert')); return; }
-
-  try {
-    const verdict = await scanContent('manual', input);
-    resultEl.textContent = verdict;
-    resultEl.classList.remove('hidden');
-  } catch (e) {
-    alert(t('connection-failed-alert'));
-  }
-}
-
-async function requestQuickScan() {
-  const niche = document.getElementById('qs-niche').value.trim();
-  const followers = document.getElementById('qs-followers').value.trim();
-  const views = document.getElementById('qs-views').value.trim();
-
-  if (!niche || !followers || !views) {
-    alert(t('fill-three-fields-alert'));
-    return;
-  }
-
-  const resultEl = document.getElementById('quick-scan-result');
-  resultEl.classList.add('hidden');
-
-  try {
-    const response = await fetch(`${API_BASE}/scan/quick`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ niche, followers, views })
-    });
-    const data = await response.json();
-
-    resultEl.innerHTML = `
-      <div style="font-style: italic; margin-bottom: 12px;">${data.hook}</div>
-      <button class="verdict-btn" onclick="enterBoardroomFromQuickScan('${niche.replace(/'/g, "\\'")}', '${followers.replace(/'/g, "\\'")}', '${views.replace(/'/g, "\\'")}')">${t('enter-boardroom-btn')}</button>
-    `;
-    resultEl.classList.remove('hidden');
-  } catch (e) {
-    alert(t('connection-failed-alert'));
-  }
-}
-
-async function enterBoardroomFromQuickScan(niche, followers, views) {
-  switchTab('boardroom');
-  await sendToExecutive(`My niche is ${niche}, I have ${followers} followers, and average ${views} views per video. Give me the full boardroom analysis.`);
 }
 
 async function loadComputedScore() {
@@ -1581,4 +1527,123 @@ async function handleDeleteAccount() {
   } else {
     alert(result.detail || 'Could not delete account.');
   }
+}
+
+function handleAttachClick() {
+  document.getElementById('screenshot-input').click();
+}
+
+function addImageMessage(dataUrl) {
+  const messages = document.getElementById('messages');
+  const bubble = document.createElement('div');
+  bubble.className = 'message user';
+  bubble.innerHTML = `<div class="bubble user"><img src="${dataUrl}" style="max-width: 200px; border-radius: 12px; display: block;" /></div>`;
+  messages.appendChild(bubble);
+  messages.scrollTop = messages.scrollHeight;
+}
+
+async function handleScreenshotSelected(event) {
+  const file = event.target.files[0];
+  event.target.value = '';
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const dataUrl = reader.result;
+    addImageMessage(dataUrl);
+    conversationHistory.push({ role: 'user', content: '[Screenshot uploaded]' });
+
+    document.getElementById('typing').classList.remove('hidden');
+    document.getElementById('send-btn').disabled = true;
+
+    const messages = document.getElementById('messages');
+    messages.style.scrollBehavior = 'auto';
+    let bubbleEl = null;
+    let displayedText = '';
+    let typewriterTimer = null;
+    let lastExpressionUpdate = 0;
+
+    function revealNextChar(fullText) {
+      if (displayedText.length < fullText.length) {
+        displayedText += fullText[displayedText.length];
+        const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+        bubbleEl.innerHTML = formatted + '<span class="cursor-blink">|</span>';
+
+        const now = Date.now();
+        if (now - lastExpressionUpdate > 400) {
+          updateExpression(displayedText);
+          lastExpressionUpdate = now;
+        }
+
+        if (isNearBottom(messages)) {
+          messages.scrollTop = messages.scrollHeight;
+        }
+        updateScrollButton();
+
+        typewriterTimer = setTimeout(() => revealNextChar(fullText), 45);
+      } else {
+        const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+        bubbleEl.innerHTML = formatted;
+        typewriterTimer = null;
+      }
+    }
+
+    try {
+      const data = await scanScreenshot(file);
+      const finalText = data.verdict;
+
+      conversationHistory.push({ role: 'assistant', content: finalText });
+
+      let audioBase64 = null;
+      if (!isMuted) {
+        try {
+          audioBase64 = await generateSpeech(finalText);
+        } catch (e) {
+          console.log('TTS generation failed:', e);
+        }
+      }
+
+      document.getElementById('typing').classList.add('hidden');
+      const wrapper = document.createElement('div');
+      wrapper.className = 'message assistant';
+      wrapper.innerHTML = '<div class="avatar">E</div><div class="bubble assistant"></div>';
+      messages.appendChild(wrapper);
+      bubbleEl = wrapper.querySelector('.bubble');
+
+      if (audioBase64) {
+        currentAutoAudio.src = `data:audio/mp3;base64,${audioBase64}`;
+        currentAutoAudio.currentTime = 0;
+        currentAutoAudio.volume = currentVolume;
+        currentAutoAudio.play().catch(e => console.log('Auto-play blocked:', e));
+      }
+      revealNextChar(finalText);
+
+      await new Promise((resolve) => {
+        const checkDone = setInterval(() => {
+          if (displayedText.length >= finalText.length && !typewriterTimer) {
+            clearInterval(checkDone);
+            resolve();
+          }
+        }, 50);
+      });
+
+      if (document.body.contains(bubbleEl)) {
+        updateExpression(displayedText);
+        checkVerdictTracking();
+        checkUsageWarning();
+        addPlaybackButton(bubbleEl, finalText, audioBase64);
+        if (isNearBottom(messages)) {
+          messages.scrollTop = messages.scrollHeight;
+        }
+      }
+    } catch (e) {
+      console.error('handleScreenshotSelected error:', e);
+      document.getElementById('typing').classList.add('hidden');
+      addMessage('assistant', t('connection-failed-chat'));
+    } finally {
+      document.getElementById('send-btn').disabled = false;
+      messages.style.scrollBehavior = '';
+    }
+  };
+  reader.readAsDataURL(file);
 }

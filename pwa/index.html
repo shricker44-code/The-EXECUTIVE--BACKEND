@@ -118,6 +118,8 @@
         <div class="input-container">
           <div class="input-divider"></div>
             <div class="input-row">
+            <button id="attach-btn" class="attach-btn" onclick="handleAttachClick()" title="Attach screenshot">+</button>
+            <input type="file" id="screenshot-input" accept="image/*" style="display: none;" onchange="handleScreenshotSelected(event)" />
             <button id="mute-btn" class="mute-btn" onclick="toggleMute()" title="Mute voice">🔊</button>
             <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1" oninput="setVolume(this.value)" class="volume-slider" title="Volume" />
             <textarea
@@ -242,45 +244,6 @@
       </div>
     </div>
 
-    <!-- Scan Tab -->
-    <div id="tab-scan" class="tab-content hidden">
-      <div class="header">
-        <div class="divider"></div>
-        <div class="header-title-center" data-i18n="scan-header-title">CONTENT SCAN</div>
-        <div class="header-sub-center" data-i18n="scan-header-sub">SUBMIT YOUR CONTENT. RECEIVE THE VERDICT.</div>
-        <div class="divider"></div>
-      </div>
-      <div class="tab-scroll">
-        <div class="field-card" style="border-color: var(--gold);">
-          <label class="field-label" data-i18n="scan-find-label">📸 FIND YOUR TIKTOK ANALYTICS</label>
-          <div style="color: var(--text-primary); font-size: 13px; line-height: 1.8; margin-top: 8px;" data-i18n="scan-instructions">
-            1. Open TikTok<br>
-            2. Go to Profile<br>
-            3. Tap the three lines (top right)<br>
-            4. Tap Creator Tools<br>
-            5. Tap Analytics<br>
-            6. Screenshot the Overview tab<br>
-            7. Upload it below
-          </div>
-        </div>
-        <div class="field-card">
-          <label class="field-label" data-i18n="scan-quick-label">⚡ QUICK SCAN — GET AN INSTANT REACTION</label>
-          <input class="field-input" id="qs-niche" type="text" placeholder="Your niche (e.g. fitness)" data-i18n-placeholder="ph-niche" />
-          <input class="field-input" id="qs-followers" type="text" placeholder="Follower count" style="margin-top: 10px;" data-i18n-placeholder="ph-follower-count" />
-          <input class="field-input" id="qs-views" type="text" placeholder="Average views" style="margin-top: 10px;" data-i18n-placeholder="ph-avg-views" />
-          <button class="verdict-btn" style="margin-top: 10px;" onclick="requestQuickScan()" data-i18n="btn-instant-reaction">GET INSTANT REACTION</button>
-          <div id="quick-scan-result" class="verdict-card hidden"></div>
-        </div>
-        <div class="divider" style="margin: 20px 0;"></div>
-        <div id="scan-manual" class="scan-section">
-          <label class="field-label" data-i18n="scan-describe-label">DESCRIBE YOUR ACCOUNT</label>
-          <textarea class="field-input field-textarea" id="scan-manual-input" placeholder="Niche, followers, avg views, posting frequency, best post, what's flopping..." data-i18n-placeholder="ph-describe-account"></textarea>
-        </div>
-        <button class="verdict-btn" onclick="requestScanVerdict()" data-i18n="btn-request-verdict">REQUEST THE VERDICT</button>
-        <div id="scan-result" class="verdict-card hidden"></div>
-      </div>
-    </div>
-
     <!-- Score Tab -->
     <div id="tab-score" class="tab-content hidden">
       <div class="header">
@@ -322,10 +285,6 @@
         <span class="nav-icon">👤</span>
         <span class="nav-label" data-i18n="nav-profile">Profile</span>
       </button>
-      <button class="nav-btn" onclick="switchTab('scan')">
-        <span class="nav-icon">🔲</span>
-        <span class="nav-label" data-i18n="nav-scan">Scan</span>
-      </button>
       <button class="nav-btn" onclick="switchTab('score')">
         <span class="nav-icon">🏆</span>
         <span class="nav-label" data-i18n="nav-score">Score</span>
@@ -345,7 +304,6 @@
       </div>
       <div class="sidebar-nav">
         <button class="sidebar-nav-item" onclick="sidebarNavigate('boardroom')"><span class="sidebar-nav-icon">💼</span><span data-i18n="nav-boardroom">Boardroom</span></button>
-        <button class="sidebar-nav-item" onclick="sidebarNavigate('scan')"><span class="sidebar-nav-icon">🔲</span><span data-i18n="nav-scan">Scan</span></button>
         <button class="sidebar-nav-item" onclick="sidebarNavigate('profile')"><span class="sidebar-nav-icon">👤</span><span data-i18n="nav-profile">Profile</span></button>
         <button class="sidebar-nav-item" onclick="sidebarNavigate('score')"><span class="sidebar-nav-icon">🏆</span><span data-i18n="nav-score">Score</span></button>
         <button class="sidebar-nav-item" onclick="sidebarNavigate('verdicts')"><span class="sidebar-nav-icon">📄</span><span data-i18n="nav-verdicts">Verdicts</span></button>
