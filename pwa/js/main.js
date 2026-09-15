@@ -1501,6 +1501,8 @@ async function handleThemeChange() {
   };
   applyTheme(theme);
   await setUserTheme(theme);
+  currentUser.theme = theme;
+  localStorage.setItem('executive_user', JSON.stringify(currentUser));
 }
 
 function resetTheme() {
@@ -1512,6 +1514,8 @@ function resetTheme() {
   root.style.removeProperty('--bubble-user-color');
   root.style.removeProperty('--bubble-assistant-color');
   setUserTheme({});
+  currentUser.theme = {};
+  localStorage.setItem('executive_user', JSON.stringify(currentUser));
   loadThemeInputs();
 }
 
