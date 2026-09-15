@@ -639,9 +639,15 @@ async function handleSignUp() {
   const email = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value.trim();
   const firstName = document.getElementById('auth-firstname').value.trim();
+  const consented = document.getElementById('auth-consent').checked;
 
   if (!email || !password || !firstName) {
-    alert(t('fill-all-fields-alert'));
+    alert('Fill in all fields.');
+    return;
+  }
+
+  if (!consented) {
+    alert('You must consent to sending analytics screenshots to create an account.');
     return;
   }
 
@@ -650,7 +656,7 @@ async function handleSignUp() {
   btn.disabled = true;
 
   try {
-    const result = await signUp(email, password, firstName);
+      const result = await signUp(email, password, firstName, consented);
     if (result.blocked) {
       showBlockedScreen(result.message);
       return;
@@ -702,13 +708,15 @@ function toggleAuthMode() {
   const isSignUp = document.getElementById('auth-firstname-group').style.display !== 'none';
   if (isSignUp) {
     document.getElementById('auth-firstname-group').style.display = 'none';
+    document.getElementById('consent-group').style.display = 'none';
     document.getElementById('auth-title').textContent = t('auth-title-welcome-back');
     document.getElementById('auth-subtitle').textContent = t('auth-subtitle-boardroom-waiting');
     document.getElementById('auth-submit-btn').textContent = t('auth-submit-btn');
     document.getElementById('auth-submit-btn').onclick = handleSignIn;
     document.getElementById('auth-toggle').textContent = t('auth-toggle-to-signup');
-  } else {
+    } else {
     document.getElementById('auth-firstname-group').style.display = 'block';
+    document.getElementById('consent-group').style.display = 'flex';
     document.getElementById('auth-title').textContent = t('auth-title-signup');
     document.getElementById('auth-subtitle').textContent = t('auth-subtitle-default');
     document.getElementById('auth-submit-btn').textContent = t('auth-submit-btn');

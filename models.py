@@ -44,6 +44,7 @@ class User(Base):
     theme_bubble_assistant = Column(String, nullable=True)
     is_deleted = Column(Boolean, default=False)
     deleted_at = Column(DateTime, nullable=True)
+    consented_at = Column(DateTime, nullable=True)
 
 class Account(Base):
     __tablename__ = "accounts"

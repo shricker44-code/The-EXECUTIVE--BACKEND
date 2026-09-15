@@ -25,6 +25,7 @@ class SignUpRequest(BaseModel):
     first_name: str
     device_fingerprint: str
     phone_number: Optional[str] = None
+    consented: bool = False
 
 class SignInRequest(BaseModel):
     email: str
@@ -34,6 +35,9 @@ class SignInRequest(BaseModel):
 @router.post("/signup")
 async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
     try:
+        if not request.consented:
+            raise HTTPException(status_code=400, detail="You must consent to sharing analytics screenshots to create an account.")
+
         auth_response = supabase.auth.sign_up({
             "email": request.email,
             "password": request.password,
@@ -53,6 +57,7 @@ async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
             is_paid=False,
             session_token=session_token,
             session_device=request.device_fingerprint,
+            consented_at=datetime.utcnow(),
         )
         db.add(new_user)
         db.commit()

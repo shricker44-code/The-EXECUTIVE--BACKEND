@@ -58,7 +58,7 @@ async function getDeviceFingerprint() {
   return Math.abs(hash).toString(16);
 }
 
-async function signUp(email, password, firstName) {
+async function signUp(email, password, firstName, consented) {
   const fingerprint = await getDeviceFingerprint();
   const response = await fetch(`${API_BASE}/auth/signup`, {
     method: 'POST',
@@ -68,6 +68,7 @@ async function signUp(email, password, firstName) {
       password,
       first_name: firstName,
       device_fingerprint: fingerprint,
+      consented: consented,
     })
   });
   const data = await response.json();
