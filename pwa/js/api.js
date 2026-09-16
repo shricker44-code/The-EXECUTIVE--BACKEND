@@ -72,7 +72,7 @@ async function signUp(email, password, firstName, consented) {
     })
   });
   const data = await response.json();
-  if (data.success) {
+  if (data.success && !data.needs_verification) {
     currentUser = data;
     localStorage.setItem('executive_user', JSON.stringify(data));
   }

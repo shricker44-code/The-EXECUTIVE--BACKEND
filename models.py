@@ -45,6 +45,7 @@ class User(Base):
     is_deleted = Column(Boolean, default=False)
     deleted_at = Column(DateTime, nullable=True)
     consented_at = Column(DateTime, nullable=True)
+    email_verified = Column(Boolean, default=False)
 
 class Account(Base):
     __tablename__ = "accounts"

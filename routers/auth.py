@@ -73,12 +73,8 @@ async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
 
         return {
             "success": True,
-            "user_id": user_id,
-            "first_name": request.first_name,
-            "is_paid": False,
-            "trial_active": True,
-            "session_token": session_token,
-            "language": "en",
+            "needs_verification": True,
+            "email": request.email,
         }
 
     except Exception as e:
@@ -99,6 +95,9 @@ async def signin(request: SignInRequest, db: Session = Depends(get_db)):
 
         if user.is_deleted:
             raise HTTPException(status_code=403, detail="This account has been deleted.")
+
+        if not user.email_verified:
+            return {"success": False, "needs_verification": True, "detail": "Please verify your email before signing in. Check your inbox."}
 
         session_token = str(uuid.uuid4())
         user.session_token = session_token
@@ -231,6 +230,20 @@ async def delete_account_request(request: DeleteAccountRequest, db: Session = De
     user.deleted_at = datetime.utcnow()
     user.is_paid = False
     user.session_token = None
+    db.commit()
+
+    return {"success": True}
+
+class ConfirmEmailRequest(BaseModel):
+    email: str
+
+@router.post("/confirm-email")
+async def confirm_email(request: ConfirmEmailRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.email_verified = True
     db.commit()
 
     return {"success": True}

@@ -656,9 +656,13 @@ async function handleSignUp() {
   btn.disabled = true;
 
   try {
-      const result = await signUp(email, password, firstName, consented);
+        const result = await signUp(email, password, firstName, consented);
     if (result.blocked) {
       showBlockedScreen(result.message);
+      return;
+    }
+    if (result.success && result.needs_verification) {
+      showBlockedScreen(`Check your inbox at ${result.email} and click the verification link to activate your account.`);
       return;
     }
     if (result.success) {
@@ -688,10 +692,13 @@ async function handleSignIn() {
   btn.textContent = t('auth-submit-entering');
   btn.disabled = true;
 
-  try {
+    try {
     const result = await signIn(email, password);
     if (result.success) {
       showApp(result);
+    } else if (result.needs_verification) {
+      showBlockedScreen(result.detail);
+      return;
     } else {
       alert(t('signin-failed-alert'));
       btn.textContent = t('auth-submit-btn');
