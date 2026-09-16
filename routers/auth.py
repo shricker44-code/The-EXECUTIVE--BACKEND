@@ -41,6 +41,9 @@ async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
         auth_response = supabase.auth.sign_up({
             "email": request.email,
             "password": request.password,
+            "options": {
+                "email_redirect_to": "https://theexecutive.app/verify.html"
+            }
         })
 
         user_id = str(uuid.uuid4())
