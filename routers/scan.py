@@ -5,7 +5,7 @@ from database import get_db
 from models import User, Verdict, Account
 from services.scanner import scan_content
 from middleware import check_verdict_limit
-from routers.chat import get_verdict_query
+from routers.chat import get_verdict_query, build_search_insights_context
 import uuid
 from datetime import datetime
 from pydantic import BaseModel
@@ -102,6 +102,24 @@ def build_assignment_outcome_context(user, account_id, db):
     )
 
 
+def build_search_insights_context(user, account_id, db):
+    last_insight = (
+        get_verdict_query(user, account_id, db)
+        .filter(Verdict.search_insights_snapshot.isnot(None))
+        .order_by(Verdict.created_at.desc())
+        .first()
+    )
+    if not last_insight:
+        return ""
+
+    return (
+        "REAL SEARCH INSIGHTS DATA (pulled directly from this creator's own TikTok Search Insights page — "
+        "prioritize this over the generic NICHE KEYWORD REFERENCE TABLE in your instructions when giving "
+        "search/content-gap advice, since this reflects their actual account, not a generic niche guess):\n"
+        f"{last_insight.search_insights_snapshot}"
+    )
+
+
 @router.post("/")
 async def scan(
     user_id: Optional[str] = Form(None),
@@ -109,6 +127,7 @@ async def scan(
     tiktok_url: Optional[str] = Form(None),
     manual_input: Optional[str] = Form(None),
     screenshot: Optional[UploadFile] = File(None),
+    screenshot_type: str = Form("analytics"),
     db: Session = Depends(get_db),
 ):
     if not user_id:
@@ -132,12 +151,14 @@ async def scan(
 
     growth_trend = build_growth_trend(user, account_id, db)
     outcome_context = build_assignment_outcome_context(user, account_id, db)
-    extra_context = "\n\n".join(filter(None, [growth_trend, outcome_context]))
+    search_insights_context = build_search_insights_context(user, account_id, db)
+    extra_context = "\n\n".join(filter(None, [growth_trend, outcome_context, search_insights_context]))
 
-    result, extracted_numbers, tokens_used = await scan_content(
+    result, extracted_numbers, tokens_used, search_insights_result = await scan_content(
         tiktok_url=tiktok_url,
         manual_input=manual_input,
         screenshot=screenshot,
+        screenshot_type=screenshot_type,
         record=record,
         db=db,
         extra_context=extra_context,
@@ -154,6 +175,7 @@ async def scan(
         watch_time_snapshot=extracted_numbers.get("watch_time") if extracted_numbers else None,
         completion_rate_snapshot=extracted_numbers.get("completion_rate") if extracted_numbers else None,
         profile_visits_snapshot=extracted_numbers.get("profile_visits") if extracted_numbers else None,
+        search_insights_snapshot=search_insights_result,
         created_at=datetime.utcnow()
     )
     db.add(verdict)

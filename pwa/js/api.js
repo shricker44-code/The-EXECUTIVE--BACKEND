@@ -382,3 +382,19 @@ async function scanScreenshot(file) {
   if (!response.ok) throw new Error('Scan failed');
   return await response.json();
 }
+
+async function scanScreenshot(file, screenshotType = 'analytics') {
+  const formData = new FormData();
+  if (currentUser) formData.append('user_id', currentUser.user_id);
+  if (currentAccountId) formData.append('account_id', currentAccountId);
+  formData.append('screenshot', file);
+  formData.append('screenshot_type', screenshotType);
+
+  const response = await fetch(`${API_BASE}/scan/`, {
+    method: 'POST',
+    body: formData
+  });
+
+  if (!response.ok) throw new Error('Scan failed');
+  return await response.json();
+}

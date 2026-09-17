@@ -1541,7 +1541,15 @@ async function handleDeleteAccount() {
   }
 }
 
+let pendingScreenshotType = 'analytics';
+
 function handleAttachClick() {
+  document.getElementById('attach-menu').classList.toggle('hidden');
+}
+
+function selectScreenshotType(type) {
+  pendingScreenshotType = type;
+  document.getElementById('attach-menu').classList.add('hidden');
   document.getElementById('screenshot-input').click();
 }
 
@@ -1601,7 +1609,7 @@ async function handleScreenshotSelected(event) {
     }
 
     try {
-      const data = await scanScreenshot(file);
+      const data = await scanScreenshot(file, pendingScreenshotType);
       const finalText = data.verdict;
 
       conversationHistory.push({ role: 'assistant', content: finalText });

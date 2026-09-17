@@ -79,6 +79,29 @@ def build_history_summary(user, account_id, db, limit=5):
     return "\n".join(lines)
 
 
+def build_search_insights_context(user, account_id, db):
+    """
+    Surfaces the creator's most recent real TikTok Search Insights data (if any
+    was ever uploaded) so the Executive can reference actual search opportunities
+    instead of the generic niche keyword table, in both scan verdicts and normal chat.
+    """
+    last_insight = (
+        get_verdict_query(user, account_id, db)
+        .filter(Verdict.search_insights_snapshot.isnot(None))
+        .order_by(Verdict.created_at.desc())
+        .first()
+    )
+    if not last_insight:
+        return ""
+
+    return (
+        "REAL SEARCH INSIGHTS DATA (pulled directly from this creator's own TikTok Search Insights page — "
+        "prioritize this over the generic NICHE KEYWORD REFERENCE TABLE in your instructions when giving "
+        "search/content-gap advice, since this reflects their actual account, not a generic niche guess):\n"
+        f"{last_insight.search_insights_snapshot}"
+    )
+
+
 def handle_posted_after_update(last_message: str, user, account_id, db):
     """If the user just answered the posted/not-posted prompt, record it on their most recent verdict."""
     last_verdict = (
@@ -161,10 +184,13 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
 
     history_summary = build_history_summary(user, account_id, db)
     gap_context = get_gap_context(user, account_id, db)
+    search_insights_context = build_search_insights_context(user, account_id, db)
     if gap_context:
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
+    if search_insights_context:
+        history_summary = f"{history_summary}\n\n{search_insights_context}" if history_summary else search_insights_context
 
-        reply, tokens_used = await get_executive_response(messages, model=model, history_summary=history_summary, language=user.language or "en")
+    reply, tokens_used = await get_executive_response(messages, model=model, history_summary=history_summary, language=user.language or "en")
 
     increment_chat_count(user, db, tokens_used=tokens_used)
 
@@ -239,8 +265,11 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
 
     history_summary = build_history_summary(user, account_id, db)
     gap_context = get_gap_context(user, account_id, db)
+    search_insights_context = build_search_insights_context(user, account_id, db)
     if gap_context:
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
+    if search_insights_context:
+        history_summary = f"{history_summary}\n\n{search_insights_context}" if history_summary else search_insights_context
 
     async def generate():
         full_reply = ""
@@ -340,4 +369,3 @@ async def get_usage(user_id: str, db: Session = Depends(get_db)):
         "trial_cap": None if user.is_paid else TRIAL_TOTAL_TOKEN_CAP,
         "is_paid": user.is_paid,
     }
-

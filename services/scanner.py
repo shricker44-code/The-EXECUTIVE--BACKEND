@@ -18,6 +18,14 @@ Respond with ONLY a JSON object in this exact format, nothing else, no markdown,
 {"follower_count": <integer or null>, "engagement_rate": <number or null>, "watch_time": <number or null>, "completion_rate": <number or null>, "profile_visits": <integer or null>}
 
 If a number isn't visible or determinable, use null for that field."""
+
+SEARCH_INSIGHTS_EXTRACTION_PROMPT = """Look at this screenshot from TikTok's Search Insights / Content Gap page. It shows keywords or topics people are searching for related to the creator's niche, usually paired with a demand or competition signal (e.g. "High search, low competition", or a specific number).
+
+List every distinct topic or keyword visible, with whatever signal appears next to it. One per line, plain text, no markdown, in this format:
+topic — signal
+
+If this screenshot does not show search/keyword data, respond with exactly: NO_INSIGHTS_FOUND"""
+
 NOTHING_CHANGED_MESSAGES = [
     "Nothing has changed since your last check-in. Go execute your assignment. Come back when the numbers move.",
     "Same numbers as last time. I already gave you your assignment. Execute it, then come back with proof it worked.",
@@ -60,6 +68,30 @@ async def extract_analytics_numbers(image_data: bytes, media_type: str) -> tuple
         }, tokens
 
 
+async def extract_search_insights(image_data: bytes, media_type: str) -> tuple[Optional[str], int]:
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    b64_image = base64.standard_b64encode(image_data).decode("utf-8")
+
+    response = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=400,
+        messages=[{
+            "role": "user",
+            "content": [
+                {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64_image}},
+                {"type": "text", "text": SEARCH_INSIGHTS_EXTRACTION_PROMPT}
+            ],
+        }],
+    )
+
+    tokens = response.usage.input_tokens + response.usage.output_tokens
+    raw = response.content[0].text.strip()
+
+    if raw == "NO_INSIGHTS_FOUND":
+        return None, tokens
+    return raw, tokens
+
+
 def is_unchanged(new_numbers: dict, last_follower_count, last_engagement_rate) -> bool:
     followers_match = (
         new_numbers.get("follower_count") is not None
@@ -78,13 +110,15 @@ async def scan_content(
     tiktok_url: Optional[str] = None,
     manual_input: Optional[str] = None,
     screenshot: Optional[UploadFile] = None,
+    screenshot_type: str = "analytics",
     record=None,
     db=None,
     extra_context: str = "",
-) -> tuple[str, Optional[dict], int]:
+) -> tuple[str, Optional[dict], int, Optional[str]]:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     messages = []
     extracted_numbers = None
+    search_insights_result = None
     total_tokens = 0
 
     if tiktok_url:
@@ -99,31 +133,51 @@ What is working. What is dead weight. What needs to change. Now."""
         image_data = await screenshot.read()
         media_type = screenshot.content_type or "image/jpeg"
 
-        if record is not None and db is not None:
-            new_numbers, extraction_tokens = await extract_analytics_numbers(image_data, media_type)
+        if screenshot_type == "search_insights":
+            insights_text, extraction_tokens = await extract_search_insights(image_data, media_type)
             total_tokens += extraction_tokens
+            search_insights_result = insights_text
 
-            if is_unchanged(new_numbers, record.last_follower_count, record.last_engagement_rate):
-                return random.choice(NOTHING_CHANGED_MESSAGES), None, total_tokens
+            b64_image = base64.standard_b64encode(image_data).decode("utf-8")
+            insights_summary = insights_text if insights_text else "No clear topics could be read from this screenshot."
+            messages.append({
+                "role": "user",
+                "content": [
+                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64_image}},
+                    {"type": "text", "text": f"""This is a screenshot of my TikTok Search Insights / Content Gap page. Here is what was extracted from it:
 
-            if new_numbers.get("follower_count") is not None:
-                record.last_follower_count = new_numbers["follower_count"]
-            if new_numbers.get("engagement_rate") is not None:
-                record.last_engagement_rate = new_numbers["engagement_rate"]
-            db.commit()
+{insights_summary}
 
-            extracted_numbers = new_numbers
+Based on these real search opportunities — not generic keyword guesses — tell me which specific topics I should make content about right now, why each is a real opportunity for my account specifically, and how to frame the hook for at least one of them. Be specific and reference the actual topics shown, not generic advice."""}
+                ],
+            })
 
-        b64_image = base64.standard_b64encode(image_data).decode("utf-8")
-        messages.append({
-            "role": "user",
-            "content": [
-                {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64_image}},
-                {"type": "text", "text": """This is a screenshot of my TikTok analytics page. Read every number visible in this screenshot precisely — follower count, total likes, engagement rate, watch time percentage, completion rate, profile visits, and any top-performing video data shown.
+        else:
+            if record is not None and db is not None:
+                new_numbers, extraction_tokens = await extract_analytics_numbers(image_data, media_type)
+                total_tokens += extraction_tokens
+
+                if is_unchanged(new_numbers, record.last_follower_count, record.last_engagement_rate):
+                    return random.choice(NOTHING_CHANGED_MESSAGES), None, total_tokens, None
+
+                if new_numbers.get("follower_count") is not None:
+                    record.last_follower_count = new_numbers["follower_count"]
+                if new_numbers.get("engagement_rate") is not None:
+                    record.last_engagement_rate = new_numbers["engagement_rate"]
+                db.commit()
+
+                extracted_numbers = new_numbers
+
+            b64_image = base64.standard_b64encode(image_data).decode("utf-8")
+            messages.append({
+                "role": "user",
+                "content": [
+                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64_image}},
+                    {"type": "text", "text": """This is a screenshot of my TikTok analytics page. Read every number visible in this screenshot precisely — follower count, total likes, engagement rate, watch time percentage, completion rate, profile visits, and any top-performing video data shown.
 
 Extract and state the exact numbers you see before giving your verdict, so I know you actually read my data and did not guess. Then deliver your full boardroom verdict using those exact numbers per your specificity requirements. What is working. What is failing. What changes immediately."""}
-            ],
-        })
+                ],
+            })
 
     elif manual_input:
         prompt = f"""A creator has submitted their account details manually. Scan this and deliver your boardroom verdict.
@@ -136,7 +190,7 @@ What is working. What is dead weight. What needs to change. No fluff."""
         messages.append({"role": "user", "content": prompt})
 
     else:
-        return "No content submitted. The Executive does not work with nothing. Give me something to analyze.", None, 0
+        return "No content submitted. The Executive does not work with nothing. Give me something to analyze.", None, 0, None
 
     system = SYSTEM_PROMPT
     if extra_context:
@@ -149,4 +203,4 @@ What is working. What is dead weight. What needs to change. No fluff."""
         messages=messages,
     )
     total_tokens += response.usage.input_tokens + response.usage.output_tokens
-    return response.content[0].text, extracted_numbers, total_tokens
+    return response.content[0].text, extracted_numbers, total_tokens, search_insights_result
