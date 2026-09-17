@@ -716,6 +716,7 @@ function toggleAuthMode() {
   if (isSignUp) {
     document.getElementById('auth-firstname-group').style.display = 'none';
     document.getElementById('consent-group').style.display = 'none';
+    document.getElementById('forgot-password-link').classList.remove('hidden');
     document.getElementById('auth-title').textContent = t('auth-title-welcome-back');
     document.getElementById('auth-subtitle').textContent = t('auth-subtitle-boardroom-waiting');
     document.getElementById('auth-submit-btn').textContent = t('auth-submit-btn');
@@ -724,13 +725,9 @@ function toggleAuthMode() {
     } else {
     document.getElementById('auth-firstname-group').style.display = 'block';
     document.getElementById('consent-group').style.display = 'flex';
-    document.getElementById('auth-title').textContent = t('auth-title-signup');
-    document.getElementById('auth-subtitle').textContent = t('auth-subtitle-default');
-    document.getElementById('auth-submit-btn').textContent = t('auth-submit-btn');
-    document.getElementById('auth-submit-btn').onclick = handleSignUp;
-    document.getElementById('auth-toggle').textContent = t('auth-toggle-to-signin');
+    document.getElementById('forgot-password-link').classList.add('hidden');
   }
-}
+ }
 function showSignIn() {
   document.getElementById('blocked-screen').classList.add('hidden');
   document.getElementById('auth-screen').classList.remove('hidden');
@@ -1661,4 +1658,30 @@ async function handleScreenshotSelected(event) {
     }
   };
   reader.readAsDataURL(file);
+}
+
+function togglePasswordVisibility(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isPassword = input.type === 'password';
+  input.type = isPassword ? 'text' : 'password';
+  btn.querySelector('.eye-open').style.display = isPassword ? 'none' : 'block';
+  btn.querySelector('.eye-closed').style.display = isPassword ? 'block' : 'none';
+}
+
+async function handleForgotPassword() {
+  const email = document.getElementById('auth-email').value.trim();
+  if (!email) {
+    alert('Enter your email above first, then click "Forgot password?"');
+    return;
+  }
+  try {
+    await fetch(`${API_BASE}/auth/forgot-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+    alert('If that email is registered, a reset link has been sent. Check your inbox.');
+  } catch {
+    alert('Connection failed. Try again.');
+  }
 }

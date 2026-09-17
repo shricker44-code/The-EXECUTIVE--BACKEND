@@ -19,6 +19,11 @@ supabase = create_client(
     os.environ.get("SUPABASE_KEY")
 )
 
+supabase_admin = create_client(
+    os.environ.get("SUPABASE_URL"),
+    os.environ.get("SUPABASE_SERVICE_KEY")
+)
+
 class SignUpRequest(BaseModel):
     email: str
     password: str
@@ -236,6 +241,50 @@ async def delete_account_request(request: DeleteAccountRequest, db: Session = De
     db.commit()
 
     return {"success": True}
+
+class ConfirmEmailRequest(BaseModel):
+    email: str
+
+@router.post("/confirm-email")
+async def confirm_email(request: ConfirmEmailRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.email_verified = True
+    db.commit()
+
+    return {"success": True}
+
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+@router.post("/forgot-password")
+async def forgot_password(request: ForgotPasswordRequest):
+    try:
+        supabase.auth.reset_password_for_email(
+            request.email,
+            {"redirect_to": "https://theexecutive.app/reset-password.html"}
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"success": True}  # never reveal whether the email exists
+
+
+class ResetPasswordRequest(BaseModel):
+    user_id: str
+    new_password: str
+
+@router.post("/reset-password")
+async def reset_password(request: ResetPasswordRequest):
+    try:
+        supabase_admin.auth.admin.update_user_by_id(
+            request.user_id,
+            {"password": request.new_password}
+        )
+        return {"success": True}
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 class ConfirmEmailRequest(BaseModel):
     email: str
