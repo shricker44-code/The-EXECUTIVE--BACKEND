@@ -1,7 +1,7 @@
 ﻿from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import chat, scan, billing
-from routers import trial, queue, auth, notifications
+from routers import trial, queue, auth, notifications, waitlist
 from routers import accounts
 from routers import score
 from database import engine
@@ -27,8 +27,7 @@ app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
 app.include_router(accounts.router, prefix="/api/accounts", tags=["accounts"])
-app.include_router(score.router, prefix="/api/score", tags=["score"])
-
+app.include_router(waitlist.router, prefix="/api/waitlist", tags=["waitlist"])
 @app.get("/")
 def root():
     return {"status": "The Executive is in session."}

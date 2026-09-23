@@ -150,6 +150,35 @@
     color: var(--muted);
   }
 
+    .waitlist-form {
+    display: flex;
+    gap: 10px;
+    max-width: 420px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .waitlist-input {
+    flex: 1;
+    min-width: 220px;
+    background: var(--panel);
+    border: 1px solid var(--gold-border);
+    border-radius: 30px;
+    padding: 14px 20px;
+    color: var(--cream);
+    font-family: var(--font-ui);
+    font-size: 14px;
+  }
+  .waitlist-input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  .waitlist-submit {
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+  }
+
   /* SECTION SHARED */
   section { padding: 70px 0; }
   .section-tag {
@@ -324,8 +353,11 @@
   <div class="hero-label">TIKTOK BOARDROOM ADVISOR</div>
   <h1>Followers don't make you money. <em>Engagement does.</em></h1>
   <p>Upload a screenshot of your TikTok analytics. Get a specific, no-fluff verdict on exactly why you're not growing — and one assignment to fix it.</p>
-  <a class="cta" href="https://theexecutive.app">Enter the Boardroom</a>
-  <div class="hero-note">Free 14-day trial. No fluff, no generic advice.</div>
+  <form class="waitlist-form" id="waitlist-form-hero" onsubmit="return submitWaitlist(event, 'hero')">
+    <input type="email" class="waitlist-input" id="waitlist-email-hero" placeholder="Enter your email" required />
+    <button type="submit" class="cta waitlist-submit">Join the Waitlist</button>
+  </form>
+  <div class="hero-note">Free 14-day trial once you're in. No fluff, no generic advice.</div>
 </div>
 </div>
 
@@ -399,7 +431,10 @@
     <div class="pricing-card">
       <div class="price">$15<span>/mo</span></div>
       <p class="desc">Unlimited verdicts. Voice playback. Full growth tracking across every account you manage.</p>
-      <a class="cta" href="https://theexecutive.app">Start Free Trial</a>
+          <form class="waitlist-form" id="waitlist-form-pricing" onsubmit="return submitWaitlist(event, 'pricing')">
+        <input type="email" class="waitlist-input" id="waitlist-email-pricing" placeholder="Enter your email" required />
+        <button type="submit" class="cta waitlist-submit">Join the Waitlist</button>
+      </form>
     </div>
   </div>
 </section>
@@ -434,6 +469,41 @@
 </div>
 
 <script>
+  async function submitWaitlist(event, formId) {
+    event.preventDefault();
+    const input = document.getElementById('waitlist-email-' + formId);
+    const email = input.value.trim();
+    if (!email) return false;
+
+    const form = document.getElementById('waitlist-form-' + formId);
+    const btn = form.querySelector('.waitlist-submit');
+    btn.disabled = true;
+    btn.textContent = 'Joining...';
+
+    try {
+      const res = await fetch('https://the-executive-backend.onrender.com/api/waitlist/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        form.innerHTML = data.already_on_list
+          ? "<p style='color: var(--gold); font-weight: 700;'>You're already on the list — hang tight.</p>"
+          : "<p style='color: var(--gold); font-weight: 700;'>You're on the list. We'll email you when it's your turn.</p>";
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Join the Waitlist';
+        alert('Something went wrong. Try again.');
+      }
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Join the Waitlist';
+      alert('Connection failed. Try again.');
+    }
+    return false;
+  }
+
   let deferredInstallPrompt = null;
 
   window.addEventListener('beforeinstallprompt', (e) => {

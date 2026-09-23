@@ -1583,3 +1583,62 @@ html, body {
 .attach-btn:hover {
   background: rgba(212,175,55,0.08);
 }
+
+.capcut-screenshot {
+  display: block;
+  max-width: 100%;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+.capcut-caption {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.upgrade-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+}
+.upgrade-popup-card {
+  background: var(--panel, #0d0a00);
+  border: 1px solid var(--gold-border, rgba(212,175,55,0.2));
+  border-left: 3px solid var(--gold, #D4AF37);
+  border-radius: 8px;
+  padding: 32px 28px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+}
+.upgrade-popup-headline {
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: var(--gold, #D4AF37);
+  margin-bottom: 14px;
+}
+.upgrade-popup-body {
+  font-size: 14px;
+  color: var(--text-muted, rgba(232,224,204,0.55));
+  margin-bottom: 22px;
+  line-height: 1.6;
+}
+.upgrade-popup-cta {
+  display: block;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.upgrade-popup-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-muted, rgba(232,224,204,0.55));
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+}

@@ -11,7 +11,8 @@ from middleware import (
     check_chat_limit, increment_chat_count,
     check_trial_message, get_model_for_user, can_use_tts,
     get_session_tokens_remaining, get_trial_tokens_remaining,
-    PAID_SESSION_TOKEN_CAP, FREE_SESSION_TOKEN_CAP, TRIAL_TOTAL_TOKEN_CAP
+    get_trial_day, check_trial_expired,
+    PAID_SESSION_TOKEN_CAP, FREE_SESSION_TOKEN_CAP, TRIAL_TOTAL_TOKEN_CAP, TRIAL_DURATION_DAYS
 )
 import uuid
 from datetime import datetime
@@ -375,10 +376,21 @@ async def get_usage(user_id: str, db: Session = Depends(get_db)):
     daily_remaining = get_session_tokens_remaining(user, db)
     cap = PAID_SESSION_TOKEN_CAP if user.is_paid else FREE_SESSION_TOKEN_CAP
 
+    trial_day = None
+    trial_days_remaining = None
+    trial_expired = False
+    if not user.is_paid:
+        trial_day = get_trial_day(user)
+        trial_days_remaining = max(0, TRIAL_DURATION_DAYS - trial_day + 1)
+        trial_expired = check_trial_expired(user)
+
     return {
         "daily_remaining": daily_remaining,
         "daily_cap": cap,
         "trial_remaining": get_trial_tokens_remaining(user),
         "trial_cap": None if user.is_paid else TRIAL_TOTAL_TOKEN_CAP,
         "is_paid": user.is_paid,
+        "trial_day": trial_day,
+        "trial_days_remaining": trial_days_remaining,
+        "trial_expired": trial_expired,
     }

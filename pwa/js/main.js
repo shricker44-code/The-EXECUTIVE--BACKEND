@@ -16,6 +16,36 @@ let audioUnlocked = false;
 let usageWarningShown = false;
 let currentVolume = parseFloat(localStorage.getItem('executive_volume')) || 1.0;
 
+const CAPCUT_SCREENSHOTS = {
+  speed_ramp:            { file: 'speed_ramp.png',            caption: 'CapCut — Speed Ramp' },
+  autocaptions:          { file: 'autocaptions.png',          caption: 'CapCut — Auto Captions' },
+  keyframes_transitions: { file: 'keyframes_transitions.png', caption: 'CapCut — Keyframes & Transitions' },
+  multitrack_chromakey:  { file: 'multitrack_chromakey.png',  caption: 'CapCut — Multi-track & Chroma Key' },
+  templates:             { file: 'templates.png',             caption: 'CapCut — Templates' },
+};
+
+function extractCapcutTag(text) {
+  const match = text.match(/\[CAPCUT_SCREENSHOT:(\w+)\]/);
+  if (!match) return { text, tag: null };
+  const cleanText = text.replace(match[0], '').replace(/\s+$/, '');
+  return { text: cleanText, tag: match[1] };
+}
+
+function appendCapcutImage(bubbleEl, tag) {
+  const info = CAPCUT_SCREENSHOTS[tag];
+  if (!info) return;
+  const img = document.createElement('img');
+  img.src = '/images/capcut/' + info.file;
+  img.alt = info.caption;
+  img.className = 'capcut-screenshot';
+  img.loading = 'lazy';
+  bubbleEl.appendChild(img);
+  const cap = document.createElement('div');
+  cap.className = 'capcut-caption';
+  cap.textContent = info.caption;
+  bubbleEl.appendChild(cap);
+}
+
 const UI_TRANSLATIONS = {
   en: {
     "splash-title": "THE EXECUTIVE",
@@ -589,8 +619,60 @@ function showApp(user) {
     subscribeToPush(user.user_id);
     startSessionCheck(user.user_id);
     initAccountsAndHistory();
+    checkUpgradePopup();
   }
 }
+
+async function checkUpgradePopup() {
+  if (!currentUser || currentUser.is_paid) return;
+
+  const today = new Date().toDateString();
+  const key = 'upgrade_popup_date_' + currentUser.user_id;
+  if (localStorage.getItem(key) === today) return;
+
+  const data = await fetchUsage();
+  if (!data || data.is_paid) return;
+
+  localStorage.setItem(key, today);
+  renderUpgradePopup(data);
+}
+
+function renderUpgradePopup(data) {
+  const existing = document.getElementById('upgrade-popup-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'upgrade-popup-overlay';
+  overlay.className = 'upgrade-popup-overlay';
+
+  const expired = data.trial_expired;
+  const daysLeft = data.trial_days_remaining;
+
+  const headline = expired
+    ? 'YOUR TRIAL HAS ENDED'
+    : `${daysLeft} DAY${daysLeft === 1 ? '' : 'S'} LEFT IN YOUR TRIAL`;
+
+  const body = expired
+    ? "Your fourteen days are up. If you want back in the boardroom, upgrade now."
+    : "Lock in your strategy before the clock runs out. Upgrade any time to keep the boardroom open permanently.";
+
+  overlay.innerHTML = `
+    <div class="upgrade-popup-card">
+      <div class="upgrade-popup-headline">${headline}</div>
+      <div class="upgrade-popup-body">${body}</div>
+      <button class="cta upgrade-popup-cta" onclick="upgradeToBasePlan()">Upgrade to Executive Plan — $15/mo</button>
+      <button class="upgrade-popup-dismiss" onclick="document.getElementById('upgrade-popup-overlay').remove()">Not now</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && currentUser) {
+    checkUpgradePopup();
+  }
+});
 
 async function initAccountsAndHistory() {
   await loadAccountSwitcher();
@@ -775,12 +857,20 @@ function addMessage(role, content) {
   if (qp) qp.style.display = 'none';
   const bubble = document.createElement('div');
   bubble.className = 'message ' + role;
+
+  let capcutTag = null;
   if (role === 'assistant') {
+    const extracted = extractCapcutTag(content);
+    content = extracted.text;
+    capcutTag = extracted.tag;
     bubble.innerHTML = '<div class="avatar">E</div><div class="bubble assistant">' + content.replace(/\n/g, '<br>') + '</div>';
   } else {
     bubble.innerHTML = '<div class="bubble user">' + content.replace(/\n/g, '<br>') + '</div>';
   }
   messages.appendChild(bubble);
+  if (capcutTag) {
+    appendCapcutImage(bubble.querySelector('.bubble'), capcutTag);
+  }
   messages.scrollTop = messages.scrollHeight;
   if (role === 'assistant') {
     checkVerdictTracking();
@@ -955,6 +1045,9 @@ async function sendToExecutive(text) {
 
     finalText = finalText.replace(/(?<!\*)\*(?!\*)([^*]+?)(?<!\*)\*(?!\*)/g, '').replace(/\s{2,}/g, ' ').trim();
 
+    const capcutExtracted = extractCapcutTag(finalText);
+    finalText = capcutExtracted.text;
+    const capcutTag = capcutExtracted.tag;
     if (isFirstMessage && currentUser && currentUser.first_name) {
       finalText = `${currentUser.first_name}. ${finalText}`;
     }
@@ -997,7 +1090,8 @@ async function sendToExecutive(text) {
       checkVerdictTracking();
       checkUsageWarning();
 
-      addPlaybackButton(bubbleEl, finalText, audioBase64);
+          addPlaybackButton(bubbleEl, finalText, audioBase64);
+      if (capcutTag) appendCapcutImage(bubbleEl, capcutTag);
 
       if (isNearBottom(messages)) {
         messages.scrollTop = messages.scrollHeight;

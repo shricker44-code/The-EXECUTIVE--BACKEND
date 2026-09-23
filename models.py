@@ -75,6 +75,15 @@ class Verdict(Base):
     search_insights_snapshot = Column(Text, nullable=True)
     capcut_screenshot = Column(String, nullable=True)
 
+class WaitlistEntry(Base):
+    __tablename__ = "waitlist_entries"
+    id = Column(String, primary_key=True)
+    email = Column(String, unique=True, nullable=False)
+    tiktok_handle = Column(String, nullable=True)
+    status = Column(String, default="waiting")  # waiting, invited, active
+    created_at = Column(DateTime, default=datetime.utcnow)
+    invited_at = Column(DateTime, nullable=True)
+
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
     id = Column(String, primary_key=True)
