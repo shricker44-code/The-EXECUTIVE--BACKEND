@@ -8,6 +8,8 @@ import uuid
 import os
 import requests
 from datetime import datetime
+from fastapi.responses import FileResponse
+import os
 
 router = APIRouter()
 
@@ -127,3 +129,7 @@ async def list_waitlist(secret: str = Query(...), status: Optional[str] = None, 
             for e in entries
         ],
     }
+@router.get("/admin/dashboard")
+async def admin_dashboard():
+    path = os.path.join(os.path.dirname(__file__), "..", "admin_waitlist.html")
+    return FileResponse(path)
