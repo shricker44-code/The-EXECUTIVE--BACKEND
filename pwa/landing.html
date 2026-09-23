@@ -149,6 +149,13 @@
     font-size: 13px;
     color: var(--muted);
   }
+  .seats-left {
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.3px;
+  }
 
     .waitlist-form {
     display: flex;
@@ -357,7 +364,8 @@
     <input type="email" class="waitlist-input" id="waitlist-email-hero" placeholder="Enter your email" required />
     <button type="submit" class="cta waitlist-submit">Join the Waitlist</button>
   </form>
-  <div class="hero-note">Free 14-day trial once you're in. No fluff, no generic advice.</div>
+    <div class="hero-note">Free 14-day trial once you're in. No fluff, no generic advice.</div>
+  <div class="seats-left" id="seats-left-hero"></div>
 </div>
 </div>
 
@@ -435,6 +443,7 @@
         <input type="email" class="waitlist-input" id="waitlist-email-pricing" placeholder="Enter your email" required />
         <button type="submit" class="cta waitlist-submit">Join the Waitlist</button>
       </form>
+      <div class="seats-left" id="seats-left-pricing"></div>
     </div>
   </div>
 </section>
@@ -535,6 +544,23 @@
     }
   }
 
+  async function fetchSeatsLeft() {
+    try {
+      const res = await fetch('https://the-executive-backend.onrender.com/api/waitlist/spots-left');
+      const data = await res.json();
+      const text = data.spots_left > 0
+        ? `Only ${data.spots_left.toLocaleString()} of ${data.cap.toLocaleString()} seats left`
+        : `Waitlist full — check back soon`;
+      const heroEl = document.getElementById('seats-left-hero');
+      const pricingEl = document.getElementById('seats-left-pricing');
+      if (heroEl) heroEl.textContent = text;
+      if (pricingEl) pricingEl.textContent = text;
+    } catch (e) {
+      // fail silently, no seats indicator shown
+    }
+  }
+
+  fetchSeatsLeft();
   renderInstallBox();
 </script>
 </body>
