@@ -496,14 +496,14 @@
         body: JSON.stringify({ email }),
       });
       const data = await res.json();
-      if (data.success) {
+      if (res.ok && data.success) {
         form.innerHTML = data.already_on_list
           ? "<p style='color: var(--gold); font-weight: 700;'>You're already on the list — hang tight.</p>"
           : "<p style='color: var(--gold); font-weight: 700;'>You're on the list. We'll email you when it's your turn.</p>";
       } else {
         btn.disabled = false;
         btn.textContent = 'Join the Waitlist';
-        alert('Something went wrong. Try again.');
+        alert(data.detail || 'Something went wrong. Try again.');
       }
     } catch (e) {
       btn.disabled = false;
@@ -548,9 +548,7 @@
     try {
       const res = await fetch('https://the-executive-backend.onrender.com/api/waitlist/spots-left');
       const data = await res.json();
-      const text = data.spots_left > 0
-        ? `Only ${data.spots_left.toLocaleString()} of ${data.cap.toLocaleString()} seats left`
-        : `Waitlist full — check back soon`;
+      const text = `Only ${data.spots_left.toLocaleString()} of ${data.cap.toLocaleString()} seats left`;
       const heroEl = document.getElementById('seats-left-hero');
       const pricingEl = document.getElementById('seats-left-pricing');
       if (heroEl) heroEl.textContent = text;
