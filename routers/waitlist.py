@@ -9,13 +9,13 @@ import os
 import requests
 from datetime import datetime
 from fastapi.responses import FileResponse
-import os
 
 router = APIRouter()
 
 ADMIN_SECRET = os.environ.get("ADMIN_SECRET")
 RESEND_API_KEY = os.environ.get("RESEND_API_KEY")
 FROM_EMAIL = "The Executive <onboarding@theexecutive.app>"
+WAITLIST_CAP = 3000
 
 
 class WaitlistJoinRequest(BaseModel):
@@ -33,6 +33,13 @@ async def join_waitlist(request: WaitlistJoinRequest, db: Session = Depends(get_
     if existing:
         return {"success": True, "already_on_list": True}
 
+    total_count = db.query(WaitlistEntry).count()
+    if total_count >= WAITLIST_CAP:
+        raise HTTPException(
+            status_code=403,
+            detail="The waitlist is full right now. Follow us for updates on when spots open back up."
+        )
+
     entry = WaitlistEntry(
         id=str(uuid.uuid4()),
         email=email,
@@ -43,6 +50,13 @@ async def join_waitlist(request: WaitlistJoinRequest, db: Session = Depends(get_
     db.add(entry)
     db.commit()
     return {"success": True, "already_on_list": False}
+
+
+@router.get("/spots-left")
+async def spots_left(db: Session = Depends(get_db)):
+    total_count = db.query(WaitlistEntry).count()
+    remaining = max(0, WAITLIST_CAP - total_count)
+    return {"spots_left": remaining, "cap": WAITLIST_CAP}
 
 
 def send_invite_email(to_email: str):
@@ -129,6 +143,8 @@ async def list_waitlist(secret: str = Query(...), status: Optional[str] = None, 
             for e in entries
         ],
     }
+
+
 @router.get("/admin/dashboard")
 async def admin_dashboard():
     path = os.path.join(os.path.dirname(__file__), "..", "admin_waitlist.html")
