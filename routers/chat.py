@@ -5,7 +5,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Verdict, Account
-from services.claude import get_executive_response, get_executive_response_stream, get_assignment_summary
+from services.claude import get_executive_response, get_executive_response_stream, get_assignment_summary, get_capcut_screenshot_tag
 from services.tts import synthesize_speech
 from middleware import (
     check_chat_limit, increment_chat_count,
@@ -295,6 +295,12 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             print(f"Assignment extraction failed: {e}")
             assignment_summary = None
 
+        try:
+            capcut_tag = await get_capcut_screenshot_tag(final_reply)
+        except Exception as e:
+            print(f"CapCut tag extraction failed: {e}")
+            capcut_tag = None
+
         verdict = Verdict(
             id=str(uuid.uuid4()),
             user_id=user.id,
@@ -302,6 +308,7 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             content=final_reply,
             user_message=last_message,
             assignment=assignment_summary,
+            capcut_screenshot=capcut_tag,
             created_at=datetime.utcnow()
         )
         db.add(verdict)
@@ -309,6 +316,9 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
 
         if trial_message:
             yield f"\n\n---\n{trial_message}"
+
+        if capcut_tag:
+            yield f"\n\n[CAPCUT_SCREENSHOT:{capcut_tag}]"
 
     return StreamingResponse(generate(), media_type="text/plain")
 
@@ -349,7 +359,10 @@ async def get_chat_history(user_id: str, account_id: str = None, limit: int = 20
     for v in reversed(verdicts):
         if v.user_message:
             messages.append({"role": "user", "content": v.user_message})
-        messages.append({"role": "assistant", "content": v.content})
+        content = v.content
+        if v.capcut_screenshot:
+            content = f"{content}\n\n[CAPCUT_SCREENSHOT:{v.capcut_screenshot}]"
+        messages.append({"role": "assistant", "content": content})
 
     return {"messages": messages}
 

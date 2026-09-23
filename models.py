@@ -73,6 +73,7 @@ class Verdict(Base):
     profile_visits_snapshot = Column(Integer, nullable=True)
     user_message = Column(Text, nullable=True)
     search_insights_snapshot = Column(Text, nullable=True)
+    capcut_screenshot = Column(String, nullable=True)
 
 class ChatSession(Base):
     __tablename__ = "chat_sessions"
