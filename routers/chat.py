@@ -15,6 +15,7 @@ from middleware import (
     PAID_SESSION_TOKEN_CAP, FREE_SESSION_TOKEN_CAP, TRIAL_TOTAL_TOKEN_CAP, TRIAL_DURATION_DAYS
 )
 import uuid
+import asyncio
 from datetime import datetime
 
 router = APIRouter()
@@ -288,25 +289,32 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
         if trial_message:
             final_reply = f"{full_reply}\n\n---\n{trial_message}"
 
-        try:
-            assignment_summary = await get_assignment_summary(final_reply)
+        assignment_result, capcut_result, example_result = await asyncio.gather(
+            get_assignment_summary(final_reply),
+            get_capcut_screenshot_tag(final_reply),
+            get_example_asset_tag(final_reply),
+            return_exceptions=True
+        )
+
+        if isinstance(assignment_result, Exception):
+            print(f"Assignment extraction failed: {assignment_result}")
+            assignment_summary = None
+        else:
+            assignment_summary = assignment_result
             if assignment_summary.lower() == "none":
                 assignment_summary = None
-        except Exception as e:
-            print(f"Assignment extraction failed: {e}")
-            assignment_summary = None
 
-        try:
-            capcut_tag = await get_capcut_screenshot_tag(final_reply)
-        except Exception as e:
-            print(f"CapCut tag extraction failed: {e}")
+        if isinstance(capcut_result, Exception):
+            print(f"CapCut tag extraction failed: {capcut_result}")
             capcut_tag = None
+        else:
+            capcut_tag = capcut_result
 
-        try:
-            example_tag = await get_example_asset_tag(final_reply)
-        except Exception as e:
-            print(f"Example asset tag extraction failed: {e}")
+        if isinstance(example_result, Exception):
+            print(f"Example asset tag extraction failed: {example_result}")
             example_tag = None
+        else:
+            example_tag = example_result
 
         verdict = Verdict(
             id=str(uuid.uuid4()),
