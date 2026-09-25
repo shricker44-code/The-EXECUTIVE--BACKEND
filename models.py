@@ -74,6 +74,8 @@ class Verdict(Base):
     user_message = Column(Text, nullable=True)
     search_insights_snapshot = Column(Text, nullable=True)
     capcut_screenshot = Column(String, nullable=True)
+    example_asset = Column(String, nullable=True)
+
 
 class WaitlistEntry(Base):
     __tablename__ = "waitlist_entries"
