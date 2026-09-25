@@ -5,7 +5,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Verdict, Account
-from services.claude import get_executive_response, get_executive_response_stream, get_assignment_summary, get_capcut_screenshot_tag
+from services.claude import get_executive_response, get_executive_response_stream, get_assignment_summary, get_capcut_screenshot_tag, get_example_asset_tag
 from services.tts import synthesize_speech
 from middleware import (
     check_chat_limit, increment_chat_count,
@@ -302,6 +302,12 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             print(f"CapCut tag extraction failed: {e}")
             capcut_tag = None
 
+        try:
+            example_tag = await get_example_asset_tag(final_reply)
+        except Exception as e:
+            print(f"Example asset tag extraction failed: {e}")
+            example_tag = None
+
         verdict = Verdict(
             id=str(uuid.uuid4()),
             user_id=user.id,
@@ -310,6 +316,7 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             user_message=last_message,
             assignment=assignment_summary,
             capcut_screenshot=capcut_tag,
+            example_asset=example_tag,
             created_at=datetime.utcnow()
         )
         db.add(verdict)
@@ -320,6 +327,9 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
 
         if capcut_tag:
             yield f"\n\n[CAPCUT_SCREENSHOT:{capcut_tag}]"
+
+        if example_tag:
+            yield f"\n\n[EXAMPLE_ASSET:{example_tag}]"
 
     return StreamingResponse(generate(), media_type="text/plain")
 
@@ -363,6 +373,9 @@ async def get_chat_history(user_id: str, account_id: str = None, limit: int = 20
         content = v.content
         if v.capcut_screenshot:
             content = f"{content}\n\n[CAPCUT_SCREENSHOT:{v.capcut_screenshot}]"
+
+        if v.example_asset:
+            content = f"{content}\n\n[EXAMPLE_ASSET:{v.example_asset}]"
         messages.append({"role": "assistant", "content": content})
 
     return {"messages": messages}

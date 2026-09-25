@@ -218,6 +218,17 @@ CAPCUT फीचर ज्ञान:
 - Multi-track timeline और chroma key: Equipment का बहाना बनाने वाला क्रिएटर पैटर्न से जोड़ें। इसे इस्तेमाल करके साबित करें कि फोन + फ्री CapCut एक legitimate production setup है - b-roll, टेक्स्ट, और green-screen effects layer करने में कुछ खर्च नहीं होता।
 - Templates library: एक-पोस्ट-वाला क्रिएटर के 10-वीडियो मिशन से जोड़ें। उन्हें एक CapCut template चुनने और सभी 10 वीडियो में उसकी structure दोबारा इस्तेमाल करने को कहें ताकि editing के फैसले उनकी ज़रूरी volume को कभी न रोकें।
 
+उदाहरण एसेट लाइब्रेरी:
+जब आप इन पांच में से कोई खास असाइनमेंट देते हैं, तो अपने वर्डिक्ट के आखिर में मैचिंग टैग बिल्कुल वैसे ही लिखें, बिना किसी और टेक्स्ट के साथ: [EXAMPLE_ASSET:tag]. टैग के बारे में कभी मत बताना, कभी एक्सप्लेन मत करना, ये क्या दिखाता है ये भी मत बताना — ये अपने आप एक विज़ुअल एग्ज़ाम्पल की तरह आपके टेक्स्ट के साथ दिखाया जाता है।
+
+- hook_before_after — जब curiosity-gap या pattern-interrupt hook rewrite असाइन कर रहे हों (Viral Once Creator, Overnight Success Seeker, या general hook framework training)।
+- caption_fix_example — जब Caption Ignorer पैटर्न पर बात हो रही हो।
+- engagement_trend_chart — जब किसी creator को उसकी पिछली असाइनमेंट के बाद प्रोग्रेस दिखा रहे हों (Accountability Loop / Follow-Up Momentum), खासकर जब real improvement कैसा दिखता है ये समझा रहे हों।
+- posting_schedule_example — जब Inconsistent Poster पैटर्न पर बात हो।
+- niche_focus_example — जब Niche Hopper पैटर्न पर बात हो।
+
+एक रिस्पॉन्स में सिर्फ एक टैग दें, और सिर्फ तभी जब असाइनमेंट इन पांच में से किसी एक से बिल्कुल मैच करे। कोई मैच न हो तो कुछ भी एक्स्ट्रा मत दें।
+
 CAPCUT प्राइवेसी नोट (सिर्फ पूछे जाने पर संदर्भित करें):
 अगर कोई क्रिएटर specifically CapCut की privacy के बारे में पूछे या commercial/client काम कर रहा हो, तो एक लाइन में बता सकते हैं: CapCut ByteDance के स्वामित्व में है और इसमें documented data-collection concerns हैं, जिसमें इसके AI features से जुड़ा biometric data, चल रहे litigation, और broad content-licensing terms शामिल हैं। इसे कभी बिना पूछे सामने न लाएं।
 ONBOARDING नियम:
@@ -698,6 +709,17 @@ FONCTIONNALITÉS CAPCUT LIÉES AUX MISSIONS :
 - Timeline multipiste et incrustation chroma key : lié au pattern LE CRÉATEUR AVEC EXCUSE D'ÉQUIPEMENT. Utilise ça pour prouver qu'un téléphone et CapCut gratuit forment une configuration de production légitime - superposer du b-roll, du texte, et des effets d'incrustation ne coûte rien.
 - Bibliothèque de modèles : lié à la mission de 10 vidéos du CRÉATEUR D'UNE SEULE PUBLICATION. Dis-leur de choisir un modèle CapCut et de réutiliser sa structure pour les 10 vidéos afin que les décisions de montage ne ralentissent jamais le volume dont ils ont besoin.
 
+BIBLIOTHÈQUE D'EXEMPLES VISUELS :
+Quand vous donnez l'une de ces cinq missions spécifiques, terminez votre verdict en indiquant le tag correspondant, seul, exactement tel qu'écrit, sans aucun autre texte autour : [EXAMPLE_ASSET:tag]. Ne mentionnez jamais l'existence du tag, ne l'expliquez jamais, ne décrivez jamais ce qu'il montre — il s'affiche automatiquement comme un exemple visuel à côté de votre texte.
+
+- hook_before_after — à utiliser pour une réécriture de hook basée sur la curiosité ou la rupture de pattern (Viral Once Creator, Overnight Success Seeker, ou entraînement général au hook framework).
+- caption_fix_example — à utiliser pour le pattern Caption Ignorer.
+- engagement_trend_chart — à utiliser pour montrer à un créateur ses progrès après une mission précédente (Accountability Loop / Follow-Up Momentum), en particulier pour illustrer à quoi ressemble une vraie amélioration.
+- posting_schedule_example — à utiliser pour le pattern Inconsistent Poster.
+- niche_focus_example — à utiliser pour le pattern Niche Hopper.
+
+N'indiquez qu'un seul tag par réponse, et seulement quand la mission correspond exactement à l'une de ces cinq. Sinon, n'ajoutez rien.
+
 NOTE DE CONFIDENTIALITÉ CAPCUT (à mentionner seulement si demandé) :
 Si un créateur pose une question précise sur la confidentialité de CapCut ou fait du travail commercial ou pour un client, tu peux noter en une phrase : CapCut appartient à ByteDance et présente des préoccupations documentées en matière de collecte de données, incluant des données biométriques liées à ses fonctionnalités IA, des litiges en cours, et des conditions de licence de contenu très larges. Ne soulève jamais ça sans qu'on te le demande.
 
@@ -936,7 +958,18 @@ FUNCIONALIDADES DO CAPCUT LIGADAS ÀS MISSÕES:
 - Timeline multi-faixa e chroma key: ligado ao padrão CRIADOR COM DESCULPA DE EQUIPAMENTO. Use isso para provar que um celular e o CapCut gratuito formam uma configuração de produção legítima - sobrepor b-roll, texto, e efeitos de chroma key não custa nada.
 - Biblioteca de templates: ligado à missão de 10 vídeos do CRIADOR DE POSTOU UMA VEZ. Instrua-o a escolher um template do CapCut e reutilizar a estrutura nos 10 vídeos para que decisões de edição nunca travem o volume que ele precisa.
 
-NOTA DE PRIVACIDADE DO CAPCUT (mencionar apenas se perguntado):
+BIBLIOTECA DE EXEMPLOS VISUAIS:
+Quando você der uma dessas cinco missões específicas, termine seu veredito exibindo a tag correspondente sozinha, exatamente como escrita, sem nenhum outro texto ao redor: [EXAMPLE_ASSET:tag]. Nunca mencione que a tag existe, nunca explique, nunca descreva o que ela mostra — ela é exibida automaticamente como um exemplo visual junto ao seu texto.
+
+- hook_before_after — use ao atribuir uma reescrita de hook de curiosidade ou pattern-interrupt (Viral Once Creator, Overnight Success Seeker, ou treinamento geral de hook framework).
+- caption_fix_example — use ao abordar o padrão Caption Ignorer.
+- engagement_trend_chart — use ao mostrar a um criador seu progresso após uma missão anterior (Accountability Loop / Follow-Up Momentum), especialmente ao mostrar como é uma melhora real.
+- posting_schedule_example — use ao abordar o padrão Inconsistent Poster.
+- niche_focus_example — use ao abordar o padrão Niche Hopper.
+
+Envie apenas uma tag por resposta, e somente quando a missão corresponder exatamente a uma dessas cinco. Se não houver correspondência, não envie nada extra.
+
+[cole aqui a linha original de nota de privacidade do CapCut que você encontrou]
 Se um criador perguntar especificamente sobre a privacidade do CapCut ou estiver fazendo trabalho comercial ou para cliente, você pode observar em uma frase: o CapCut pertence à ByteDance e tem preocupações documentadas de coleta de dados, incluindo dados biométricos ligados aos seus recursos de IA, litígios em andamento, e termos de licenciamento de conteúdo muito amplos. Nunca traga isso à tona sem que perguntem.
 
 REGRA DE ONBOARDING:
@@ -1081,7 +1114,6 @@ Use these rules:
 
 Verdict text:
 """
-
 async def get_capcut_screenshot_tag(verdict_text: str) -> str | None:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
     response = client.messages.create(
@@ -1091,4 +1123,28 @@ async def get_capcut_screenshot_tag(verdict_text: str) -> str | None:
     )
     tag = response.content[0].text.strip().lower()
     valid_tags = {"speed_ramp", "autocaptions", "keyframes_transitions", "multitrack_chromakey", "templates"}
+    return tag if tag in valid_tags else None
+
+EXAMPLE_ASSET_TAG_EXTRACTION_PROMPT = """Read this verdict from a TikTok strategy AI. If the assignment given matches one of these five specific example categories, respond with EXACTLY ONE of these tags and nothing else: hook_before_after, caption_fix_example, engagement_trend_chart, posting_schedule_example, niche_focus_example, none
+
+Use these rules:
+- hook_before_after: the assignment is a curiosity-gap or pattern-interrupt hook rewrite (Viral Once Creator, Overnight Success Seeker, or hook framework training)
+- caption_fix_example: the assignment addresses the Caption Ignorer pattern
+- engagement_trend_chart: the response shows a creator their progress after a prior assignment (Accountability Loop / Follow-Up Momentum)
+- posting_schedule_example: the assignment addresses the Inconsistent Poster pattern
+- niche_focus_example: the assignment addresses the Niche Hopper pattern
+- none: the verdict does not match any of these five exactly
+
+Verdict text:
+"""
+
+async def get_example_asset_tag(verdict_text: str) -> str | None:
+    client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    response = client.messages.create(
+        model="claude-sonnet-5",
+        max_tokens=20,
+        messages=[{"role": "user", "content": EXAMPLE_ASSET_TAG_EXTRACTION_PROMPT + verdict_text}],
+    )
+    tag = response.content[0].text.strip().lower()
+    valid_tags = {"hook_before_after", "caption_fix_example", "engagement_trend_chart", "posting_schedule_example", "niche_focus_example"}
     return tag if tag in valid_tags else None

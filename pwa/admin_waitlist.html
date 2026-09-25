@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Boardroom Waitlist</title>
+<style>
+  :root {
+    --black: #080600;
+    --panel: #0d0a00;
+    --panel-2: #131000;
+    --line: rgba(212,175,55,0.16);
+    --line-strong: rgba(212,175,55,0.32);
+    --gold: #D4AF37;
+    --gold-dim: #8b6914;
+    --cream: #E8E0CC;
+    --muted: rgba(232,224,204,0.55);
+    --faint: rgba(232,224,204,0.32);
+    --waiting: #C9A24B;
+    --invited: #5FAE7A;
+    --danger: #C0564A;
+    --font-ui: 'Inter', -apple-system, system-ui, sans-serif;
+    --font-brand: Georgia, 'Times New Roman', serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: var(--font-ui);
+    margin: 0;
+    padding: 28px 20px 60px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 26px;
+    border-bottom: 1px solid var(--line); padding-bottom: 20px;
+  }
+  .brand { font-family: var(--font-brand); font-weight: 900; font-size: 15px; letter-spacing: 1px; color: var(--gold); }
+  h1 { font-family: var(--font-brand); font-weight: 900; font-size: clamp(22px, 4vw, 30px); margin: 6px 0 0; color: var(--cream); }
+  .subtitle { color: var(--muted); font-size: 13.5px; margin-top: 6px; }
+  .connect-card {
+    background: var(--panel); border: 1px solid var(--line); border-left: 3px solid var(--gold);
+    border-radius: 6px; padding: 18px 20px; margin-bottom: 24px;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .connect-label { font-size: 11px; letter-spacing: 1.5px; color: var(--gold-dim); font-weight: 700; width: 100%; }
+  input[type="password"], input[type="text"], input[type="number"], input[type="search"] {
+    background: var(--black); border: 1px solid var(--line-strong); border-radius: 5px;
+    padding: 10px 13px; color: var(--cream); font-family: var(--font-ui); font-size: 13.5px; outline: none;
+  }
+  input:focus { border-color: var(--gold); }
+  #secret-input { flex: 1; min-width: 200px; }
+  button {
+    font-family: var(--font-ui); font-weight: 700; font-size: 13px; border: none; border-radius: 5px;
+    padding: 10px 18px; cursor: pointer; background: var(--gold); color: var(--black);
+    white-space: nowrap; transition: filter 0.15s ease, opacity 0.15s ease;
+  }
+  button:hover:not(:disabled) { filter: brightness(1.08); }
+  button:disabled { opacity: 0.45; cursor: default; }
+  button.ghost { background: transparent; color: var(--cream); border: 1px solid var(--line-strong); }
+  .status-msg { width: 100%; font-size: 12.5px; color: var(--danger); margin-top: 2px; }
+  .status-msg.ok { color: var(--invited); }
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-tile { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 16px 18px; }
+  .stat-num { font-family: var(--font-brand); font-size: 30px; font-weight: 900; color: var(--gold); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat-label { font-size: 11px; letter-spacing: 1.2px; color: var(--muted); margin-top: 4px; text-transform: uppercase; }
+  .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .tabs { display: flex; gap: 6px; }
+  .tab-btn { background: transparent; color: var(--muted); border: 1px solid var(--line); font-weight: 600; padding: 7px 14px; font-size: 12.5px; }
+  .tab-btn.active { color: var(--black); background: var(--gold); border-color: var(--gold); }
+  #search-input { min-width: 180px; }
+  .invite-bar {
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 12px 16px;
+    display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 16px;
+  }
+  .invite-bar .sep { width: 1px; height: 22px; background: var(--line-strong); }
+  .invite-bar label { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 8px; }
+  #invite-count-input { width: 70px; }
+  .table-wrap { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; overflow: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
+  thead th {
+    text-align: left; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold-dim);
+    font-weight: 700; padding: 12px 14px; border-bottom: 1px solid var(--line-strong); white-space: nowrap;
+  }
+  tbody td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(212,175,55,0.04); }
+  .email-cell { color: var(--cream); font-weight: 600; }
+  .handle-cell { color: var(--muted); }
+  .pill { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.4px; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+  .pill.waiting { background: rgba(201,162,75,0.14); color: var(--waiting); }
+  .pill.invited { background: rgba(95,174,122,0.14); color: var(--invited); }
+  .time-cell { color: var(--faint); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  input[type="checkbox"] { accent-color: var(--gold); width: 15px; height: 15px; cursor: pointer; }
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 13.5px; }
+  footer { margin-top: 26px; text-align: center; color: var(--faint); font-size: 11.5px; }
+  @media (max-width: 640px) {
+    .stats { grid-template-columns: 1fr; }
+    .connect-card { flex-direction: column; align-items: stretch; }
+    #secret-input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div>
+      <div class="brand">THE EXECUTIVE</div>
+      <h1>Waitlist</h1>
+      <div class="subtitle">Who's waiting, who's in the boardroom.</div>
+    </div>
+  </header>
+
+  <div class="connect-card">
+    <div class="connect-label">ADMIN ACCESS</div>
+    <input type="password" id="secret-input" placeholder="Admin secret" autocomplete="off" />
+    <button id="connect-btn" onclick="loadList()">Load waitlist</button>
+    <button class="ghost" onclick="clearSecret()">Forget secret</button>
+    <div class="status-msg" id="status-msg" hidden></div>
+  </div>
+
+  <div id="dashboard" hidden>
+    <div class="stats">
+      <div class="stat-tile"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
+      <div class="stat-tile"><div class="stat-num" id="stat-waiting">0</div><div class="stat-label">Waiting</div></div>
+      <div class="stat-tile"><div class="stat-num" id="stat-invited">0</div><div class="stat-label">Invited</div></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="tabs">
+        <button class="tab-btn active" data-filter="all" onclick="setFilter('all')">All</button>
+        <button class="tab-btn" data-filter="waiting" onclick="setFilter('waiting')">Waiting</button>
+        <button class="tab-btn" data-filter="invited" onclick="setFilter('invited')">Invited</button>
+      </div>
+      <input type="search" id="search-input" placeholder="Search email..." oninput="renderTable()" />
+    </div>
+
+    <div class="invite-bar">
+      <button id="invite-selected-btn" onclick="inviteSelected()" disabled>Invite selected (0)</button>
+      <div class="sep"></div>
+      <label>Or invite next
+        <input type="number" id="invite-count-input" min="1" value="5" />
+        oldest waiting
+      </label>
+      <button class="ghost" onclick="inviteNext()">Send invites</button>
+      <button class="ghost" onclick="loadList(true)" style="margin-left:auto;">Refresh</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:30px;"><input type="checkbox" id="select-all" onchange="toggleSelectAll(this)" /></th>
+            <th>Email</th>
+            <th>TikTok</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th>Invited</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+      <div class="empty-state" id="empty-state" hidden>No entries match this view.</div>
+    </div>
+  </div>
+
+  <footer>The Executive · Waitlist Admin</footer>
+</div>
+
+<script>
+  const API_BASE = '/api/waitlist';
+  let entries = [];
+  let selected = new Set();
+  let currentFilter = 'all';
+
+  function getSecret() {
+    try { return localStorage.getItem('executive_admin_secret') || ''; } catch (e) { return ''; }
+  }
+  function setSecret(v) {
+    try { localStorage.setItem('executive_admin_secret', v); } catch (e) {}
+  }
+  function clearSecret() {
+    try { localStorage.removeItem('executive_admin_secret'); } catch (e) {}
+    document.getElementById('secret-input').value = '';
+    document.getElementById('dashboard').hidden = true;
+    showStatus('Secret cleared.', true);
+  }
+
+  function showStatus(msg, ok) {
+    const el = document.getElementById('status-msg');
+    el.textContent = msg;
+    el.hidden = false;
+    el.className = 'status-msg' + (ok ? ' ok' : '');
+  }
+  function hideStatus() {
+    document.getElementById('status-msg').hidden = true;
+  }
+
+  window.addEventListener('load', () => {
+    const saved = getSecret();
+    if (saved) {
+      document.getElementById('secret-input').value = saved;
+      loadList();
+    }
+  });
+
+  async function loadList(silent) {
+    const secret = document.getElementById('secret-input').value.trim();
+    if (!secret) { showStatus('Enter your admin secret first.', false); return; }
+    setSecret(secret);
+
+    const btn = document.getElementById('connect-btn');
+    if (!silent) { btn.disabled = true; btn.textContent = 'Loading...'; }
+    hideStatus();
+
+    try {
+      const res = await fetch(`${API_BASE}/admin/list?secret=${encodeURIComponent(secret)}`);
+      if (res.status === 403) {
+        showStatus('Wrong secret — not authorized.', false);
+        document.getElementById('dashboard').hidden = true;
+        return;
+      }
+      if (!res.ok) {
+        showStatus(`Backend returned an error (${res.status}).`, false);
+        return;
+      }
+      const data = await res.json();
+      entries = data.entries || [];
+      selected = new Set();
+      document.getElementById('dashboard').hidden = false;
+      renderAll();
+      hideStatus();
+    } catch (e) {
+      showStatus("Couldn't reach the backend. Check your connection and try again.", false);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Load waitlist';
+    }
+  }
+
+  function renderAll() { renderStats(); renderTable(); }
+
+  function renderStats() {
+    document.getElementById('stat-total').textContent = entries.length;
+    document.getElementById('stat-waiting').textContent = entries.filter(e => e.status === 'waiting').length;
+    document.getElementById('stat-invited').textContent = entries.filter(e => e.status === 'invited').length;
+  }
+
+  function setFilter(f) {
+    currentFilter = f;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.filter === f));
+    renderTable();
+  }
+
+  function timeAgo(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    const diffMs = Date.now() - d.getTime();
+    const days = Math.floor(diffMs / 86400000);
+    if (days <= 0) return 'today';
+    if (days === 1) return '1 day ago';
+    if (days < 30) return `${days} days ago`;
+    const months = Math.floor(days / 30);
+    return months === 1 ? '1 month ago' : `${months} months ago`;
+  }
+
+  function visibleEntries() {
+    const q = document.getElementById('search-input').value.trim().toLowerCase();
+    return entries.filter(e => {
+      if (currentFilter !== 'all' && e.status !== currentFilter) return false;
+      if (q && !e.email.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }
+
+  function renderTable() {
+    const rows = visibleEntries();
+    const tbody = document.getElementById('table-body');
+    const emptyState = document.getElementById('empty-state');
+
+    if (rows.length === 0) {
+      tbody.innerHTML = '';
+      emptyState.hidden = false;
+    } else {
+      emptyState.hidden = true;
+      tbody.innerHTML = rows.map(e => `
+        <tr>
+          <td><input type="checkbox" data-email="${escapeAttr(e.email)}" ${selected.has(e.email) ? 'checked' : ''} onchange="toggleRow('${escapeJs(e.email)}', this.checked)" /></td>
+          <td class="email-cell">${escapeHtml(e.email)}</td>
+          <td class="handle-cell">${e.tiktok_handle ? '@' + escapeHtml(e.tiktok_handle) : '—'}</td>
+          <td><span class="pill ${e.status}">${e.status}</span></td>
+          <td class="time-cell">${timeAgo(e.created_at)}</td>
+          <td class="time-cell">${e.invited_at ? timeAgo(e.invited_at) : '—'}</td>
+        </tr>
+      `).join('');
+    }
+    updateSelectedButton();
+  }
+
+  function toggleRow(email, checked) {
+    if (checked) selected.add(email); else selected.delete(email);
+    updateSelectedButton();
+  }
+
+  function toggleSelectAll(cb) {
+    const rows = visibleEntries().filter(e => e.status === 'waiting');
+    if (cb.checked) rows.forEach(e => selected.add(e.email));
+    else rows.forEach(e => selected.delete(e.email));
+    renderTable();
+  }
+
+  function updateSelectedButton() {
+    const btn = document.getElementById('invite-selected-btn');
+    btn.textContent = `Invite selected (${selected.size})`;
+    btn.disabled = selected.size === 0;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function escapeAttr(s) { return escapeHtml(s); }
+  function escapeJs(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+
+  async function postInvite(body) {
+    const secret = getSecret();
+    const res = await fetch(`${API_BASE}/admin/invite?secret=${encodeURIComponent(secret)}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error('Request failed');
+    return res.json();
+  }
+
+  async function inviteSelected() {
+    if (selected.size === 0) return;
+    const btn = document.getElementById('invite-selected-btn');
+    btn.disabled = true;
+    const original = btn.textContent;
+    btn.textContent = 'Sending...';
+    try {
+      const data = await postInvite({ emails: Array.from(selected) });
+      showStatus(`Invited ${data.count} creator${data.count === 1 ? '' : 's'}.`, true);
+      selected = new Set();
+      await loadList(true);
+    } catch (e) {
+      showStatus('Invite failed — check your admin secret and RESEND_API_KEY on the backend.', false);
+      btn.textContent = original;
+      btn.disabled = false;
+    }
+  }
+
+  async function inviteNext() {
+    const count = parseInt(document.getElementById('invite-count-input').value, 10);
+    if (!count || count < 1) return;
+    try {
+      const data = await postInvite({ count });
+      showStatus(`Invited ${data.count} creator${data.count === 1 ? '' : 's'}.`, true);
+      await loadList(true);
+    } catch (e) {
+      showStatus('Invite failed — check your admin secret and RESEND_API_KEY on the backend.', false);
+    }
+  }
+</script>
+</body>
+</html>

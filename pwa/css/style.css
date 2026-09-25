@@ -1642,3 +1642,11 @@ html, body {
   cursor: pointer;
   text-decoration: underline;
 }
+
+  .seats-left {
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: 0.3px;
+  }

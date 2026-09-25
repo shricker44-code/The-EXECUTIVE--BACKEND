@@ -24,6 +24,36 @@ const CAPCUT_SCREENSHOTS = {
   templates:             { file: 'templates.png',             caption: 'CapCut — Templates' },
 };
 
+const EXAMPLE_ASSETS = {
+  hook_before_after:      { file: 'hook_before_after.png',      caption: 'Before/After — Hook Rewrite' },
+  caption_fix_example:    { file: 'caption_fix_example.png',    caption: 'Before/After — Caption Fix' },
+  engagement_trend_chart: { file: 'engagement_trend_chart.png', caption: 'Engagement Trend — After Assignment' },
+  posting_schedule_example: { file: 'posting_schedule_example.png', caption: 'Before/After — Posting Schedule' },
+  niche_focus_example:    { file: 'niche_focus_example.png',    caption: 'Before/After — Niche Focus' },
+};
+
+function extractExampleAssetTag(text) {
+  const match = text.match(/\[EXAMPLE_ASSET:(\w+)\]/);
+  if (!match) return { text, tag: null };
+  const cleanText = text.replace(match[0], '').replace(/\s+$/, '');
+  return { text: cleanText, tag: match[1] };
+}
+
+function appendExampleAssetImage(bubbleEl, tag) {
+  const info = EXAMPLE_ASSETS[tag];
+  if (!info) return;
+  const img = document.createElement('img');
+  img.src = '/images/examples/' + info.file;
+  img.alt = info.caption;
+  img.className = 'capcut-screenshot';
+  img.loading = 'lazy';
+  bubbleEl.appendChild(img);
+  const cap = document.createElement('div');
+  cap.className = 'capcut-caption';
+  cap.textContent = info.caption;
+  bubbleEl.appendChild(cap);
+}
+
 function extractCapcutTag(text) {
   const match = text.match(/\[CAPCUT_SCREENSHOT:(\w+)\]/);
   if (!match) return { text, tag: null };
@@ -858,19 +888,26 @@ function addMessage(role, content) {
   const bubble = document.createElement('div');
   bubble.className = 'message ' + role;
 
-  let capcutTag = null;
-  if (role === 'assistant') {
-    const extracted = extractCapcutTag(content);
-    content = extracted.text;
-    capcutTag = extracted.tag;
-    bubble.innerHTML = '<div class="avatar">E</div><div class="bubble assistant">' + content.replace(/\n/g, '<br>') + '</div>';
-  } else {
-    bubble.innerHTML = '<div class="bubble user">' + content.replace(/\n/g, '<br>') + '</div>';
-  }
-  messages.appendChild(bubble);
-  if (capcutTag) {
-    appendCapcutImage(bubble.querySelector('.bubble'), capcutTag);
-  }
+       let capcutTag = null;
+      let exampleTag = null;
+      if (role === 'assistant') {
+        const extracted = extractCapcutTag(content);
+        content = extracted.text;
+        capcutTag = extracted.tag;
+        const extractedExample = extractExampleAssetTag(content);
+        content = extractedExample.text;
+        exampleTag = extractedExample.tag;
+        bubble.innerHTML = '<div class="avatar">E</div><div class="bubble assistant">' + content.replace(/\n/g, '<br>') + '</div>';
+      } else {
+        bubble.innerHTML = '<div class="bubble user">' + content.replace(/\n/g, '<br>') + '</div>';
+      }
+      messages.appendChild(bubble);
+      if (capcutTag) {
+        appendCapcutImage(bubble.querySelector('.bubble'), capcutTag);
+      }
+      if (exampleTag) {
+        appendExampleAssetImage(bubble.querySelector('.bubble'), exampleTag);
+      }
   messages.scrollTop = messages.scrollHeight;
   if (role === 'assistant') {
     checkVerdictTracking();
@@ -1048,6 +1085,10 @@ async function sendToExecutive(text) {
     const capcutExtracted = extractCapcutTag(finalText);
     finalText = capcutExtracted.text;
     const capcutTag = capcutExtracted.tag;
+
+    const exampleExtracted = extractExampleAssetTag(finalText);
+    finalText = exampleExtracted.text;
+    const exampleTag = exampleExtracted.tag;
     if (isFirstMessage && currentUser && currentUser.first_name) {
       finalText = `${currentUser.first_name}. ${finalText}`;
     }
@@ -1090,8 +1131,9 @@ async function sendToExecutive(text) {
       checkVerdictTracking();
       checkUsageWarning();
 
-          addPlaybackButton(bubbleEl, finalText, audioBase64);
+            addPlaybackButton(bubbleEl, finalText, audioBase64);
       if (capcutTag) appendCapcutImage(bubbleEl, capcutTag);
+      if (exampleTag) appendExampleAssetImage(bubbleEl, exampleTag);
 
       if (isNearBottom(messages)) {
         messages.scrollTop = messages.scrollHeight;
