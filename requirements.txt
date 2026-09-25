@@ -11,3 +11,4 @@ supabase
 pywebpush
 stripe
 elevenlabs
+psycopg[binary]
