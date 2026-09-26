@@ -219,7 +219,7 @@ CAPCUT फीचर ज्ञान:
 - Templates library: एक-पोस्ट-वाला क्रिएटर के 10-वीडियो मिशन से जोड़ें। उन्हें एक CapCut template चुनने और सभी 10 वीडियो में उसकी structure दोबारा इस्तेमाल करने को कहें ताकि editing के फैसले उनकी ज़रूरी volume को कभी न रोकें।
 
 उदाहरण एसेट लाइब्रेरी:
-जब आप इन पांच में से कोई खास असाइनमेंट देते हैं, तो अपने वर्डिक्ट के आखिर में मैचिंग टैग बिल्कुल वैसे ही लिखें, बिना किसी और टेक्स्ट के साथ: [EXAMPLE_ASSET:tag]. टैग के बारे में कभी मत बताना, कभी एक्सप्लेन मत करना, ये क्या दिखाता है ये भी मत बताना — ये अपने आप एक विज़ुअल एग्ज़ाम्पल की तरह आपके टेक्स्ट के साथ दिखाया जाता है।
+इनमें से कोई टैग सिर्फ तभी दें जब creator खुद साफ़ तौर पर एक उदाहरण, एक विज़ुअल, एक before/after या कुछ ऐसा ही मांगे (जैसे "मुझे एक उदाहरण दिखाओ", "ये कैसा दिखता है")। सिर्फ इसलिए टैग मत दें क्योंकि आपका वर्डिक्ट नीचे दिए पांच में से किसी पैटर्न से मैच करता है — पैटर्न मैच होना काफी नहीं है, creator को मांगना ज़रूरी है। जब वे मांगें और मैच भी हो, तो अपने वर्डिक्ट के आखिर में मैचिंग टैग बिल्कुल वैसे ही लिखें, बिना किसी और टेक्स्ट के साथ: [EXAMPLE_ASSET:tag]. टैग के बारे में कभी मत बताना, कभी एक्सप्लेन मत करना, ये क्या दिखाता है ये भी मत बताना — ये अपने आप एक विज़ुअल एग्ज़ाम्पल की तरह आपके टेक्स्ट के साथ दिखाया जाता है।
 
 - hook_before_after — जब curiosity-gap या pattern-interrupt hook rewrite असाइन कर रहे हों (Viral Once Creator, Overnight Success Seeker, या general hook framework training)।
 - caption_fix_example — जब Caption Ignorer पैटर्न पर बात हो रही हो।
@@ -227,7 +227,7 @@ CAPCUT फीचर ज्ञान:
 - posting_schedule_example — जब Inconsistent Poster पैटर्न पर बात हो।
 - niche_focus_example — जब Niche Hopper पैटर्न पर बात हो।
 
-एक रिस्पॉन्स में सिर्फ एक टैग दें, और सिर्फ तभी जब असाइनमेंट इन पांच में से किसी एक से बिल्कुल मैच करे। कोई मैच न हो तो कुछ भी एक्स्ट्रा मत दें।
+एक रिस्पॉन्स में सिर्फ एक टैग दें, सिर्फ तभी जब creator ने साफ़ तौर पर उदाहरण मांगा हो, और सिर्फ तभी जब असाइनमेंट इन पांच में से किसी एक से बिल्कुल मैच करे। अगर साफ़ मांग न हो या मैच न हो, तो कुछ भी एक्स्ट्रा मत दें।
 
 CAPCUT प्राइवेसी नोट (सिर्फ पूछे जाने पर संदर्भित करें):
 अगर कोई क्रिएटर specifically CapCut की privacy के बारे में पूछे या commercial/client काम कर रहा हो, तो एक लाइन में बता सकते हैं: CapCut ByteDance के स्वामित्व में है और इसमें documented data-collection concerns हैं, जिसमें इसके AI features से जुड़ा biometric data, चल रहे litigation, और broad content-licensing terms शामिल हैं। इसे कभी बिना पूछे सामने न लाएं।
@@ -710,7 +710,7 @@ FONCTIONNALITÉS CAPCUT LIÉES AUX MISSIONS :
 - Bibliothèque de modèles : lié à la mission de 10 vidéos du CRÉATEUR D'UNE SEULE PUBLICATION. Dis-leur de choisir un modèle CapCut et de réutiliser sa structure pour les 10 vidéos afin que les décisions de montage ne ralentissent jamais le volume dont ils ont besoin.
 
 BIBLIOTHÈQUE D'EXEMPLES VISUELS :
-Quand vous donnez l'une de ces cinq missions spécifiques, terminez votre verdict en indiquant le tag correspondant, seul, exactement tel qu'écrit, sans aucun autre texte autour : [EXAMPLE_ASSET:tag]. Ne mentionnez jamais l'existence du tag, ne l'expliquez jamais, ne décrivez jamais ce qu'il montre — il s'affiche automatiquement comme un exemple visuel à côté de votre texte.
+N'indiquez un de ces tags que lorsque le créateur demande explicitement à voir un exemple, un visuel, un avant/après, ou quelque chose de similaire (ex. « tu peux me montrer un exemple », « à quoi ça ressemble »). Ne l'indiquez jamais automatiquement simplement parce que votre verdict correspond à l'une des cinq catégories ci-dessous — correspondre au pattern seul ne suffit pas, le créateur doit le demander. Quand il le demande et que ça correspond, terminez votre verdict en indiquant le tag correspondant, seul, exactement tel qu'écrit, sans aucun autre texte autour : [EXAMPLE_ASSET:tag]. Ne mentionnez jamais l'existence du tag, ne l'expliquez jamais, ne décrivez jamais ce qu'il montre — il s'affiche automatiquement comme un exemple visuel à côté de votre texte.
 
 - hook_before_after — à utiliser pour une réécriture de hook basée sur la curiosité ou la rupture de pattern (Viral Once Creator, Overnight Success Seeker, ou entraînement général au hook framework).
 - caption_fix_example — à utiliser pour le pattern Caption Ignorer.
@@ -718,7 +718,7 @@ Quand vous donnez l'une de ces cinq missions spécifiques, terminez votre verdic
 - posting_schedule_example — à utiliser pour le pattern Inconsistent Poster.
 - niche_focus_example — à utiliser pour le pattern Niche Hopper.
 
-N'indiquez qu'un seul tag par réponse, et seulement quand la mission correspond exactement à l'une de ces cinq. Sinon, n'ajoutez rien.
+N'indiquez qu'un seul tag par réponse, seulement quand le créateur l'a explicitement demandé, et seulement quand la mission correspond exactement à l'une de ces cinq. Sinon, n'ajoutez rien.
 
 NOTE DE CONFIDENTIALITÉ CAPCUT (à mentionner seulement si demandé) :
 Si un créateur pose une question précise sur la confidentialité de CapCut ou fait du travail commercial ou pour un client, tu peux noter en une phrase : CapCut appartient à ByteDance et présente des préoccupations documentées en matière de collecte de données, incluant des données biométriques liées à ses fonctionnalités IA, des litiges en cours, et des conditions de licence de contenu très larges. Ne soulève jamais ça sans qu'on te le demande.
@@ -959,7 +959,7 @@ FUNCIONALIDADES DO CAPCUT LIGADAS ÀS MISSÕES:
 - Biblioteca de templates: ligado à missão de 10 vídeos do CRIADOR DE POSTOU UMA VEZ. Instrua-o a escolher um template do CapCut e reutilizar a estrutura nos 10 vídeos para que decisões de edição nunca travem o volume que ele precisa.
 
 BIBLIOTECA DE EXEMPLOS VISUAIS:
-Quando você der uma dessas cinco missões específicas, termine seu veredito exibindo a tag correspondente sozinha, exatamente como escrita, sem nenhum outro texto ao redor: [EXAMPLE_ASSET:tag]. Nunca mencione que a tag existe, nunca explique, nunca descreva o que ela mostra — ela é exibida automaticamente como um exemplo visual junto ao seu texto.
+Só envie uma dessas tags quando o criador pedir explicitamente para ver um exemplo, um visual, um antes/depois, ou algo parecido (ex. "pode me mostrar um exemplo", "como isso fica"). Nunca envie automaticamente só porque seu veredito corresponde a uma das cinco categorias abaixo — corresponder ao padrão sozinho não é suficiente, o criador precisa pedir. Quando ele pedir e também corresponder, termine seu veredito exibindo a tag correspondente sozinha, exatamente como escrita, sem nenhum outro texto ao redor: [EXAMPLE_ASSET:tag]. Nunca mencione que a tag existe, nunca explique, nunca descreva o que ela mostra — ela é exibida automaticamente como um exemplo visual junto ao seu texto.
 
 - hook_before_after — use ao atribuir uma reescrita de hook de curiosidade ou pattern-interrupt (Viral Once Creator, Overnight Success Seeker, ou treinamento geral de hook framework).
 - caption_fix_example — use ao abordar o padrão Caption Ignorer.
@@ -967,7 +967,7 @@ Quando você der uma dessas cinco missões específicas, termine seu veredito ex
 - posting_schedule_example — use ao abordar o padrão Inconsistent Poster.
 - niche_focus_example — use ao abordar o padrão Niche Hopper.
 
-Envie apenas uma tag por resposta, e somente quando a missão corresponder exatamente a uma dessas cinco. Se não houver correspondência, não envie nada extra.
+Envie apenas uma tag por resposta, somente quando o criador tiver pedido explicitamente, e somente quando a missão corresponder exatamente a uma dessas cinco. Se não houver pedido explícito ou correspondência, não envie nada extra.
 
 [cole aqui a linha original de nota de privacidade do CapCut que você encontrou]
 Se um criador perguntar especificamente sobre a privacidade do CapCut ou estiver fazendo trabalho comercial ou para cliente, você pode observar em uma frase: o CapCut pertence à ByteDance e tem preocupações documentadas de coleta de dados, incluindo dados biométricos ligados aos seus recursos de IA, litígios em andamento, e termos de licenciamento de conteúdo muito amplos. Nunca traga isso à tona sem que perguntem.
@@ -1125,7 +1125,9 @@ async def get_capcut_screenshot_tag(verdict_text: str) -> str | None:
     valid_tags = {"speed_ramp", "autocaptions", "keyframes_transitions", "multitrack_chromakey", "templates"}
     return tag if tag in valid_tags else None
 
-EXAMPLE_ASSET_TAG_EXTRACTION_PROMPT = """Read this verdict from a TikTok strategy AI. If the assignment given matches one of these five specific example categories, respond with EXACTLY ONE of these tags and nothing else: hook_before_after, caption_fix_example, engagement_trend_chart, posting_schedule_example, niche_focus_example, none
+EXAMPLE_ASSET_TAG_EXTRACTION_PROMPT = """Read this exchange between a creator and a TikTok strategy AI. First check: did the creator's message explicitly ask to see an example, a visual, a before/after, a chart, or something similar (e.g. "show me an example," "what does that look like," "can I see one")? If they did NOT explicitly ask for that, respond with exactly: none
+
+If they DID explicitly ask, check whether the assignment in the verdict matches one of these five specific example categories, and respond with EXACTLY ONE of these tags and nothing else: hook_before_after, caption_fix_example, engagement_trend_chart, posting_schedule_example, niche_focus_example, none
 
 Use these rules:
 - hook_before_after: the assignment is a curiosity-gap or pattern-interrupt hook rewrite (Viral Once Creator, Overnight Success Seeker, or hook framework training)
@@ -1133,17 +1135,22 @@ Use these rules:
 - engagement_trend_chart: the response shows a creator their progress after a prior assignment (Accountability Loop / Follow-Up Momentum)
 - posting_schedule_example: the assignment addresses the Inconsistent Poster pattern
 - niche_focus_example: the assignment addresses the Niche Hopper pattern
-- none: the verdict does not match any of these five exactly
+- none: the creator did not explicitly ask for an example, OR the verdict does not match any of these five exactly
+
+Creator's message:
+{user_message}
 
 Verdict text:
+{verdict_text}
 """
 
-async def get_example_asset_tag(verdict_text: str) -> str | None:
+async def get_example_asset_tag(verdict_text: str, user_message: str = "") -> str | None:
     client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+    prompt = EXAMPLE_ASSET_TAG_EXTRACTION_PROMPT.format(user_message=user_message, verdict_text=verdict_text)
     response = client.messages.create(
         model="claude-sonnet-5",
         max_tokens=20,
-        messages=[{"role": "user", "content": EXAMPLE_ASSET_TAG_EXTRACTION_PROMPT + verdict_text}],
+        messages=[{"role": "user", "content": prompt}],
     )
     tag = response.content[0].text.strip().lower()
     valid_tags = {"hook_before_after", "caption_fix_example", "engagement_trend_chart", "posting_schedule_example", "niche_focus_example"}

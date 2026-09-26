@@ -292,7 +292,7 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
         assignment_result, capcut_result, example_result = await asyncio.gather(
             get_assignment_summary(final_reply),
             get_capcut_screenshot_tag(final_reply),
-            get_example_asset_tag(final_reply),
+            get_example_asset_tag(final_reply, last_message),
             return_exceptions=True
         )
 
