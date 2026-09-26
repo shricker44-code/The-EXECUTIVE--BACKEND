@@ -148,6 +148,8 @@ const UI_TRANSLATIONS = {
     "verdicts-header-sub": "TAP ANY RULING TO DISCUSS IN BOARDROOM",
     "usage-daily": "Daily usage: {used} / {cap} tokens today",
     "usage-daily-trial": "Daily: {used} / {cap} tokens today<br>Trial total: {trialUsed} / {trialCap} tokens used",
+    "greeting-named": "{name}. Have a seat. I don't do small talk, so let's get right to it — tell me your niche, your numbers, and what's not working.",
+    "greeting-anon": "Have a seat. I don't do small talk, so let's get right to it — tell me your niche, your numbers, and what's not working.",
   },
   fr: {
     "splash-title": "THE EXECUTIVE",
@@ -220,6 +222,8 @@ const UI_TRANSLATIONS = {
     "verdicts-header-sub": "TOUCHE UN JUGEMENT POUR EN DISCUTER AU BUREAU",
     "usage-daily": "Utilisation quotidienne : {used} / {cap} tokens aujourd'hui",
     "usage-daily-trial": "Quotidien : {used} / {cap} tokens aujourd'hui<br>Total essai : {trialUsed} / {trialCap} tokens utilisés",
+    "greeting-named": "{name}. Assieds-toi. Je ne fais pas de bavardage, alors allons droit au but — dis-moi ta niche, tes chiffres, et ce qui ne marche pas.",
+    "greeting-anon": "Assieds-toi. Je ne fais pas de bavardage, alors allons droit au but — dis-moi ta niche, tes chiffres, et ce qui ne marche pas.",
   },
   pt: {
     "splash-title": "THE EXECUTIVE",
@@ -292,6 +296,8 @@ const UI_TRANSLATIONS = {
     "verdicts-header-sub": "TOQUE EM QUALQUER VEREDITO PARA DISCUTIR NO ESCRITÓRIO",
     "usage-daily": "Uso diário: {used} / {cap} tokens hoje",
     "usage-daily-trial": "Diário: {used} / {cap} tokens hoje<br>Total do teste: {trialUsed} / {trialCap} tokens usados",
+    "greeting-named": "{name}. Sente-se. Não perco tempo com conversa fiada, então vamos direto ao ponto — me diga seu nicho, seus números, e o que não está funcionando.",
+    "greeting-anon": "Sente-se. Não perco tempo com conversa fiada, então vamos direto ao ponto — me diga seu nicho, seus números, e o que não está funcionando.",
   },
   hi: {
     "splash-title": "THE EXECUTIVE",
@@ -362,6 +368,8 @@ const UI_TRANSLATIONS = {
     "btn-get-score-verdict": "मेरे स्कोर पर फैसला पाएं →",
     "verdicts-header-title": "एग्ज़िक्यूटिव के फैसले",
     "verdicts-header-sub": "बोर्डरूम में चर्चा करने के लिए किसी भी फैसले पर टैप करें",
+    "greeting-named": "{name}। बैठिए। मैं फ़ालतू बातें नहीं करता, तो सीधे मुद्दे पर आते हैं — अपनी niche, अपने नंबर, और क्या काम नहीं कर रहा है, मुझे बताइए।",
+    "greeting-anon": "बैठिए। मैं फ़ालतू बातें नहीं करता, तो सीधे मुद्दे पर आते हैं — अपनी niche, अपने नंबर, और क्या काम नहीं कर रहा है, मुझे बताइए।",
   },
 };
 
