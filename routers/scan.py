@@ -5,8 +5,9 @@ from database import get_db
 from models import User, Verdict, Account
 from services.scanner import scan_content
 from middleware import check_verdict_limit
-from routers.chat import get_verdict_query, build_search_insights_context
+from routers.chat import get_verdict_query
 import uuid
+import asyncio
 from datetime import datetime
 from pydantic import BaseModel
 
