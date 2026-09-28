@@ -1668,7 +1668,7 @@ async function handleCancelSubscription() {
   }
 }
 
-async function handleDeleteAccount() {
+async function handleDeleteAccountPermanently() {
   const confirmed = confirm('Permanently delete your account? This cannot be undone after 30 days. Type nothing else to confirm — press OK to proceed.');
   if (!confirmed) return;
 
