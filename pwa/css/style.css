@@ -1292,19 +1292,21 @@ html, body {
   .bubble {
     font-size: 16.5px;
     line-height: 1.65;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.95), 0 1px 3px rgba(0,0,0,0.95);
   }
 
-    .bubble.user {
-    background: transparent;
-    padding: 4px 0;
+  .bubble.user {
+    background: rgba(212,175,55,0.16);
+    padding: 10px 16px;
+    border-radius: 16px;
     font-weight: 600;
     color: var(--bubble-user-color, var(--gold));
   }
 
   .bubble.assistant {
-    background: transparent;
-    padding: 4px 0;
+    background: rgba(8,6,0,0.6);
+    backdrop-filter: blur(6px);
+    padding: 10px 16px;
+    border-radius: 16px;
     color: var(--bubble-assistant-color, var(--text-primary));
   }
 
