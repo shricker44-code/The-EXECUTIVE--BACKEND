@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Account, Verdict
 import uuid
+import asyncio
 from datetime import datetime
 
 router = APIRouter()
