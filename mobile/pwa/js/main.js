@@ -1102,6 +1102,19 @@ async function verdictTrackingResponse(posted) {
 async function handleSend() {
   const input = document.getElementById('user-input');
   const text = input.value.trim();
+
+  if (pendingScreenshots.length > 0) {
+    const files = pendingScreenshots.map(item => item.file);
+    const dataUrls = pendingScreenshots.map(item => item.dataUrl);
+    pendingScreenshots = [];
+    renderPendingAttachments();
+    input.value = '';
+    input.style.height = 'auto';
+    unlockAudio();
+    await sendScreenshots(files, dataUrls);
+    return;
+  }
+
   if (!text) return;
   input.value = '';
   input.style.height = 'auto';
@@ -1826,6 +1839,7 @@ async function handleDeleteAccountPermanently() {
 }
 
 let pendingScreenshotType = 'analytics';
+let pendingScreenshots = []; // { file, dataUrl }
 
 function handleAttachClick() {
   document.getElementById('attach-menu').classList.toggle('hidden');
@@ -1854,13 +1868,39 @@ async function handleScreenshotSelected(event) {
   event.target.value = '';
   if (!files.length) return;
 
-  const dataUrls = await Promise.all(files.map(file => new Promise((resolve, reject) => {
+  const newItems = await Promise.all(files.map(file => new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
+    reader.onload = () => resolve({ file, dataUrl: reader.result });
     reader.onerror = reject;
     reader.readAsDataURL(file);
   })));
 
+  pendingScreenshots.push(...newItems);
+  renderPendingAttachments();
+}
+
+function renderPendingAttachments() {
+  const strip = document.getElementById('pending-attachments');
+  if (!pendingScreenshots.length) {
+    strip.classList.add('hidden');
+    strip.innerHTML = '';
+    return;
+  }
+  strip.classList.remove('hidden');
+  strip.innerHTML = pendingScreenshots.map((item, i) => `
+    <div style="position:relative; display:inline-block;">
+      <img src="${item.dataUrl}" style="width:56px; height:56px; object-fit:cover; border-radius:8px; border:1px solid #2a2a2a; display:block;" />
+      <button onclick="removePendingScreenshot(${i})" style="position:absolute; top:-6px; right:-6px; width:18px; height:18px; border-radius:50%; background:#000; color:#fff; border:1px solid #555; font-size:11px; line-height:1; cursor:pointer; padding:0;">×</button>
+    </div>
+  `).join('');
+}
+
+function removePendingScreenshot(index) {
+  pendingScreenshots.splice(index, 1);
+  renderPendingAttachments();
+}
+
+async function sendScreenshots(files, dataUrls) {
   addImageMessage(dataUrls);
   conversationHistory.push({ role: 'user', content: `[${files.length} screenshot${files.length > 1 ? 's' : ''} uploaded]` });
 
@@ -1948,7 +1988,7 @@ async function handleScreenshotSelected(event) {
       }
     }
   } catch (e) {
-    console.error('handleScreenshotSelected error:', e);
+    console.error('sendScreenshots error:', e);
     document.getElementById('typing').classList.add('hidden');
     addMessage('assistant', t('connection-failed-chat'));
   } finally {
@@ -1956,8 +1996,6 @@ async function handleScreenshotSelected(event) {
     messages.style.scrollBehavior = '';
   }
 }
-  reader.readAsDataURL(file);
-
 
 function togglePasswordVisibility(inputId, btn) {
   const input = document.getElementById(inputId);
