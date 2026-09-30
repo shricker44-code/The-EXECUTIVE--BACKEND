@@ -1837,120 +1837,127 @@ function selectScreenshotType(type) {
   document.getElementById('screenshot-input').click();
 }
 
-function addImageMessage(dataUrl) {
+function addImageMessage(dataUrls) {
   const messages = document.getElementById('messages');
   const bubble = document.createElement('div');
   bubble.className = 'message user';
-  bubble.innerHTML = `<div class="bubble user"><img src="${dataUrl}" style="max-width: 200px; border-radius: 12px; display: block;" /></div>`;
+  const imgsHtml = dataUrls.map(url =>
+    `<img src="${url}" style="max-width: 140px; border-radius: 12px; display: inline-block; margin: 2px;" />`
+  ).join('');
+  bubble.innerHTML = `<div class="bubble user" style="display:flex; flex-wrap:wrap; gap:4px;">${imgsHtml}</div>`;
   messages.appendChild(bubble);
   messages.scrollTop = messages.scrollHeight;
 }
 
 async function handleScreenshotSelected(event) {
-  const file = event.target.files[0];
+  const files = Array.from(event.target.files);
   event.target.value = '';
-  if (!file) return;
+  if (!files.length) return;
 
-  const reader = new FileReader();
-  reader.onload = async () => {
-    const dataUrl = reader.result;
-    addImageMessage(dataUrl);
-    conversationHistory.push({ role: 'user', content: '[Screenshot uploaded]' });
+  const dataUrls = await Promise.all(files.map(file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  })));
 
-    document.getElementById('typing').classList.remove('hidden');
-    document.getElementById('send-btn').disabled = true;
+  addImageMessage(dataUrls);
+  conversationHistory.push({ role: 'user', content: `[${files.length} screenshot${files.length > 1 ? 's' : ''} uploaded]` });
 
-    const messages = document.getElementById('messages');
-    messages.style.scrollBehavior = 'auto';
-    let bubbleEl = null;
-    let displayedText = '';
-    let typewriterTimer = null;
-    let lastExpressionUpdate = 0;
+  document.getElementById('typing').classList.remove('hidden');
+  document.getElementById('send-btn').disabled = true;
 
-    function revealNextChar(fullText) {
-      if (displayedText.length < fullText.length) {
-        displayedText += fullText[displayedText.length];
-        const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-        bubbleEl.innerHTML = formatted + '<span class="cursor-blink">|</span>';
+  const messages = document.getElementById('messages');
+  messages.style.scrollBehavior = 'auto';
+  let bubbleEl = null;
+  let displayedText = '';
+  let typewriterTimer = null;
+  let lastExpressionUpdate = 0;
 
-        const now = Date.now();
-        if (now - lastExpressionUpdate > 400) {
-          updateExpression(displayedText);
-          lastExpressionUpdate = now;
-        }
+  function revealNextChar(fullText) {
+    if (displayedText.length < fullText.length) {
+      displayedText += fullText[displayedText.length];
+      const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+      bubbleEl.innerHTML = formatted + '<span class="cursor-blink">|</span>';
 
-        if (isNearBottom(messages)) {
-          messages.scrollTop = messages.scrollHeight;
-        }
-        updateScrollButton();
-
-        typewriterTimer = setTimeout(() => revealNextChar(fullText), 45);
-      } else {
-        const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-        bubbleEl.innerHTML = formatted;
-        typewriterTimer = null;
-      }
-    }
-
-    try {
-      const data = await scanScreenshot(file, pendingScreenshotType);
-      const finalText = data.verdict;
-
-      conversationHistory.push({ role: 'assistant', content: finalText });
-
-      let audioBase64 = null;
-      if (!isMuted) {
-        try {
-          audioBase64 = await generateSpeech(finalText);
-        } catch (e) {
-          console.log('TTS generation failed:', e);
-        }
-      }
-
-      document.getElementById('typing').classList.add('hidden');
-      const wrapper = document.createElement('div');
-      wrapper.className = 'message assistant';
-      wrapper.innerHTML = '<div class="avatar">E</div><div class="bubble assistant"></div>';
-      messages.appendChild(wrapper);
-      bubbleEl = wrapper.querySelector('.bubble');
-
-      if (audioBase64) {
-        currentAutoAudio.src = `data:audio/mp3;base64,${audioBase64}`;
-        currentAutoAudio.currentTime = 0;
-        currentAutoAudio.volume = currentVolume;
-        currentAutoAudio.play().catch(e => console.log('Auto-play blocked:', e));
-      }
-      revealNextChar(finalText);
-
-      await new Promise((resolve) => {
-        const checkDone = setInterval(() => {
-          if (displayedText.length >= finalText.length && !typewriterTimer) {
-            clearInterval(checkDone);
-            resolve();
-          }
-        }, 50);
-      });
-
-      if (document.body.contains(bubbleEl)) {
+      const now = Date.now();
+      if (now - lastExpressionUpdate > 400) {
         updateExpression(displayedText);
-        checkVerdictTracking();
-        checkUsageWarning();
-        addPlaybackButton(bubbleEl, finalText, audioBase64);
-        if (isNearBottom(messages)) {
-          messages.scrollTop = messages.scrollHeight;
-        }
+        lastExpressionUpdate = now;
       }
-    } catch (e) {
-      console.error('handleScreenshotSelected error:', e);
-      document.getElementById('typing').classList.add('hidden');
-      addMessage('assistant', t('connection-failed-chat'));
-    } finally {
-      document.getElementById('send-btn').disabled = false;
-      messages.style.scrollBehavior = '';
+
+      if (isNearBottom(messages)) {
+        messages.scrollTop = messages.scrollHeight;
+      }
+      updateScrollButton();
+
+      typewriterTimer = setTimeout(() => revealNextChar(fullText), 45);
+    } else {
+      const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+      bubbleEl.innerHTML = formatted;
+      typewriterTimer = null;
     }
-  };
-  reader.readAsDataURL(file);
+  }
+
+  try {
+    const data = await scanScreenshot(files, pendingScreenshotType);
+    const finalText = data.verdict;
+
+    conversationHistory.push({ role: 'assistant', content: finalText });
+
+    let audioBase64 = null;
+    if (!isMuted) {
+      try {
+        audioBase64 = await generateSpeech(finalText);
+      } catch (e) {
+        console.log('TTS generation failed:', e);
+      }
+    }
+
+    document.getElementById('typing').classList.add('hidden');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'message assistant';
+    wrapper.innerHTML = '<div class="avatar">E</div><div class="bubble assistant"></div>';
+    messages.appendChild(wrapper);
+    bubbleEl = wrapper.querySelector('.bubble');
+
+    if (audioBase64) {
+      currentAutoAudio.src = `data:audio/mp3;base64,${audioBase64}`;
+      currentAutoAudio.currentTime = 0;
+      currentAutoAudio.volume = currentVolume;
+      currentAutoAudio.play().catch(e => console.log('Auto-play blocked:', e));
+    }
+    revealNextChar(finalText);
+
+    await new Promise((resolve) => {
+      const checkDone = setInterval(() => {
+        if (displayedText.length >= finalText.length && !typewriterTimer) {
+          clearInterval(checkDone);
+          resolve();
+        }
+      }, 50);
+    });
+
+    if (document.body.contains(bubbleEl)) {
+      updateExpression(displayedText);
+      checkVerdictTracking();
+      checkUsageWarning();
+      addPlaybackButton(bubbleEl, finalText, audioBase64);
+      if (isNearBottom(messages)) {
+        messages.scrollTop = messages.scrollHeight;
+      }
+    }
+  } catch (e) {
+    console.error('handleScreenshotSelected error:', e);
+    document.getElementById('typing').classList.add('hidden');
+    addMessage('assistant', t('connection-failed-chat'));
+  } finally {
+    document.getElementById('send-btn').disabled = false;
+    messages.style.scrollBehavior = '';
+  }
 }
+  reader.readAsDataURL(file);
+
 
 function togglePasswordVisibility(inputId, btn) {
   const input = document.getElementById(inputId);

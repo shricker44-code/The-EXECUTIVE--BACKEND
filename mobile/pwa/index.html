@@ -143,7 +143,7 @@
                 <button onclick="selectScreenshotType('search_insights')" style="display: block; width: 100%; text-align: left; padding: 12px 16px; background: none; border: none; color: #f5f5f5; cursor: pointer; font-size: 13px; border-top: 1px solid #2a2a2a;">🔍 Search Insights Screenshot</button>
               </div>
             </div>
-            <input type="file" id="screenshot-input" accept="image/*" style="display: none;" onchange="handleScreenshotSelected(event)" />
+            <input type="file" id="screenshot-input" accept="image/*" multiple style="display:none" onchange="handleScreenshotSelected(event)">
             <button id="mute-btn" class="mute-btn" onclick="toggleMute()" title="Mute voice">🔊</button>
             <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1" oninput="setVolume(this.value)" class="volume-slider" title="Volume" />
             <textarea

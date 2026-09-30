@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Form, Depends
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy.orm import Session
 from database import get_db
 from models import User, Verdict, Account
@@ -127,7 +127,7 @@ async def scan(
     account_id: Optional[str] = Form(None),
     tiktok_url: Optional[str] = Form(None),
     manual_input: Optional[str] = Form(None),
-    screenshot: Optional[UploadFile] = File(None),
+    screenshots: List[UploadFile] = File(None),
     screenshot_type: str = Form("analytics"),
     db: Session = Depends(get_db),
 ):
@@ -158,7 +158,7 @@ async def scan(
     result, extracted_numbers, tokens_used, search_insights_result = await scan_content(
         tiktok_url=tiktok_url,
         manual_input=manual_input,
-        screenshot=screenshot,
+        screenshots=screenshots,
         screenshot_type=screenshot_type,
         record=record,
         db=db,
@@ -170,7 +170,7 @@ async def scan(
         user_id=user.id,
         account_id=account.id if account else None,
         content=result,
-        user_message="[Screenshot uploaded]",
+        user_message=f"[{len(screenshots)} screenshot(s) uploaded]" if screenshots else None,
         follower_count_snapshot=extracted_numbers.get("follower_count") if extracted_numbers else None,
         engagement_rate_snapshot=extracted_numbers.get("engagement_rate") if extracted_numbers else None,
         watch_time_snapshot=extracted_numbers.get("watch_time") if extracted_numbers else None,

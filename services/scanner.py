@@ -3,7 +3,7 @@ import json
 import base64
 import random
 import anthropic
-from typing import Optional
+from typing import Optional, List
 from fastapi import UploadFile
 from services.claude import SYSTEM_PROMPT_EN as SYSTEM_PROMPT
 
@@ -109,7 +109,7 @@ def is_unchanged(new_numbers: dict, last_follower_count, last_engagement_rate) -
 async def scan_content(
     tiktok_url: Optional[str] = None,
     manual_input: Optional[str] = None,
-    screenshot: Optional[UploadFile] = None,
+    screenshots: Optional[List[UploadFile]] = None,
     screenshot_type: str = "analytics",
     record=None,
     db=None,
@@ -129,22 +129,31 @@ Analyze what you can determine about this creator strategy and deliver a full Ex
 What is working. What is dead weight. What needs to change. Now."""
         messages.append({"role": "user", "content": prompt})
 
-    elif screenshot:
-        image_data = await screenshot.read()
-        media_type = screenshot.content_type or "image/jpeg"
+    elif screenshots:
+        image_blocks = []
+        images_data = []
+        for screenshot in screenshots:
+            image_data = await screenshot.read()
+            media_type = screenshot.content_type or "image/jpeg"
+            images_data.append((image_data, media_type))
+            b64_image = base64.standard_b64encode(image_data).decode("utf-8")
+            image_blocks.append({"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64_image}})
 
         if screenshot_type == "search_insights":
-            insights_text, extraction_tokens = await extract_search_insights(image_data, media_type)
-            total_tokens += extraction_tokens
-            search_insights_result = insights_text
+            insight_texts = []
+            for image_data, media_type in images_data:
+                insights_text, extraction_tokens = await extract_search_insights(image_data, media_type)
+                total_tokens += extraction_tokens
+                if insights_text:
+                    insight_texts.append(insights_text)
 
-            b64_image = base64.standard_b64encode(image_data).decode("utf-8")
-            insights_summary = insights_text if insights_text else "No clear topics could be read from this screenshot."
+            search_insights_result = "\n".join(insight_texts) if insight_texts else None
+            insights_summary = search_insights_result if search_insights_result else "No clear topics could be read from these screenshots."
+
             messages.append({
                 "role": "user",
-                "content": [
-                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64_image}},
-                    {"type": "text", "text": f"""This is a screenshot of my TikTok Search Insights / Content Gap page. Here is what was extracted from it:
+                "content": image_blocks + [
+                    {"type": "text", "text": f"""These are screenshots of my TikTok Search Insights / Content Gap page. Here is what was extracted from them:
 
 {insights_summary}
 
@@ -154,26 +163,33 @@ Based on these real search opportunities — not generic keyword guesses — tel
 
         else:
             if record is not None and db is not None:
-                new_numbers, extraction_tokens = await extract_analytics_numbers(image_data, media_type)
-                total_tokens += extraction_tokens
+                merged_numbers = {
+                    "follower_count": None, "engagement_rate": None,
+                    "watch_time": None, "completion_rate": None, "profile_visits": None,
+                }
+                for image_data, media_type in images_data:
+                    new_numbers, extraction_tokens = await extract_analytics_numbers(image_data, media_type)
+                    total_tokens += extraction_tokens
+                    for key, value in new_numbers.items():
+                        if value is not None:
+                            merged_numbers[key] = value
 
-                if is_unchanged(new_numbers, record.last_follower_count, record.last_engagement_rate):
+                if is_unchanged(merged_numbers, record.last_follower_count, record.last_engagement_rate):
                     return random.choice(NOTHING_CHANGED_MESSAGES), None, total_tokens, None
 
-                if new_numbers.get("follower_count") is not None:
-                    record.last_follower_count = new_numbers["follower_count"]
-                if new_numbers.get("engagement_rate") is not None:
-                    record.last_engagement_rate = new_numbers["engagement_rate"]
+                if merged_numbers.get("follower_count") is not None:
+                    record.last_follower_count = merged_numbers["follower_count"]
+                if merged_numbers.get("engagement_rate") is not None:
+                    record.last_engagement_rate = merged_numbers["engagement_rate"]
                 db.commit()
 
-                extracted_numbers = new_numbers
+                extracted_numbers = merged_numbers
 
-            b64_image = base64.standard_b64encode(image_data).decode("utf-8")
+            plural = "s" if len(images_data) > 1 else ""
             messages.append({
                 "role": "user",
-                "content": [
-                    {"type": "image", "source": {"type": "base64", "media_type": media_type, "data": b64_image}},
-                    {"type": "text", "text": """This is a screenshot of my TikTok analytics page. Read every number visible in this screenshot precisely — follower count, total likes, engagement rate, watch time percentage, completion rate, profile visits, and any top-performing video data shown.
+                "content": image_blocks + [
+                    {"type": "text", "text": f"""These are screenshot{plural} of my TikTok analytics page. Read every number visible across all of them precisely — follower count, total likes, engagement rate, watch time percentage, completion rate, profile visits, and any top-performing video data shown.
 
 Extract and state the exact numbers you see before giving your verdict, so I know you actually read my data and did not guess. Then deliver your full boardroom verdict using those exact numbers per your specificity requirements. What is working. What is failing. What changes immediately."""}
                 ],
