@@ -133,6 +133,68 @@ def build_questionnaire_context(user):
     return "\n".join(lines)
 
 
+MIN_FREQUENCY_SAMPLES = 3
+MIN_FREQUENCY_SPAN_DAYS = 4
+
+
+def compute_posting_frequency(user, account_id, db):
+    """
+    Estimates how often this creator is actually posting, inferred from the
+    cadence of their analytics screenshot uploads (every screenshot upload
+    creates a Verdict row with snapshot fields set - see scan.py). This is a
+    proxy for real posting frequency, not a direct read of TikTok's own data,
+    so it needs enough history to mean anything - deliberately deferred until
+    there's a real pattern to read instead of asking the creator to guess a
+    number at signup.
+
+    Returns a human string like "~4x/week" or "~1.5x/day", or None when
+    there isn't enough upload history yet to estimate from.
+    """
+    uploads = (
+        get_verdict_query(user, account_id, db)
+        .filter(Verdict.follower_count_snapshot.isnot(None))
+        .order_by(Verdict.created_at.asc())
+        .all()
+    )
+    if len(uploads) < MIN_FREQUENCY_SAMPLES:
+        return None
+
+    span_days = (uploads[-1].created_at - uploads[0].created_at).total_seconds() / 86400
+    if span_days < MIN_FREQUENCY_SPAN_DAYS:
+        return None
+
+    # (n - 1) intervals across the span, not raw upload count - a burst of
+    # same-day uploads shouldn't inflate the estimate.
+    uploads_per_week = (len(uploads) - 1) / (span_days / 7)
+    if uploads_per_week <= 0:
+        return None
+
+    def fmt(n):
+        s = f"{n:.1f}"
+        return s[:-2] if s.endswith(".0") else s
+
+    if uploads_per_week >= 7:
+        return f"~{fmt(uploads_per_week / 7)}x/day"
+    return f"~{fmt(uploads_per_week)}x/week"
+
+
+def build_posting_frequency_context(posting_frequency, niche):
+    """
+    Surfaces the inferred posting cadence so the Executive can hold it
+    directly against the POSTING FREQUENCY BENCHMARKS table in the system
+    prompt instead of only having the generic niche benchmark to work with.
+    """
+    if not posting_frequency:
+        return ""
+    return (
+        f"INFERRED POSTING FREQUENCY (estimated from this creator's screenshot upload cadence over time, "
+        f"not self-reported - treat this as a real signal, not a guess): {posting_frequency}. "
+        f"Compare this directly against the POSTING FREQUENCY BENCHMARKS for their niche "
+        f"({niche or 'their niche'}) in your instructions, and state explicitly whether they are "
+        f"under-posting, over-posting, or on pace for it."
+    )
+
+
 def build_search_insights_context(user, account_id, db):
     """
     Surfaces the creator's most recent real TikTok Search Insights data (if any
@@ -241,10 +303,13 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
 
     history_summary = build_history_summary(user, account_id, db)
     questionnaire_context = build_questionnaire_context(user)
+    posting_frequency_context = build_posting_frequency_context(user.posting_frequency, user.niche)
     gap_context = get_gap_context(user, account_id, db)
     search_insights_context = build_search_insights_context(user, account_id, db)
     if questionnaire_context:
         history_summary = f"{history_summary}\n\n{questionnaire_context}" if history_summary else questionnaire_context
+    if posting_frequency_context:
+        history_summary = f"{history_summary}\n\n{posting_frequency_context}" if history_summary else posting_frequency_context
     if gap_context:
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
     if search_insights_context:
@@ -330,10 +395,13 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
 
     history_summary = build_history_summary(user, account_id, db)
     questionnaire_context = build_questionnaire_context(user)
+    posting_frequency_context = build_posting_frequency_context(user.posting_frequency, user.niche)
     gap_context = get_gap_context(user, account_id, db)
     search_insights_context = build_search_insights_context(user, account_id, db)
     if questionnaire_context:
         history_summary = f"{history_summary}\n\n{questionnaire_context}" if history_summary else questionnaire_context
+    if posting_frequency_context:
+        history_summary = f"{history_summary}\n\n{posting_frequency_context}" if history_summary else posting_frequency_context
     if gap_context:
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
     if search_insights_context:

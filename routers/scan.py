@@ -5,7 +5,10 @@ from database import get_db
 from models import User, Verdict, Account
 from services.scanner import scan_content
 from middleware import check_verdict_limit
-from routers.chat import get_verdict_query, build_questionnaire_context
+from routers.chat import (
+    get_verdict_query, build_questionnaire_context,
+    compute_posting_frequency, build_posting_frequency_context,
+)
 import uuid
 import asyncio
 from datetime import datetime
@@ -153,11 +156,20 @@ async def scan(
 
     record = account if account else user
 
+    # Recompute from upload history BEFORE this upload's own Verdict row is added below,
+    # same reasoning as growth_trend - this scan's own numbers shouldn't bias its own context.
+    inferred_frequency = compute_posting_frequency(user, account_id, db)
+    if inferred_frequency:
+        user.posting_frequency = inferred_frequency
+
     questionnaire_context = build_questionnaire_context(user)
+    posting_frequency_context = build_posting_frequency_context(user.posting_frequency, user.niche)
     growth_trend = build_growth_trend(user, account_id, db)
     outcome_context = build_assignment_outcome_context(user, account_id, db)
     search_insights_context = build_search_insights_context(user, account_id, db)
-    extra_context = "\n\n".join(filter(None, [questionnaire_context, growth_trend, outcome_context, search_insights_context]))
+    extra_context = "\n\n".join(filter(None, [
+        questionnaire_context, posting_frequency_context, growth_trend, outcome_context, search_insights_context,
+    ]))
 
     result, extracted_numbers, tokens_used, search_insights_result = await scan_content(
         tiktok_url=tiktok_url,

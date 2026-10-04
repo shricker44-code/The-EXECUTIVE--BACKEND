@@ -793,8 +793,17 @@ async function showApp(user) {
   document.getElementById('blocked-screen').classList.add('hidden');
 
   if (user && user.user_id) {
+    // signin already tells us this - skip the extra round trip when it's present.
+    // Cached sessions from before this field existed fall through to the status check below.
+    if (user.questionnaire_completed === true) {
+      enterApp(user);
+      return;
+    }
+
     try {
-      const status = await checkQuestionnaireStatus(user.user_id);
+      const status = (user.questionnaire_completed === false)
+        ? { completed: false }
+        : await checkQuestionnaireStatus(user.user_id);
       if (status && !status.completed) {
         pendingAppUser = user;
         questionnaireEditMode = false;
@@ -1029,11 +1038,15 @@ function populateProfileFromQuestionnaire(data) {
   const styleEl = document.getElementById('p-style');
   const challengeEl = document.getElementById('p-challenge');
   const goalEl = document.getElementById('p-goal');
+  const freqEl = document.getElementById('p-freq');
   if (usernameEl) usernameEl.value = data.tiktok_username ? `@${data.tiktok_username}` : '';
   if (nicheEl) nicheEl.value = data.niche || '';
   if (styleEl) styleEl.value = QUESTIONNAIRE_LABELS.style[data.content_style] || data.content_style || '';
   if (challengeEl) challengeEl.value = QUESTIONNAIRE_LABELS.challenge[data.biggest_challenge] || data.biggest_challenge || '';
   if (goalEl) goalEl.value = QUESTIONNAIRE_LABELS.goal[data.goal] || data.goal || '';
+  // posting_frequency is inferred from screenshot upload cadence, not asked in the
+  // questionnaire - stays blank until there's enough upload history to estimate from.
+  if (freqEl) freqEl.value = data.posting_frequency || '';
 }
 
 async function loadProfileFromQuestionnaireStatus() {

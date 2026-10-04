@@ -43,6 +43,7 @@ async def get_questionnaire_status(user_id: str, db: Session = Depends(get_db)):
         "content_style": user.content_style,
         "biggest_challenge": user.biggest_challenge,
         "goal": user.goal,
+        "posting_frequency": user.posting_frequency,
     }
 
 
@@ -79,4 +80,5 @@ async def submit_questionnaire(payload: QuestionnaireSubmission, db: Session = D
         "content_style": user.content_style,
         "biggest_challenge": user.biggest_challenge,
         "goal": user.goal,
+        "posting_frequency": user.posting_frequency,
     }
