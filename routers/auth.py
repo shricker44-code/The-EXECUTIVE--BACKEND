@@ -122,6 +122,7 @@ async def signin(request: SignInRequest, db: Session = Depends(get_db)):
             "trial_active": user.trial_active,
             "session_token": session_token,
             "language": user.language or "en",
+            "questionnaire_completed": bool(user.questionnaire_completed),
             "theme": {
                 "accent": user.theme_accent,
                 "background": user.theme_background,

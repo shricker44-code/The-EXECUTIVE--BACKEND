@@ -12,6 +12,36 @@
   <link rel="apple-touch-icon" href="/images/icon-192.png" />
   <link rel="stylesheet" href="/css/style.css" />
   <title>The Executive</title>
+  <style>
+    .q-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .q-chip {
+      padding: 9px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--gold-border, rgba(212,175,55,0.35));
+      background: rgba(255,255,255,0.03);
+      color: var(--text-primary, #E8E0CC);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      line-height: 1.3;
+    }
+    .q-chip:hover { border-color: var(--gold, #D4AF37); }
+    .q-chip.selected {
+      background: var(--gold, #D4AF37);
+      border-color: var(--gold, #D4AF37);
+      color: #000;
+      font-weight: 600;
+    }
+    .q-readonly-note {
+      font-size: 11px;
+      color: var(--text-muted, #999);
+      margin-top: 4px;
+    }
+    .field-input[readonly] {
+      opacity: 0.75;
+      cursor: default;
+    }
+  </style>
 </head>
 <body>
 
@@ -81,6 +111,48 @@
     <button class="auth-toggle" onclick="upgradeToBasePlan()" data-i18n="blocked-upgrade-btn">Upgrade to Executive Plan →</button>
   </div>
 </div>
+
+  <!-- Questionnaire Screen (mandatory, shown once after signup/signin until completed) -->
+  <div id="questionnaire-screen" class="auth-screen hidden">
+    <div class="auth-container" style="max-width: 440px;">
+      <div class="auth-title" data-i18n="q-title">ONE LAST THING BEFORE THE BOARDROOM</div>
+      <div class="auth-subtitle" data-i18n="q-subtitle">30 seconds. This is how The Executive learns who you are — no generic advice after this.</div>
+      <div class="auth-divider"></div>
+
+      <div class="auth-form" style="gap: 20px;">
+
+        <div class="auth-field">
+          <label class="auth-label" data-i18n="q-label-handle">YOUR TIKTOK HANDLE</label>
+          <input id="q-handle" class="auth-input" type="text" placeholder="@yourhandle" data-i18n-placeholder="q-ph-handle" />
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" data-i18n="q-label-niche">WHAT'S YOUR NICHE?</label>
+          <div id="q-niche-chips" class="q-chip-row"></div>
+          <input id="q-niche-other" class="auth-input hidden" type="text" placeholder="Type your niche" style="margin-top: 8px;" data-i18n-placeholder="q-ph-niche-other" />
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" data-i18n="q-label-style">HOW WOULD YOU DESCRIBE YOUR CONTENT?</label>
+          <div id="q-style-chips" class="q-chip-row"></div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" data-i18n="q-label-challenge">WHAT'S YOUR BIGGEST STRUGGLE RIGHT NOW?</label>
+          <div id="q-challenge-chips" class="q-chip-row"></div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" data-i18n="q-label-goal">WHAT'S YOUR GOAL?</label>
+          <div id="q-goal-chips" class="q-chip-row"></div>
+        </div>
+
+        <p id="q-error" class="hidden" style="color: #FF6B6B; font-size: 12px; text-align: center; margin: 0;"></p>
+
+        <button id="q-submit-btn" class="auth-submit" onclick="handleQuestionnaireSubmit()" data-i18n="q-submit-btn">STEP INTO THE BOARDROOM</button>
+      </div>
+    </div>
+  </div>
 
   <!-- App Shell -->
   <div id="app" class="app hidden">
@@ -184,34 +256,46 @@
           </div>
           <div class="field-card">
             <label class="field-label" data-i18n="field-username">TIKTOK USERNAME</label>
-            <input class="field-input" id="p-username" type="text" placeholder="@yourhandle" />
+            <input class="field-input" id="p-username" type="text" placeholder="@yourhandle" readonly />
           </div>
           <div class="field-card">
             <label class="field-label" data-i18n="field-niche">YOUR NICHE</label>
-            <input class="field-input" id="p-niche" type="text" placeholder="e.g. fitness, comedy, cooking" data-i18n-placeholder="ph-niche" />
+            <input class="field-input" id="p-niche" type="text" placeholder="e.g. fitness, comedy, cooking" data-i18n-placeholder="ph-niche" readonly />
           </div>
           <div class="field-card">
-            <label class="field-label" data-i18n="field-followers">FOLLOWER COUNT</label>
-            <input class="field-input" id="p-followers" type="text" placeholder="e.g. 2,400" />
+            <label class="field-label" data-i18n="field-style">CONTENT PERSONALITY</label>
+            <input class="field-input" id="p-style" type="text" readonly />
           </div>
           <div class="field-card">
-            <label class="field-label" data-i18n="field-views">AVERAGE VIEWS</label>
-            <input class="field-input" id="p-views" type="text" placeholder="e.g. 800" />
-          </div>
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-freq">POSTING FREQUENCY</label>
-            <input class="field-input" id="p-freq" type="text" placeholder="e.g. 3x per week" data-i18n-placeholder="ph-freq" />
+            <label class="field-label" data-i18n="field-challenge">BIGGEST STRUGGLE</label>
+            <input class="field-input" id="p-challenge" type="text" readonly />
           </div>
           <div class="field-card">
             <label class="field-label" data-i18n="field-goal">YOUR GOAL</label>
-            <input class="field-input" id="p-goal" type="text" placeholder="e.g. reach 10k followers" data-i18n-placeholder="ph-goal" />
+            <input class="field-input" id="p-goal" type="text" readonly />
+          </div>
+          <button class="save-btn" onclick="openQuestionnaireForEdit()" data-i18n="btn-edit-answers">✎ EDIT MY ANSWERS</button>
+
+          <div class="field-card">
+            <label class="field-label" data-i18n="field-followers">FOLLOWER COUNT</label>
+            <input class="field-input" id="p-followers" type="text" placeholder="—" readonly />
+            <div class="q-readonly-note" data-i18n="note-auto-screenshot">Auto-filled from your analytics screenshots.</div>
+          </div>
+          <div class="field-card">
+            <label class="field-label" data-i18n="field-views">AVERAGE VIEWS</label>
+            <input class="field-input" id="p-views" type="text" placeholder="—" readonly />
+            <div class="q-readonly-note" data-i18n="note-auto-screenshot">Auto-filled from your analytics screenshots.</div>
+          </div>
+          <div class="field-card">
+            <label class="field-label" data-i18n="field-freq">POSTING FREQUENCY</label>
+            <input class="field-input" id="p-freq" type="text" placeholder="—" readonly />
+            <div class="q-readonly-note" data-i18n="note-auto-screenshot">Auto-filled from your analytics screenshots.</div>
           </div>
                     <div class="field-card">
             <label class="field-label" data-i18n="field-checkin">DAILY CHECK-IN TIME</label>
             <input class="field-input" id="p-checkin-time" type="time" />
             <button class="verdict-btn" onclick="handleSetCheckInTime()" data-i18n="btn-set-checkin">SET REPORTING TIME</button>
           </div>
-                    <button class="save-btn" onclick="saveProfile()" data-i18n="btn-save-profile">SAVE PROFILE</button>
           <button class="verdict-btn" onclick="getProfileVerdict()" data-i18n="btn-get-analysis">GET MY EXECUTIVE ANALYSIS →</button>
 
           <div class="field-card" style="margin-top: 16px;">

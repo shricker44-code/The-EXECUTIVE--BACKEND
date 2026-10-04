@@ -665,7 +665,6 @@ function applyUITranslations() {
 
 window.addEventListener('load', () => {
   renderVerdicts();
-  loadProfile();
   loadDisplayName();
   playSplashThenInit();
   const volSlider = document.getElementById('volume-slider');
@@ -785,10 +784,36 @@ function updateUpgradeButtonVisibility() {
   }
 }
 
-function showApp(user) {
+let pendingAppUser = null;
+let questionnaireEditMode = false;
+
+async function showApp(user) {
   document.getElementById('splash').classList.add('hidden');
   document.getElementById('auth-screen').classList.add('hidden');
   document.getElementById('blocked-screen').classList.add('hidden');
+
+  if (user && user.user_id) {
+    try {
+      const status = await checkQuestionnaireStatus(user.user_id);
+      if (status && !status.completed) {
+        pendingAppUser = user;
+        questionnaireEditMode = false;
+        showQuestionnaireScreen(status);
+        return;
+      }
+    } catch (e) {
+      console.log('Questionnaire status check failed, letting them in:', e);
+    }
+  }
+
+  enterApp(user);
+}
+
+function enterApp(user) {
+  document.getElementById('splash').classList.add('hidden');
+  document.getElementById('auth-screen').classList.add('hidden');
+  document.getElementById('blocked-screen').classList.add('hidden');
+  document.getElementById('questionnaire-screen').classList.add('hidden');
   document.getElementById('app').classList.remove('hidden');
   updateUpgradeButtonVisibility();
   applyUITranslations();
@@ -798,6 +823,224 @@ function showApp(user) {
     startSessionCheck(user.user_id);
     initAccountsAndHistory();
     checkUpgradePopup();
+    loadProfileFromQuestionnaireStatus();
+  }
+}
+
+// --- Onboarding questionnaire ---------------------------------------------
+// Required, static (no AI call) screen shown once between signup/signin and
+// the boardroom. Answers personalize every verdict from message one, and
+// replace manual Profile-tab data entry (those fields become read-only
+// displays of what's captured here, or by screenshot upload later).
+
+const QUESTIONNAIRE_NICHES = [
+  'Fitness', 'Beauty', 'Food', 'Finance', 'Fashion', 'Gaming',
+  'Education', 'Lifestyle', 'Motivation/Business', 'Entertainment/Comedy', 'AI Content Creator'
+];
+
+const QUESTIONNAIRE_STYLE_OPTIONS = [
+  { value: 'funny_meme', label: 'Funny / meme' },
+  { value: 'raw_relatable', label: 'Raw & relatable' },
+  { value: 'polished_aesthetic', label: 'Polished / aesthetic' },
+  { value: 'educational_expert', label: 'Educational / expert' },
+  { value: 'high_energy_motivational', label: 'High-energy / motivational' },
+];
+
+const QUESTIONNAIRE_CHALLENGE_OPTIONS = [
+  { value: 'views_not_growing', label: 'Views not growing' },
+  { value: 'dont_know_what_to_post', label: "Don't know what to post" },
+  { value: 'engagement_low', label: 'Engagement is low' },
+  { value: 'cant_stay_consistent', label: "Can't stay consistent" },
+  { value: 'just_starting_out', label: 'Just starting out' },
+];
+
+const QUESTIONNAIRE_GOAL_OPTIONS = [
+  { value: 'follower_milestone', label: 'Hit a follower milestone' },
+  { value: 'go_viral_once', label: 'Go viral once' },
+  { value: 'build_personal_brand', label: 'Build a personal brand' },
+  { value: 'get_sponsorships', label: 'Get sponsorships' },
+  { value: 'just_having_fun', label: 'Just having fun' },
+];
+
+const QUESTIONNAIRE_LABELS = {
+  style: Object.fromEntries(QUESTIONNAIRE_STYLE_OPTIONS.map(o => [o.value, o.label])),
+  challenge: Object.fromEntries(QUESTIONNAIRE_CHALLENGE_OPTIONS.map(o => [o.value, o.label])),
+  goal: Object.fromEntries(QUESTIONNAIRE_GOAL_OPTIONS.map(o => [o.value, o.label])),
+};
+
+let questionnaireAnswers = { niche: '', content_style: '', biggest_challenge: '', goal: '' };
+
+async function checkQuestionnaireStatus(userId) {
+  try {
+    const res = await fetch(`${API_BASE}/questionnaire/status?user_id=${encodeURIComponent(userId)}`);
+    return await res.json();
+  } catch (e) {
+    console.log('checkQuestionnaireStatus failed:', e);
+    return null;
+  }
+}
+
+function renderChipRow(containerId, options, group, preselected) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = options.map(opt => {
+    const value = typeof opt === 'string' ? opt : opt.value;
+    const label = typeof opt === 'string' ? opt : opt.label;
+    const selected = preselected === value ? 'selected' : '';
+    return `<button type="button" class="q-chip ${selected}" data-value="${value}" onclick="selectQuestionnaireChip('${group}', '${value}', this)">${label}</button>`;
+  }).join('');
+}
+
+function selectQuestionnaireChip(group, value, btnEl) {
+  const container = btnEl.parentElement;
+  container.querySelectorAll('.q-chip').forEach(c => c.classList.remove('selected'));
+  btnEl.classList.add('selected');
+  questionnaireAnswers[group] = value;
+
+  if (group === 'niche') {
+    const otherInput = document.getElementById('q-niche-other');
+    if (value === 'Other') {
+      otherInput.classList.remove('hidden');
+      otherInput.focus();
+      questionnaireAnswers.niche = otherInput.value.trim();
+    } else {
+      otherInput.classList.add('hidden');
+    }
+  }
+}
+
+function showQuestionnaireScreen(status) {
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('questionnaire-screen').classList.remove('hidden');
+
+  questionnaireAnswers = {
+    niche: (status && status.niche) || '',
+    content_style: (status && status.content_style) || '',
+    biggest_challenge: (status && status.biggest_challenge) || '',
+    goal: (status && status.goal) || '',
+  };
+
+  if (status && status.tiktok_username) {
+    document.getElementById('q-handle').value = status.tiktok_username;
+  }
+
+  const nicheIsCustom = questionnaireAnswers.niche && !QUESTIONNAIRE_NICHES.includes(questionnaireAnswers.niche);
+  renderChipRow('q-niche-chips', [...QUESTIONNAIRE_NICHES, 'Other'], 'niche', nicheIsCustom ? 'Other' : questionnaireAnswers.niche);
+  if (nicheIsCustom) {
+    document.getElementById('q-niche-other').value = questionnaireAnswers.niche;
+    document.getElementById('q-niche-other').classList.remove('hidden');
+  }
+
+  renderChipRow('q-style-chips', QUESTIONNAIRE_STYLE_OPTIONS, 'content_style', questionnaireAnswers.content_style);
+  renderChipRow('q-challenge-chips', QUESTIONNAIRE_CHALLENGE_OPTIONS, 'biggest_challenge', questionnaireAnswers.biggest_challenge);
+  renderChipRow('q-goal-chips', QUESTIONNAIRE_GOAL_OPTIONS, 'goal', questionnaireAnswers.goal);
+
+  document.getElementById('q-error').classList.add('hidden');
+}
+
+function openQuestionnaireForEdit() {
+  if (!currentUser || !currentUser.user_id) return;
+  questionnaireEditMode = true;
+  checkQuestionnaireStatus(currentUser.user_id).then(status => {
+    showQuestionnaireScreen(status || {});
+  });
+}
+
+async function handleQuestionnaireSubmit() {
+  const errorEl = document.getElementById('q-error');
+  errorEl.classList.add('hidden');
+
+  const userId = (pendingAppUser && pendingAppUser.user_id) || (currentUser && currentUser.user_id);
+  if (!userId) return;
+
+  const handle = document.getElementById('q-handle').value.trim();
+  const otherNicheInput = document.getElementById('q-niche-other');
+  if (!otherNicheInput.classList.contains('hidden')) {
+    questionnaireAnswers.niche = otherNicheInput.value.trim();
+  }
+
+  if (!handle) {
+    errorEl.textContent = 'Enter your TikTok handle.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  if (!questionnaireAnswers.niche) {
+    errorEl.textContent = 'Pick (or type) your niche.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+  if (!questionnaireAnswers.content_style || !questionnaireAnswers.biggest_challenge || !questionnaireAnswers.goal) {
+    errorEl.textContent = 'Answer all questions before stepping in.';
+    errorEl.classList.remove('hidden');
+    return;
+  }
+
+  const btn = document.getElementById('q-submit-btn');
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'ENTERING...';
+
+  try {
+    const res = await fetch(`${API_BASE}/questionnaire/submit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: userId,
+        tiktok_username: handle,
+        niche: questionnaireAnswers.niche,
+        content_style: questionnaireAnswers.content_style,
+        biggest_challenge: questionnaireAnswers.biggest_challenge,
+        goal: questionnaireAnswers.goal,
+      }),
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      errorEl.textContent = data.detail || 'Something went wrong. Try again.';
+      errorEl.classList.remove('hidden');
+      btn.disabled = false;
+      btn.textContent = originalText;
+      return;
+    }
+
+    populateProfileFromQuestionnaire(data);
+
+    if (questionnaireEditMode) {
+      document.getElementById('questionnaire-screen').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      questionnaireEditMode = false;
+    } else {
+      const user = pendingAppUser || currentUser;
+      pendingAppUser = null;
+      enterApp(user);
+    }
+  } catch (e) {
+    console.error('Questionnaire submit failed:', e);
+    errorEl.textContent = 'Connection failed. Try again.';
+    errorEl.classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = originalText;
+  }
+}
+
+function populateProfileFromQuestionnaire(data) {
+  const usernameEl = document.getElementById('p-username');
+  const nicheEl = document.getElementById('p-niche');
+  const styleEl = document.getElementById('p-style');
+  const challengeEl = document.getElementById('p-challenge');
+  const goalEl = document.getElementById('p-goal');
+  if (usernameEl) usernameEl.value = data.tiktok_username ? `@${data.tiktok_username}` : '';
+  if (nicheEl) nicheEl.value = data.niche || '';
+  if (styleEl) styleEl.value = QUESTIONNAIRE_LABELS.style[data.content_style] || data.content_style || '';
+  if (challengeEl) challengeEl.value = QUESTIONNAIRE_LABELS.challenge[data.biggest_challenge] || data.biggest_challenge || '';
+  if (goalEl) goalEl.value = QUESTIONNAIRE_LABELS.goal[data.goal] || data.goal || '';
+}
+
+async function loadProfileFromQuestionnaireStatus() {
+  if (!currentUser || !currentUser.user_id) return;
+  const status = await checkQuestionnaireStatus(currentUser.user_id);
+  if (status && status.completed) {
+    populateProfileFromQuestionnaire(status);
   }
 }
 
@@ -1308,31 +1551,6 @@ async function sendToExecutive(text) {
     document.getElementById('send-btn').disabled = false;
     messages.style.scrollBehavior = '';
   }
-}
-
-function saveProfile() {
-  const profile = {
-    username: document.getElementById('p-username').value,
-    niche: document.getElementById('p-niche').value,
-    followers: document.getElementById('p-followers').value,
-    views: document.getElementById('p-views').value,
-    freq: document.getElementById('p-freq').value,
-    goal: document.getElementById('p-goal').value,
-  };
-  localStorage.setItem('executive_profile', JSON.stringify(profile));
-  alert(t('profile-saved-alert'));
-}
-
-function loadProfile() {
-  const data = localStorage.getItem('executive_profile');
-  if (!data) return;
-  const profile = JSON.parse(data);
-  if (profile.username) document.getElementById('p-username').value = profile.username;
-  if (profile.niche) document.getElementById('p-niche').value = profile.niche;
-  if (profile.followers) document.getElementById('p-followers').value = profile.followers;
-  if (profile.views) document.getElementById('p-views').value = profile.views;
-  if (profile.freq) document.getElementById('p-freq').value = profile.freq;
-  if (profile.goal) document.getElementById('p-goal').value = profile.goal;
 }
 
 function loadDisplayName() {

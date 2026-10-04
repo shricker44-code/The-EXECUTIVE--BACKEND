@@ -81,6 +81,58 @@ def build_history_summary(user, account_id, db, limit=5):
     return "\n".join(lines)
 
 
+CONTENT_STYLE_LABELS = {
+    "funny_meme": "Funny / meme",
+    "raw_relatable": "Raw & relatable",
+    "polished_aesthetic": "Polished / aesthetic",
+    "educational_expert": "Educational / expert",
+    "high_energy_motivational": "High-energy / motivational",
+}
+BIGGEST_CHALLENGE_LABELS = {
+    "views_not_growing": "Views not growing",
+    "dont_know_what_to_post": "Doesn't know what to post",
+    "engagement_low": "Engagement is low",
+    "cant_stay_consistent": "Can't stay consistent",
+    "just_starting_out": "Just starting out",
+}
+GOAL_LABELS = {
+    "follower_milestone": "Hit a follower milestone",
+    "go_viral_once": "Go viral once",
+    "build_personal_brand": "Build a personal brand",
+    "get_sponsorships": "Get sponsorships",
+    "just_having_fun": "Just having fun",
+}
+
+
+def build_questionnaire_context(user):
+    """
+    Turns the mandatory signup questionnaire answers into a context block so
+    the Executive sounds personalized from the very first message, not just
+    after enough chat/screenshot history has piled up.
+    """
+    if not user.questionnaire_completed:
+        return ""
+
+    style = CONTENT_STYLE_LABELS.get(user.content_style, user.content_style)
+    challenge = BIGGEST_CHALLENGE_LABELS.get(user.biggest_challenge, user.biggest_challenge)
+    goal = GOAL_LABELS.get(user.goal, user.goal)
+
+    lines = ["CREATOR PROFILE (from onboarding questionnaire - use this to personalize from the first message):"]
+    if user.niche:
+        lines.append(f"- Niche: {user.niche}")
+    if style:
+        lines.append(f"- Content personality: {style}")
+    if challenge:
+        lines.append(f"- Self-reported biggest struggle right now: {challenge}")
+    if goal:
+        lines.append(f"- Stated goal: {goal}")
+    lines.append(
+        "Weave these naturally into your diagnosis and pattern recognition - reference their specific struggle "
+        "and goal directly instead of giving a generic answer. Do not simply repeat these fields back to them as a list."
+    )
+    return "\n".join(lines)
+
+
 def build_search_insights_context(user, account_id, db):
     """
     Surfaces the creator's most recent real TikTok Search Insights data (if any
@@ -167,6 +219,9 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     if not user:
         return {"reply": "Please sign in to speak with The Executive.", "limited": True}
 
+    if not user.questionnaire_completed:
+        return {"reply": "Complete your onboarding questionnaire before stepping into the boardroom.", "limited": True, "needs_questionnaire": True}
+
     if account_id:
         account = db.query(Account).filter(Account.id == account_id, Account.user_id == user.id).first()
         if not account:
@@ -185,8 +240,11 @@ async def chat(request: ChatRequest, db: Session = Depends(get_db)):
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
     history_summary = build_history_summary(user, account_id, db)
+    questionnaire_context = build_questionnaire_context(user)
     gap_context = get_gap_context(user, account_id, db)
     search_insights_context = build_search_insights_context(user, account_id, db)
+    if questionnaire_context:
+        history_summary = f"{history_summary}\n\n{questionnaire_context}" if history_summary else questionnaire_context
     if gap_context:
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
     if search_insights_context:
@@ -243,6 +301,11 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
             yield "Please sign in to speak with The Executive."
         return StreamingResponse(error_gen(), media_type="text/plain")
 
+    if not user.questionnaire_completed:
+        def questionnaire_gen():
+            yield "Complete your onboarding questionnaire before stepping into the boardroom."
+        return StreamingResponse(questionnaire_gen(), media_type="text/plain", headers={"X-Needs-Questionnaire": "true"})
+
     if account_id:
         account = db.query(Account).filter(Account.id == account_id, Account.user_id == user.id).first()
         if not account:
@@ -266,8 +329,11 @@ async def chat_stream(request: ChatRequest, db: Session = Depends(get_db)):
     print(f"MODEL LOG: user={user.id} model={model} timestamp={datetime.utcnow().isoformat()}")
 
     history_summary = build_history_summary(user, account_id, db)
+    questionnaire_context = build_questionnaire_context(user)
     gap_context = get_gap_context(user, account_id, db)
     search_insights_context = build_search_insights_context(user, account_id, db)
+    if questionnaire_context:
+        history_summary = f"{history_summary}\n\n{questionnaire_context}" if history_summary else questionnaire_context
     if gap_context:
         history_summary = f"{history_summary}\n\n{gap_context}" if history_summary else gap_context
     if search_insights_context:
