@@ -1635,7 +1635,7 @@ async function loadComputedScore() {
   container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-secondary);">${t('calculating-score')}</div>`;
 
   const data = await fetchScore();
-  if (!data || data.error) {
+    if (!data || data.error || data.detail || typeof data.total !== 'number') {
     container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-secondary);">${t('not-enough-data')}</div>`;
     document.getElementById('score-total').textContent = '0';
     document.getElementById('score-fill').style.width = '0%';
