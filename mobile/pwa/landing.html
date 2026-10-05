@@ -323,6 +323,106 @@
   }
   .install-box .cta { margin-top: 18px; }
 
+  /* INSTALL (now directly under the hero signup) */
+  .home-screen { padding: 44px 0 30px; text-align: center; }
+  .home-screen .section-tag,
+  .home-screen h2,
+  .home-screen .section-sub { margin-left: auto; margin-right: auto; }
+  .home-screen .section-sub { margin-bottom: 26px; }
+  .home-screen .install-box { margin: 0 auto; text-align: center; }
+
+  /* DEVICES */
+  .devices-section { text-align: center; padding: 50px 0 80px; }
+  .devices-section .section-tag,
+  .devices-section h2,
+  .devices-section .section-sub { margin-left: auto; margin-right: auto; }
+  .phones {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 64px;
+    flex-wrap: wrap;
+  }
+  .phone-caption {
+    margin-top: 18px;
+    font-size: 12px;
+    letter-spacing: 2.5px;
+    font-weight: 700;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+  .phone {
+    position: relative;
+    width: 250px;
+    padding: 9px;
+    background: linear-gradient(160deg, #26200f, #0f0c04);
+    border: 1px solid rgba(212,175,55,0.35);
+    box-shadow: 0 34px 70px rgba(0,0,0,0.65), 0 0 50px rgba(212,175,55,0.10);
+  }
+  .phone-screen {
+    position: relative;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+  }
+  .phone-screen img {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    object-fit: cover;
+    object-position: top;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  .phone-screen img.active { opacity: 1; }
+
+  .iphone { border-radius: 42px; }
+  .iphone .phone-screen { aspect-ratio: 1179 / 2556; border-radius: 33px; background: #080600; }
+  .iphone .phone-screen img { top: 26px; height: calc(100% - 26px); }
+  .iphone .phone-screen::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 50%;
+    width: 72px; height: 20px;
+    margin-left: -36px;
+    background: #000;
+    border-radius: 12px;
+    z-index: 3;
+  }
+  .iphone .phone-screen::after {
+    content: '';
+    position: absolute;
+    bottom: 6px; left: 50%;
+    width: 84px; height: 4px;
+    margin-left: -42px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 3px;
+    z-index: 3;
+  }
+  .ios-time {
+    position: absolute;
+    top: 8px; left: 22px;
+    z-index: 3;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.2px;
+  }
+
+  .android { border-radius: 30px; width: 232px; }
+  .android .phone-screen { aspect-ratio: 1080 / 2520; border-radius: 22px; }
+  .android .phone-screen img { top: 0; height: 100%; }
+  .android .phone-screen::before {
+    content: '';
+    position: absolute;
+    top: 9px; left: 50%;
+    width: 9px; height: 9px;
+    margin-left: -4px;
+    background: #000;
+    border-radius: 50%;
+    z-index: 3;
+  }
+
   /* FOOTER */
   footer {
     border-top: 1px solid var(--gold-border);
@@ -341,6 +441,10 @@
     .hs-grid { grid-template-columns: 1fr; }
     .positioning-row { gap: 32px; }
     .verdict-card { padding: 28px 24px; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .phones { gap: 44px; }
+    .phone { width: 220px; }
+    .android { width: 204px; }
   }
   @media (max-width: 500px) {
     .process-grid { grid-template-columns: 1fr; }
@@ -368,6 +472,48 @@
   <div class="seats-left" id="seats-left-hero"></div>
 </div>
 </div>
+
+<section class="home-screen">
+  <div class="wrap">
+    <div class="section-tag">INSTALL IT</div>
+    <h2>Add The Executive to your home screen.</h2>
+    <p class="section-sub">It opens like a real app — full screen, one tap, no App Store needed.</p>
+    <div class="install-box" id="install-box">
+      <div id="install-content">Checking your device...</div>
+    </div>
+  </div>
+</section>
+
+<section class="devices-section">
+  <div class="wrap">
+    <div class="section-tag">SEE IT IN ACTION</div>
+    <h2>Your boardroom, in your pocket.</h2>
+    <p class="section-sub">Same boardroom on iPhone and Android — your verdicts, your rulings, your accounts, one tap from your home screen.</p>
+    <div class="phones">
+      <div class="phone-wrap">
+        <div class="phone iphone">
+          <div class="phone-screen">
+            <div class="ios-time">9:41</div>
+            <img class="active" src="/images/screens/iphone-verdict.jpg" alt="The Executive delivering a verdict on iPhone" loading="lazy" />
+            <img src="/images/screens/iphone-rulings.jpg" alt="The Executive's Rulings on iPhone" loading="lazy" />
+            <img src="/images/screens/iphone-sidebar.jpg" alt="The Executive menu on iPhone" loading="lazy" />
+          </div>
+        </div>
+        <div class="phone-caption">iPhone</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone android">
+          <div class="phone-screen">
+            <img class="active" src="/images/screens/android-rulings.jpg" alt="The Executive's Rulings on Android" loading="lazy" />
+            <img src="/images/screens/android-sidebar.jpg" alt="The Executive menu on Android" loading="lazy" />
+            <img src="/images/screens/android-verdict.jpg" alt="The Executive delivering a verdict on Android" loading="lazy" />
+          </div>
+        </div>
+        <div class="phone-caption">Android</div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section class="process">
   <div class="wrap">
@@ -455,17 +601,6 @@
     <div class="feedback-card">
       <p>This is early. If something's broken, brilliant, or missing — say so. Every message gets read.</p>
       <a class="cta" href="mailto:theexecutiveapp@gmail.com">Send Feedback</a>
-    </div>
-  </div>
-</section>
-
-<section class="home-screen">
-  <div class="wrap">
-    <div class="section-tag">INSTALL IT</div>
-    <h2>Add The Executive to your home screen.</h2>
-    <p class="section-sub">It opens like a real app — full screen, one tap, no App Store needed.</p>
-    <div class="install-box" id="install-box">
-      <div id="install-content">Checking your device...</div>
     </div>
   </div>
 </section>
@@ -560,6 +695,24 @@
 
   fetchSeatsLeft();
   renderInstallBox();
+
+  // Phone mockups: gently cycle through the app screens (off for reduced-motion users)
+  (function () {
+    const screens = document.querySelectorAll('.phone-screen');
+    screens.forEach((screen, i) => {
+      const imgs = screen.querySelectorAll('img');
+      if (imgs.length < 2) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      let idx = 0;
+      setTimeout(() => {
+        setInterval(() => {
+          imgs[idx].classList.remove('active');
+          idx = (idx + 1) % imgs.length;
+          imgs[idx].classList.add('active');
+        }, 3800);
+      }, i * 1900);
+    });
+  })();
 </script>
 </body>
 </html>

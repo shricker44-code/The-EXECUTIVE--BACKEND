@@ -1,436 +1,695 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie.min.js"></script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#D4AF37" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="The Executive" />
-  <link rel="manifest" href="/manifest.json" />
-  <link rel="apple-touch-icon" href="/images/icon-192.png" />
-  <link rel="stylesheet" href="/css/style.css" />
-  <title>The Executive</title>
-  <style>
-    .q-chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-    .q-chip {
-      padding: 9px 14px;
-      border-radius: 20px;
-      border: 1px solid var(--gold-border, rgba(212,175,55,0.35));
-      background: rgba(255,255,255,0.03);
-      color: var(--text-primary, #E8E0CC);
-      font-size: 13px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      line-height: 1.3;
-    }
-    .q-chip:hover { border-color: var(--gold, #D4AF37); }
-    .q-chip.selected {
-      background: var(--gold, #D4AF37);
-      border-color: var(--gold, #D4AF37);
-      color: #000;
-      font-weight: 600;
-    }
-    .q-readonly-note {
-      font-size: 11px;
-      color: var(--text-muted, #999);
-      margin-top: 4px;
-    }
-    .field-input[readonly] {
-      opacity: 0.75;
-      cursor: default;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Executive — TikTok Boardroom Advisor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json" />
+<style>
+  :root {
+    --black: #080600;
+    --panel: #0d0a00;
+    --gold: #D4AF37;
+    --gold-dim: #8b6914;
+    --gold-border: rgba(212,175,55,0.2);
+    --cream: #E8E0CC;
+    --muted: rgba(232,224,204,0.55);
+    --font-ui: 'Inter', -apple-system, system-ui, sans-serif;
+    --font-brand: Georgia, 'Times New Roman', serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: var(--font-ui);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .wrap {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* NAV */
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 0;
+  }
+  .nav-brand {
+    font-family: var(--font-brand);
+    font-weight: 900;
+    font-size: 17px;
+    letter-spacing: 1px;
+    color: var(--gold);
+  }
+  .nav-signin {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    border: 1px solid var(--gold-border);
+    border-radius: 20px;
+    padding: 8px 18px;
+    transition: color 0.2s ease, border-color 0.2s ease;
+  }
+  .nav-signin:hover { color: var(--gold); border-color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    padding: 90px 0 100px;
+    text-align: center;
+    opacity: 0;
+    animation: hero-in 0.9s ease forwards;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: url('/images/laughingintheoffice.jpeg') center 20% / cover no-repeat;
+    opacity: 0.28;
+    z-index: 0;
+  }
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(8,6,0,0.4) 0%, rgba(8,6,0,0.85) 70%, var(--black) 100%);
+  }
+  .hero > .wrap { position: relative; z-index: 1; }
+  @keyframes hero-in {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-label {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--gold-dim);
+    font-weight: 700;
+    margin-bottom: 22px;
+  }
+  .hero h1 {
+    font-family: var(--font-brand);
+    font-weight: 900;
+    font-size: clamp(32px, 5.4vw, 56px);
+    line-height: 1.14;
+    max-width: 780px;
+    margin: 0 auto 26px;
+    color: var(--cream);
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+  .hero p {
+    max-width: 520px;
+    margin: 0 auto 38px;
+    font-size: 17px;
+    color: var(--muted);
+  }
+  .cta {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--black);
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: 1px;
+    padding: 16px 36px;
+    border-radius: 30px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(212,175,55,0.25);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .cta:hover { transform: translateY(-1px); box-shadow: 0 6px 30px rgba(212,175,55,0.35); }
+  .cta::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -150%;
+    width: 60%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+    transform: skewX(-20deg);
+    animation: shine 4.5s ease-in-out infinite;
+  }
+  @keyframes shine { 0% { left: -150%; } 35% { left: 150%; } 100% { left: 150%; } }
+  .hero-note {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+    .waitlist-form {
+    display: flex;
+    gap: 10px;
+    max-width: 420px;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .waitlist-input {
+    flex: 1;
+    min-width: 220px;
+    background: var(--panel);
+    border: 1px solid var(--gold-border);
+    border-radius: 30px;
+    padding: 14px 20px;
+    color: var(--cream);
+    font-family: var(--font-ui);
+    font-size: 14px;
+  }
+  .waitlist-input:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+  .waitlist-submit {
+    white-space: nowrap;
+    cursor: pointer;
+    border: none;
+  }
+
+  /* SECTION SHARED */
+  section { padding: 70px 0; }
+  .section-tag {
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    color: var(--gold-dim);
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  h2 {
+    font-family: var(--font-brand);
+    font-size: clamp(24px, 3.4vw, 32px);
+    font-weight: 900;
+    color: var(--cream);
+    margin-bottom: 14px;
+    max-width: 560px;
+  }
+  .section-sub {
+    color: var(--muted);
+    max-width: 540px;
+    font-size: 15px;
+    margin-bottom: 48px;
+  }
+
+  /* PROCESS */
+  .process { border-top: 1px solid var(--gold-border); border-bottom: 1px solid var(--gold-border); }
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+  }
+  .process-item { border-left: 1px solid var(--gold-border); padding-left: 18px; }
+  .process-num {
+    font-family: var(--font-brand);
+    color: var(--gold);
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .process-item h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+  .process-item p { font-size: 13.5px; color: var(--muted); }
+
+  /* VERDICT SAMPLE */
+  .verdict-section, .pricing-section { text-align: center; }
+  .verdict-section .section-tag, .verdict-section h2, .verdict-section .section-sub,
+  .pricing-section .section-tag, .pricing-section h2 { margin-left: auto; margin-right: auto; }
+
+  .verdict-card {
+    background: var(--panel);
+    border: 1px solid var(--gold-border);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    padding: 36px 40px;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .verdict-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+    font-weight: 700;
+    margin-bottom: 18px;
+  }
+  .verdict-text {
+    font-size: 16.5px;
+    line-height: 1.75;
+    color: var(--cream);
+  }
+  .verdict-text + .verdict-text { margin-top: 14px; }
+
+  /* BENEFITS */
+  .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  .benefit-item { border-left: 1px solid var(--gold-border); padding-left: 18px; }
+  .benefit-item h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+  .benefit-item p { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+
+  /* PRICING */
+  .pricing-card {
+    max-width: 380px;
+    background: var(--panel);
+    border: 1px solid var(--gold-border);
+    border-radius: 8px;
+    padding: 40px;
+    text-align: center;
+    margin: 0 auto;
+  }
+  .price {
+    font-family: var(--font-brand);
+    font-size: 48px;
+    font-weight: 900;
+    color: var(--gold);
+  }
+  .price span { font-size: 16px; color: var(--muted); font-family: var(--font-ui); }
+  .pricing-card p.desc { color: var(--muted); font-size: 14px; margin: 14px 0 26px; }
+  .pricing-card .cta { display: block; width: 100%; }
+
+  /* FEEDBACK */
+  .feedback-card {
+    max-width: 560px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .feedback-card p {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 26px;
+  }
+  .install-box {
+    max-width: 480px;
+    background: var(--panel);
+    border: 1px solid var(--gold-border);
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    padding: 30px 34px;
+  }
+  .install-box p {
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 14px;
+  }
+  .install-box .cta { margin-top: 18px; }
+
+
+  /* INSTALL (now directly under the hero signup) */
+  .home-screen { padding: 44px 0 30px; text-align: center; }
+  .home-screen .section-tag,
+  .home-screen h2,
+  .home-screen .section-sub { margin-left: auto; margin-right: auto; }
+  .home-screen .section-sub { margin-bottom: 26px; }
+  .home-screen .install-box { margin: 0 auto; text-align: center; }
+
+  /* DEVICES */
+  .devices-section { text-align: center; padding: 50px 0 80px; }
+  .devices-section .section-tag,
+  .devices-section h2,
+  .devices-section .section-sub { margin-left: auto; margin-right: auto; }
+  .phones {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 64px;
+    flex-wrap: wrap;
+  }
+  .phone-caption {
+    margin-top: 18px;
+    font-size: 12px;
+    letter-spacing: 2.5px;
+    font-weight: 700;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+  }
+  .phone {
+    position: relative;
+    width: 250px;
+    padding: 9px;
+    background: linear-gradient(160deg, #26200f, #0f0c04);
+    border: 1px solid rgba(212,175,55,0.35);
+    box-shadow: 0 34px 70px rgba(0,0,0,0.65), 0 0 50px rgba(212,175,55,0.10);
+  }
+  .phone-screen {
+    position: relative;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+  }
+  .phone-screen img {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    object-fit: cover;
+    object-position: top;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  .phone-screen img.active { opacity: 1; }
+
+  .iphone { border-radius: 42px; }
+  .iphone .phone-screen { aspect-ratio: 1179 / 2556; border-radius: 33px; background: #080600; }
+  .iphone .phone-screen img { top: 26px; height: calc(100% - 26px); }
+  .iphone .phone-screen::before {
+    content: '';
+    position: absolute;
+    top: 8px; left: 50%;
+    width: 72px; height: 20px;
+    margin-left: -36px;
+    background: #000;
+    border-radius: 12px;
+    z-index: 3;
+  }
+  .iphone .phone-screen::after {
+    content: '';
+    position: absolute;
+    bottom: 6px; left: 50%;
+    width: 84px; height: 4px;
+    margin-left: -42px;
+    background: rgba(255,255,255,0.55);
+    border-radius: 3px;
+    z-index: 3;
+  }
+  .ios-time {
+    position: absolute;
+    top: 8px; left: 22px;
+    z-index: 3;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.2px;
+  }
+
+  .android { border-radius: 30px; width: 232px; }
+  .android .phone-screen { aspect-ratio: 1080 / 2520; border-radius: 22px; }
+  .android .phone-screen img { top: 0; height: 100%; }
+  .android .phone-screen::before {
+    content: '';
+    position: absolute;
+    top: 9px; left: 50%;
+    width: 9px; height: 9px;
+    margin-left: -4px;
+    background: #000;
+    border-radius: 50%;
+    z-index: 3;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--gold-border);
+    padding: 34px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  footer .brand { font-family: var(--font-brand); color: var(--gold-dim); font-size: 13px; }
+  footer .fine { color: rgba(232,224,204,0.35); font-size: 12px; }
+
+  @media (max-width: 760px) {
+    .process-grid { grid-template-columns: 1fr 1fr; }
+    .hs-grid { grid-template-columns: 1fr; }
+    .positioning-row { gap: 32px; }
+    .verdict-card { padding: 28px 24px; }
+    .benefits-grid { grid-template-columns: 1fr; }
+    .phones { gap: 44px; }
+    .phone { width: 220px; }
+    .android { width: 204px; }
+  }
+  @media (max-width: 500px) {
+    .process-grid { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- Splash Screen -->
-  <div id="splash" class="splash">
-    <div id="splash-lottie" class="splash-lottie"></div>
-    <h1 class="splash-title" data-i18n="splash-title">THE EXECUTIVE</h1>
-    <p class="splash-sub" data-i18n="splash-sub">Your TikTok Boardroom Advisor</p>
-  </div>
-
-    <!-- Auth Screen -->
-  <div id="auth-screen" class="auth-screen hidden">
-    <div class="auth-container">
-      <img src="/images/logo.png" alt="The Executive" class="auth-seal-img" />
-      <div class="auth-title" id="auth-title" data-i18n="auth-title-signup">THE EXECUTIVE</div>
-      <div class="auth-subtitle" id="auth-subtitle" data-i18n="auth-subtitle-signup">YOUR 14-DAY TRIAL STARTS NOW</div>
-      <div class="auth-divider"></div>
-      <div class="auth-form">
-        <div id="auth-firstname-group" class="auth-field">
-          <label class="auth-label" data-i18n="auth-label-firstname">FIRST NAME</label>
-          <input id="auth-firstname" class="auth-input" type="text" placeholder="Your first name" data-i18n-placeholder="auth-placeholder-firstname" />
-        </div>
-        <div class="auth-field">
-          <label class="auth-label" data-i18n="auth-label-email">EMAIL</label>
-          <input id="auth-email" class="auth-input" type="email" placeholder="your@email.com" />
-        </div>
-        <div class="auth-field">
-          <label class="auth-label" data-i18n="auth-label-password">PASSWORD</label>
-          <div style="position: relative;">
-            <input id="auth-password" class="auth-input" type="password" placeholder="••••••••" style="padding-right: 40px; width: 100%; box-sizing: border-box;" />
-            <button type="button" onclick="togglePasswordVisibility('auth-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-muted);">
-              <svg class="eye-open" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
-              <svg class="eye-closed" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
-                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                <line x1="1" y1="1" x2="23" y2="23"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <p id="forgot-password-link" class="hidden" style="text-align: right; margin: -6px 0 0 0;">
-          <a href="#" onclick="handleForgotPassword(); return false;" style="font-size: 12px; color: var(--text-muted);">Forgot password?</a>
-        </p>
-        <div id="consent-group" class="auth-field" style="flex-direction: row; align-items: flex-start; gap: 10px;">
-          <input type="checkbox" id="auth-consent" style="margin-top: 3px; width: 16px; height: 16px; accent-color: var(--gold); cursor: pointer;" />
-          <label for="auth-consent" style="font-size: 12px; color: var(--text-muted); line-height: 1.5; cursor: pointer;">I consent to sending screenshots of my private TikTok analytics to The Executive for analysis, and I agree to the <a href="/terms.html" target="_blank" style="color: var(--gold);">Terms and Conditions</a>.</label>
-        </div>
-        <button id="auth-submit-btn" class="auth-submit" onclick="handleSignUp()" data-i18n="auth-submit-btn">ENTER THE BOARDROOM</button>
-        <button id="auth-toggle" class="auth-toggle" onclick="toggleAuthMode()" data-i18n="auth-toggle-signup">Already have an account? Sign in</button>
-      </div>
-    </div>
-  </div>
-  <!-- Blocked Screen -->
-<div id="blocked-screen" class="auth-screen hidden">
-  <div class="auth-container">
-    <div class="auth-seal">
-      <span class="auth-seal-letter">E</span>
-      <span class="auth-seal-sub">EXEC</span>
-    </div>
-    <div class="auth-title" data-i18n="blocked-welcome-back">WELCOME BACK</div>
-    <div class="auth-divider"></div>
-    <div id="blocked-message" class="blocked-message"></div>
-    <button class="auth-submit" onclick="showSignIn()" data-i18n="blocked-signin-btn">SIGN IN TO MY ACCOUNT</button>
-    <div style="margin-top: 12px; color: rgba(212,175,55,0.3); font-size: 11px; text-align: center; letter-spacing: 1px;">OR</div>
-    <button class="auth-toggle" onclick="upgradeToBasePlan()" data-i18n="blocked-upgrade-btn">Upgrade to Executive Plan →</button>
-  </div>
+<div class="wrap nav">
+  <div class="nav-brand">THE EXECUTIVE</div>
+  <a class="nav-signin" href="https://theexecutive.app">Sign In</a>
 </div>
 
-  <!-- Questionnaire Screen (mandatory, shown once after signup/signin until completed) -->
-  <div id="questionnaire-screen" class="auth-screen hidden">
-    <div class="auth-container" style="max-width: 440px;">
-      <div class="auth-title" data-i18n="q-title">ONE LAST THING BEFORE THE BOARDROOM</div>
-      <div class="auth-subtitle" data-i18n="q-subtitle">30 seconds. This is how The Executive learns who you are — no generic advice after this.</div>
-      <div class="auth-divider"></div>
-
-      <div class="auth-form" style="gap: 20px;">
-
-        <div class="auth-field">
-          <label class="auth-label" data-i18n="q-label-handle">YOUR TIKTOK HANDLE</label>
-          <input id="q-handle" class="auth-input" type="text" placeholder="@yourhandle" data-i18n-placeholder="q-ph-handle" />
-        </div>
-
-        <div class="auth-field">
-          <label class="auth-label" data-i18n="q-label-niche">WHAT'S YOUR NICHE?</label>
-          <div id="q-niche-chips" class="q-chip-row"></div>
-          <input id="q-niche-other" class="auth-input hidden" type="text" placeholder="Type your niche" style="margin-top: 8px;" data-i18n-placeholder="q-ph-niche-other" />
-        </div>
-
-        <div class="auth-field">
-          <label class="auth-label" data-i18n="q-label-style">HOW WOULD YOU DESCRIBE YOUR CONTENT?</label>
-          <div id="q-style-chips" class="q-chip-row"></div>
-        </div>
-
-        <div class="auth-field">
-          <label class="auth-label" data-i18n="q-label-challenge">WHAT'S YOUR BIGGEST STRUGGLE RIGHT NOW?</label>
-          <div id="q-challenge-chips" class="q-chip-row"></div>
-        </div>
-
-        <div class="auth-field">
-          <label class="auth-label" data-i18n="q-label-goal">WHAT'S YOUR GOAL?</label>
-          <div id="q-goal-chips" class="q-chip-row"></div>
-        </div>
-
-        <p id="q-error" class="hidden" style="color: #FF6B6B; font-size: 12px; text-align: center; margin: 0;"></p>
-
-        <button id="q-submit-btn" class="auth-submit" onclick="handleQuestionnaireSubmit()" data-i18n="q-submit-btn">STEP INTO THE BOARDROOM</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- App Shell -->
-  <div id="app" class="app hidden">
-
-    <!-- MOBILE-ONLY: Sidebar trigger -->
-    <button id="mobile-menu-btn" class="mobile-menu-btn" onclick="toggleSidebar()">E</button>
-
-    <!-- Boardroom Tab -->
-    <div id="tab-boardroom" class="tab-content active">
-
-      <!-- Left Panel — Character -->
-      <div class="boardroom-left">
-        <div class="header">
-          <div class="divider"></div>
-          <div class="header-content">
-            <img src="/images/logo.png" alt="The Executive" class="seal-img" />
-            <div class="header-text">
-  <div class="header-title">THE EXECUTIVE</div>
-  <div class="header-sub" data-i18n="header-sub">TIKTOK BOARDROOM ADVISOR</div>
+<div class="hero">
+<div class="hero-bg"></div>
+<div class="wrap">
+  <div class="hero-label">TIKTOK BOARDROOM ADVISOR</div>
+  <h1>Followers don't make you money. <em>Engagement does.</em></h1>
+  <p>Upload a screenshot of your TikTok analytics. Get a specific, no-fluff verdict on exactly why you're not growing — and one assignment to fix it.</p>
+  <form class="waitlist-form" id="waitlist-form-hero" onsubmit="return submitWaitlist(event, 'hero')">
+    <input type="email" class="waitlist-input" id="waitlist-email-hero" placeholder="Enter your email" required />
+    <button type="submit" class="cta waitlist-submit">Join the Waitlist</button>
+  </form>
+  <div class="hero-note">Free 14-day trial once you're in. No fluff, no generic advice.</div>
 </div>
-<div class="live-badge">● LIVE</div>
-<button class="clear-chat-btn" onclick="clearChat()" title="Clear conversation">🗑️</button>
-          </div>
-          <div class="divider"></div>
-        </div>
-        <div id="account-switcher" class="account-switcher hidden"></div>
-        <div id="expression-container" class="expression-container">
-          <img id="expression-img" class="expression-img" src="/images/expressions/neutral.jpeg" alt="The Executive" />
-        </div>
-      </div>
+</div>
 
-      <!-- Right Panel — Chat -->
-      <div class="boardroom-right">
-        <div id="messages" class="messages"></div>
-<button id="scroll-bottom-btn" class="scroll-bottom-btn" onclick="scrollToBottom()">↓</button>
-        <div id="typing" class="typing hidden">
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-          <span class="typing-text" data-i18n="typing-text">The Executive is deliberating...</span>
-        </div>
-        <div id="quick-prompts" class="quick-prompts">
-          <div class="quick-prompts-label" data-i18n="quick-prompts-label">PRESENT YOUR CASE</div>
-          <div class="quick-prompts-grid">
-            <button class="prompt-btn" onclick="sendQuickPrompt('Evaluate my content strategy')" data-i18n="qp-1">Evaluate my content strategy</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Why aren\'t my views growing?')" data-i18n="qp-2">Why aren't my views growing?</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('What\'s my winning formula?')" data-i18n="qp-3">What's my winning formula?</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('How do I dominate my niche?')" data-i18n="qp-4">How do I dominate my niche?</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Fire my worst habit')" data-i18n="qp-5">Fire my worst habit</button>
-            <button class="prompt-btn" onclick="sendQuickPrompt('Am I wasting my posting time?')" data-i18n="qp-6">Am I wasting my posting time?</button>
-          </div>
-        </div>
-        <div class="input-container">
-          <div class="input-divider"></div>
-          <div id="pending-attachments" class="hidden" style="display:flex; flex-wrap:wrap; gap:6px; padding: 0 4px 8px;"></div>
-                 <div class="input-row">
-            <div style="position: relative;">
-              <button id="attach-btn" class="attach-btn" onclick="handleAttachClick()" title="Attach screenshot">+</button>
-              <div id="attach-menu" class="hidden" style="position: absolute; bottom: 48px; left: 0; background: #141414; border: 1px solid #2a2a2a; border-radius: 8px; overflow: hidden; z-index: 10; min-width: 220px;">
-                <button onclick="selectScreenshotType('analytics')" style="display: block; width: 100%; text-align: left; padding: 12px 16px; background: none; border: none; color: #f5f5f5; cursor: pointer; font-size: 13px;">📊 Analytics Screenshot</button>
-                <button onclick="selectScreenshotType('search_insights')" style="display: block; width: 100%; text-align: left; padding: 12px 16px; background: none; border: none; color: #f5f5f5; cursor: pointer; font-size: 13px; border-top: 1px solid #2a2a2a;">🔍 Search Insights Screenshot</button>
-              </div>
-            </div>
-            <input type="file" id="screenshot-input" accept="image/*" multiple style="display:none" onchange="handleScreenshotSelected(event)">
-            <button id="mute-btn" class="mute-btn" onclick="toggleMute()" title="Mute voice">🔊</button>
-            <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1" oninput="setVolume(this.value)" class="volume-slider" title="Volume" />
-            <textarea
-              id="user-input"
-              class="user-input"
-              placeholder="State your case to The Executive..."
-              data-i18n-placeholder="input-placeholder"
-              rows="1"
-              onkeydown="handleKeyDown(event)"
-              oninput="autoResize(this)"
-            ></textarea>
-            <button id="send-btn" class="send-btn" onclick="handleSend()">↑</button>
-          </div>
-        </div>
-      </div>
+<section class="home-screen">
+  <div class="wrap">
+    <div class="section-tag">INSTALL IT</div>
+    <h2>Add The Executive to your home screen.</h2>
+    <p class="section-sub">It opens like a real app — full screen, one tap, no App Store needed.</p>
+    <div class="install-box" id="install-box">
+      <div id="install-content">Checking your device...</div>
     </div>
-
-    <!-- Profile Tab -->
-    <div id="tab-profile" class="tab-content hidden">
-      <div class="header">
-        <div class="divider"></div>
-        <div class="header-title-center" data-i18n="profile-header-title">CREATOR PROFILE</div>
-        <div id="usage-display" style="text-align: center; color: var(--text-muted); font-size: 12px; padding: 8px 20px; letter-spacing: 0.5px;"></div>
-        <div class="header-sub-center" data-i18n="profile-header-sub">YOUR DOSSIER. THE EXECUTIVE NEEDS THE FACTS.</div>
-        <div class="divider"></div>
-      </div>
-      <div class="field-card">
-       <label class="field-label" data-i18n="field-plan">EXECUTIVE PLAN</label>
-       <button class="verdict-btn" onclick="upgradeToBasePlan()" data-i18n="upgrade-btn">UPGRADE TO EXECUTIVE PLAN — $15/MO</button>
-      </div>
-      <div class="tab-scroll">
-        <div class="profile-form">
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-callyou">WHAT SHOULD THE EXECUTIVE CALL YOU?</label>
-            <input class="field-input" id="p-displayname" type="text" placeholder="Your name" data-i18n-placeholder="ph-name" />
-            <button class="save-btn" style="margin-top: 10px;" onclick="handleUpdateName()" data-i18n="btn-update-name">UPDATE NAME</button>
-          </div>
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-username">TIKTOK USERNAME</label>
-            <input class="field-input" id="p-username" type="text" placeholder="@yourhandle" readonly />
-          </div>
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-niche">YOUR NICHE</label>
-            <input class="field-input" id="p-niche" type="text" placeholder="e.g. fitness, comedy, cooking" data-i18n-placeholder="ph-niche" readonly />
-          </div>
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-style">CONTENT PERSONALITY</label>
-            <input class="field-input" id="p-style" type="text" readonly />
-          </div>
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-challenge">BIGGEST STRUGGLE</label>
-            <input class="field-input" id="p-challenge" type="text" readonly />
-          </div>
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-goal">YOUR GOAL</label>
-            <input class="field-input" id="p-goal" type="text" readonly />
-          </div>
-          <button class="save-btn" onclick="openQuestionnaireForEdit()" data-i18n="btn-edit-answers">✎ EDIT MY ANSWERS</button>
-
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-followers">FOLLOWER COUNT</label>
-            <input class="field-input" id="p-followers" type="text" placeholder="—" readonly />
-            <div class="q-readonly-note" data-i18n="note-auto-screenshot">Auto-filled from your analytics screenshots.</div>
-          </div>
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-views">AVERAGE VIEWS</label>
-            <input class="field-input" id="p-views" type="text" placeholder="—" readonly />
-            <div class="q-readonly-note" data-i18n="note-auto-screenshot">Auto-filled from your analytics screenshots.</div>
-          </div>
-          <div class="field-card">
-            <label class="field-label" data-i18n="field-freq">POSTING FREQUENCY</label>
-            <input class="field-input" id="p-freq" type="text" placeholder="—" readonly />
-            <div class="q-readonly-note" data-i18n="note-auto-screenshot">Auto-filled from your analytics screenshots.</div>
-          </div>
-                    <div class="field-card">
-            <label class="field-label" data-i18n="field-checkin">DAILY CHECK-IN TIME</label>
-            <input class="field-input" id="p-checkin-time" type="time" />
-            <button class="verdict-btn" onclick="handleSetCheckInTime()" data-i18n="btn-set-checkin">SET REPORTING TIME</button>
-          </div>
-          <button class="verdict-btn" onclick="getProfileVerdict()" data-i18n="btn-get-analysis">GET MY EXECUTIVE ANALYSIS →</button>
-
-          <div class="field-card" style="margin-top: 16px;">
-            <button class="save-btn" onclick="toggleSettingsSection()" style="display: flex; align-items: center; justify-content: space-between;">
-              <span>SETTINGS</span>
-              <span id="settings-arrow">▼</span>
-            </button>
-            <div id="settings-content" class="hidden" style="margin-top: 14px;">
-              <label class="field-label" data-i18n="field-language">LANGUAGE</label>
-              <div style="display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
-                <button class="score-btn" id="lang-en" onclick="setLanguage('en')">English</button>
-                <button class="score-btn" id="lang-fr" onclick="setLanguage('fr')">Français</button>
-                <button class="score-btn" id="lang-pt" onclick="setLanguage('pt')">Português</button>
-                <button class="score-btn" id="lang-hi" onclick="setLanguage('hi')">हिन्दी</button>
-              </div>
-
-              <label class="field-label" style="margin-top: 20px; display: block;">THEME</label>
-              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 10px;">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-size: 12px; color: var(--text-muted);">Accent Color</span>
-                  <input type="color" id="theme-accent" value="#D4AF37" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-size: 12px; color: var(--text-muted);">Background Color</span>
-                  <input type="color" id="theme-background" value="#080600" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-size: 12px; color: var(--text-muted);">Primary Text Color</span>
-                  <input type="color" id="theme-text-primary" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-size: 12px; color: var(--text-muted);">Secondary Text Color</span>
-                  <input type="color" id="theme-text-secondary" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-size: 12px; color: var(--text-muted);">Your Message Color</span>
-                  <input type="color" id="theme-bubble-user" value="#D4AF37" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span style="font-size: 12px; color: var(--text-muted);">Executive Message Color</span>
-                  <input type="color" id="theme-bubble-assistant" value="#E8E0CC" onchange="handleThemeChange()" style="width: 40px; height: 30px; border: none; background: none; cursor: pointer;" />
-                </div>
-                                <button class="save-btn" style="margin-top: 4px;" onclick="resetTheme()">RESET TO DEFAULT</button>
-              </div>
-
-              <div style="margin-top: 20px; border-top: 1px solid var(--gold-border); padding-top: 16px;">
-                <button class="auth-toggle" onclick="handleCancelSubscription()" style="color: #FF9944; width: 100%;">CANCEL SUBSCRIPTION</button>
-                <button class="auth-toggle" onclick="handleDeleteAccountPermanently()" style="color: #FF4444; width: 100%; margin-top: 8px;">DELETE ACCOUNT</button>
-              </div>
-            </div>
-          </div>
-
-          <button class="auth-toggle" onclick="handleSignOut()" style="margin-top: 16px; color: #FF4444;" data-i18n="btn-sign-out">SIGN OUT</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Score Tab -->
-    <div id="tab-score" class="tab-content hidden">
-      <div class="header">
-        <div class="divider"></div>
-        <div class="header-title-center" data-i18n="score-header-title">EXECUTIVE SCORE</div>
-        <div class="header-sub-center" data-i18n="score-header-sub">TRACK YOUR GROWTH. EARN YOUR RANK.</div>
-        <div class="divider"></div>
-      </div>
-      <div class="tab-scroll">
-        <div class="score-card">
-          <div id="score-total" class="score-big">0</div>
-          <div class="score-max">/100</div>
-          <div id="score-label" class="score-label">YOU'RE FIRED</div>
-          <div class="score-bar"><div id="score-fill" class="score-fill"></div></div>
-        </div>
-        <div class="score-categories" id="score-categories"></div>
-        <button class="verdict-btn" onclick="getScoreVerdict()" data-i18n="btn-get-score-verdict">GET VERDICT ON MY SCORE →</button>
-      </div>
-    </div>
-
-    <!-- Verdicts Tab -->
-    <div id="tab-verdicts" class="tab-content hidden">
-      <div class="header">
-        <div class="divider"></div>
-        <div class="header-title-center" data-i18n="verdicts-header-title">THE EXECUTIVE'S RULINGS</div>
-        <div class="header-sub-center" data-i18n="verdicts-header-sub">TAP ANY RULING TO DISCUSS IN BOARDROOM</div>
-        <div class="divider"></div>
-      </div>
-      <div class="tab-scroll" id="verdicts-list"></div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <nav class="bottom-nav">
-      <button class="nav-btn active" onclick="switchTab('boardroom')">
-        <span class="nav-icon">💼</span>
-        <span class="nav-label" data-i18n="nav-boardroom">Boardroom</span>
-      </button>
-      <button class="nav-btn" onclick="switchTab('profile')">
-        <span class="nav-icon">👤</span>
-        <span class="nav-label" data-i18n="nav-profile">Profile</span>
-      </button>
-      <button class="nav-btn" onclick="switchTab('score')">
-        <span class="nav-icon">🏆</span>
-        <span class="nav-label" data-i18n="nav-score">Score</span>
-      </button>
-      <button class="nav-btn" onclick="switchTab('verdicts')">
-        <span class="nav-icon">📄</span>
-        <span class="nav-label" data-i18n="nav-verdicts">Verdicts</span>
-      </button>
-    </nav>
-
-    <!-- MOBILE-ONLY: Slide-in Sidebar -->
-    <div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-    <div id="mobile-sidebar" class="mobile-sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-title" data-i18n="sidebar-title">THE EXECUTIVE</div>
-        <button class="sidebar-close" onclick="closeSidebar()">×</button>
-      </div>
-      <div class="sidebar-nav">
-        <button class="sidebar-nav-item" onclick="sidebarNavigate('boardroom')"><span class="sidebar-nav-icon">💼</span><span data-i18n="nav-boardroom">Boardroom</span></button>
-        <button class="sidebar-nav-item" onclick="sidebarNavigate('profile')"><span class="sidebar-nav-icon">👤</span><span data-i18n="nav-profile">Profile</span></button>
-        <button class="sidebar-nav-item" onclick="sidebarNavigate('score')"><span class="sidebar-nav-icon">🏆</span><span data-i18n="nav-score">Score</span></button>
-        <button class="sidebar-nav-item" onclick="sidebarNavigate('verdicts')"><span class="sidebar-nav-icon">📄</span><span data-i18n="nav-verdicts">Verdicts</span></button>
-        <button class="sidebar-nav-item" onclick="sidebarClearChat()"><span class="sidebar-nav-icon">🗑️</span><span data-i18n="sidebar-clear-chat">Clear Chat</span></button>
-      </div>
-      <div class="sidebar-divider"></div>
-      <div id="sidebar-accounts" class="sidebar-accounts"></div>
-    </div>
-
   </div>
+</section>
 
-  <script src="/js/expressions.js"></script>
-  <script src="/js/api.js"></script>
-  <script src="/js/main.js"></script>
-  <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js');
+<section class="devices-section">
+  <div class="wrap">
+    <div class="section-tag">SEE IT IN ACTION</div>
+    <h2>Your boardroom, in your pocket.</h2>
+    <p class="section-sub">Same boardroom on iPhone and Android — your verdicts, your rulings, your accounts, one tap from your home screen.</p>
+    <div class="phones">
+      <div class="phone-wrap">
+        <div class="phone iphone">
+          <div class="phone-screen">
+            <div class="ios-time">9:41</div>
+            <img class="active" src="/images/screens/iphone-verdict.jpg" alt="The Executive delivering a verdict on iPhone" loading="lazy" />
+            <img src="/images/screens/iphone-rulings.jpg" alt="The Executive's Rulings on iPhone" loading="lazy" />
+            <img src="/images/screens/iphone-sidebar.jpg" alt="The Executive menu on iPhone" loading="lazy" />
+          </div>
+        </div>
+        <div class="phone-caption">iPhone</div>
+      </div>
+      <div class="phone-wrap">
+        <div class="phone android">
+          <div class="phone-screen">
+            <img class="active" src="/images/screens/android-rulings.jpg" alt="The Executive's Rulings on Android" loading="lazy" />
+            <img src="/images/screens/android-sidebar.jpg" alt="The Executive menu on Android" loading="lazy" />
+            <img src="/images/screens/android-verdict.jpg" alt="The Executive delivering a verdict on Android" loading="lazy" />
+          </div>
+        </div>
+        <div class="phone-caption">Android</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="process">
+  <div class="wrap">
+    <div class="section-tag">HOW IT WORKS</div>
+    <h2>Four steps. No guessing.</h2>
+    <div class="process-grid">
+      <div class="process-item">
+        <div class="process-num">01</div>
+        <h3>Screenshot your analytics</h3>
+        <p>Open TikTok, go to Creator Tools, screenshot your Overview tab.</p>
+      </div>
+      <div class="process-item">
+        <div class="process-num">02</div>
+        <h3>The Executive reads it</h3>
+        <p>Follower count, engagement rate, watch time, completion rate — all of it.</p>
+      </div>
+      <div class="process-item">
+        <div class="process-num">03</div>
+        <h3>Get your verdict</h3>
+        <p>A specific diagnosis built from your real numbers, not a template.</p>
+      </div>
+      <div class="process-item">
+        <div class="process-num">04</div>
+        <h3>Complete the assignment</h3>
+        <p>One task. Come back with proof. The Executive holds you to it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="verdict-section">
+  <div class="wrap">
+    <div class="section-tag">SAMPLE VERDICT</div>
+    <h2>This is what a real verdict sounds like.</h2>
+    <div class="verdict-card">
+      <div class="verdict-label">THE EXECUTIVE</div>
+      <div class="verdict-text">Your engagement rate sits at 2.1%. The benchmark for fitness creators under 10K is 5 to 8%. That's not bad luck. That's a hook problem.</div>
+      <div class="verdict-text">Your last five videos opened with your face and a wave. Nobody's stopping to watch that.</div>
+      <div class="verdict-text">Study a creator in your niche who opens with a curiosity-gap hook instead. Then post one video using that exact structure. Come back when it's done.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="section-tag">WHY IT WORKS</div>
+    <h2>Built to make you money, not just grow a number.</h2>
+    <div class="benefits-grid">
+      <div class="benefit-item">
+        <h3>Real benchmarks, your niche</h3>
+        <p>Every verdict compares your numbers against real data for creators in your niche and follower tier — not generic advice.</p>
+      </div>
+      <div class="benefit-item">
+        <h3>One fix at a time</h3>
+        <p>No ten-point checklists. Just the single highest-leverage change to make next, and proof it worked before moving on.</p>
+      </div>
+      <div class="benefit-item">
+        <h3>Remembers your progress</h3>
+        <p>Every check-in builds on the last. The Executive tracks your growth over time and holds you accountable to what actually worked.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing-section">
+  <div class="wrap">
+    <div class="section-tag">PRICING</div>
+    <h2>One plan. No tiers to decode.</h2>
+    <div class="pricing-card">
+      <div class="price">$15<span>/mo</span></div>
+      <p class="desc">Unlimited verdicts. Voice playback. Full growth tracking across every account you manage.</p>
+          <form class="waitlist-form" id="waitlist-form-pricing" onsubmit="return submitWaitlist(event, 'pricing')">
+        <input type="email" class="waitlist-input" id="waitlist-email-pricing" placeholder="Enter your email" required />
+        <button type="submit" class="cta waitlist-submit">Join the Waitlist</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="pricing-section">
+  <div class="wrap">
+    <div class="section-tag">FEEDBACK</div>
+    <h2>Tell The Executive what's working.</h2>
+    <div class="feedback-card">
+      <p>This is early. If something's broken, brilliant, or missing — say so. Every message gets read.</p>
+      <a class="cta" href="mailto:theexecutiveapp@gmail.com">Send Feedback</a>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+<footer>
+    <div class="brand">THE EXECUTIVE</div>
+    <div class="fine">© 2026 The Executive. All boardroom sessions are confidential. · <a href="/terms.html" style="color: rgba(232,224,204,0.5);">Terms and Conditions</a></div>
+  </footer>
+</div>
+
+<script>
+  async function submitWaitlist(event, formId) {
+    event.preventDefault();
+    const input = document.getElementById('waitlist-email-' + formId);
+    const email = input.value.trim();
+    if (!email) return false;
+
+    const form = document.getElementById('waitlist-form-' + formId);
+    const btn = form.querySelector('.waitlist-submit');
+    btn.disabled = true;
+    btn.textContent = 'Joining...';
+
+    try {
+      const res = await fetch('https://the-executive-backend.onrender.com/api/waitlist/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        form.innerHTML = data.already_on_list
+          ? "<p style='color: var(--gold); font-weight: 700;'>You're already on the list — hang tight.</p>"
+          : "<p style='color: var(--gold); font-weight: 700;'>You're on the list. We'll email you when it's your turn.</p>";
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Join the Waitlist';
+        alert('Something went wrong. Try again.');
+      }
+    } catch (e) {
+      btn.disabled = false;
+      btn.textContent = 'Join the Waitlist';
+      alert('Connection failed. Try again.');
     }
-  </script>
+    return false;
+  }
+
+  let deferredInstallPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    renderInstallBox();
+  });
+
+  function renderInstallBox() {
+    const el = document.getElementById('install-content');
+    const ua = navigator.userAgent;
+    const isIOS = /iPhone|iPad|iPod/.test(ua);
+    const isAndroid = /Android/.test(ua);
+
+    if (deferredInstallPrompt) {
+      el.innerHTML = `<p>One tap installs it directly — no App Store, no steps.</p><a class="cta" href="javascript:void(0)" id="install-btn">Install App</a>`;
+      document.getElementById('install-btn').addEventListener('click', async () => {
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        el.innerHTML = `<p>Installed. Check your home screen.</p>`;
+      });
+    } else if (isIOS) {
+      el.innerHTML = `<p>On iPhone: tap the Share icon in Safari, then "Add to Home Screen." That's the only step Apple allows.</p>`;
+    } else if (isAndroid) {
+      el.innerHTML = `<p>Open theexecutive.app in Chrome, then tap the three-dot menu and choose "Install app."</p>`;
+    } else {
+      el.innerHTML = `<p>Open theexecutive.app on your phone to install it as an app.</p>`;
+    }
+  }
+
+  renderInstallBox();
+
+  // Phone mockups: gently cycle through the app screens (off for reduced-motion users)
+  (function () {
+    const screens = document.querySelectorAll('.phone-screen');
+    screens.forEach((screen, i) => {
+      const imgs = screen.querySelectorAll('img');
+      if (imgs.length < 2) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      let idx = 0;
+      setTimeout(() => {
+        setInterval(() => {
+          imgs[idx].classList.remove('active');
+          idx = (idx + 1) % imgs.length;
+          imgs[idx].classList.add('active');
+        }, 3800);
+      }, i * 1900);
+    });
+  })();
+</script>
 </body>
 </html>
