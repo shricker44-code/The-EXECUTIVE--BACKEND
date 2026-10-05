@@ -45,6 +45,15 @@ async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
         if not request.consented:
             raise HTTPException(status_code=400, detail="You must consent to sharing analytics screenshots to create an account.")
 
+        waitlist_entry = db.query(WaitlistEntry).filter(
+            WaitlistEntry.email == request.email.strip().lower()
+        ).first()
+        if not waitlist_entry or waitlist_entry.status != "invited":
+            raise HTTPException(
+                status_code=403,
+                detail="The Executive is invite-only right now. Join the waitlist and we'll email you when it's your turn."
+            )
+
         auth_response = supabase.auth.sign_up({
             "email": request.email,
             "password": request.password,
@@ -286,76 +295,5 @@ async def reset_password(request: ResetPasswordRequest):
             {"password": request.new_password}
         )
         return {"success": True}
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
-class ConfirmEmailRequest(BaseModel):
-    email: str
-
-@router.post("/confirm-email")
-async def confirm_email(request: ConfirmEmailRequest, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == request.email).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    user.email_verified = True
-    db.commit()
-
-    return {"success": True}
-
-@router.post("/signup")
-async def signup(request: SignUpRequest, db: Session = Depends(get_db)):
-    try:
-        if not request.consented:
-            raise HTTPException(status_code=400, detail="You must consent to sharing analytics screenshots to create an account.")
-
-        waitlist_entry = db.query(WaitlistEntry).filter(
-            WaitlistEntry.email == request.email.strip().lower()
-        ).first()
-        if not waitlist_entry or waitlist_entry.status != "invited":
-            raise HTTPException(
-                status_code=403,
-                detail="The Executive is invite-only right now. Join the waitlist and we'll email you when it's your turn."
-            )
-
-        auth_response = supabase.auth.sign_up({
-            "email": request.email,
-            "password": request.password,
-        })
-
-        user_id = str(uuid.uuid4())
-        session_token = str(uuid.uuid4())
-
-        new_user = User(
-            id=user_id,
-            email=request.email,
-            first_name=request.first_name,
-            device_fingerprint=request.device_fingerprint,
-            phone_number=request.phone_number,
-            trial_start_date=datetime.utcnow(),
-            trial_active=True,
-            is_paid=False,
-            session_token=session_token,
-            session_device=request.device_fingerprint,
-            consented_at=datetime.utcnow(),
-        )
-        db.add(new_user)
-        db.commit()
-
-        default_account = Account(
-            id=str(uuid.uuid4()),
-            user_id=user_id,
-            label="Main",
-            created_at=datetime.utcnow(),
-        )
-        db.add(default_account)
-        db.commit()
-
-        return {
-            "success": True,
-            "needs_verification": True,
-            "email": request.email,
-        }
-
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
