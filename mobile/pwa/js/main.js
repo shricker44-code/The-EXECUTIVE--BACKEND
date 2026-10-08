@@ -1599,6 +1599,34 @@ async function sendToExecutive(text) {
   }
 }
 
+function loadDisplayName() {
+  if (currentUser && currentUser.first_name) {
+    const input = document.getElementById('p-displayname');
+    if (input) input.value = currentUser.first_name;
+  }
+}
+
+async function handleUpdateName() {
+  const newName = document.getElementById('p-displayname').value.trim();
+  if (!newName) { alert(t('enter-name-alert')); return; }
+  const btn = event.target;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  try {
+    const result = await updateDisplayName(newName);
+    if (result.success) {
+      btn.textContent = t('update-name-updated');
+      setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
+    } else {
+      btn.textContent = t('update-name-failed');
+      setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
+    }
+  } catch (e) {
+    btn.textContent = t('update-name-failed');
+    setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
+  }
+}
+
 async function handleSetCheckInTime() {
   const time = document.getElementById('p-checkin-time').value;
   if (!time) { alert(t('pick-time-alert')); return; }
@@ -1640,7 +1668,7 @@ async function loadComputedScore() {
   container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-secondary);">${t('calculating-score')}</div>`;
 
   const data = await fetchScore();
-    if (!data || data.error || data.detail || typeof data.total !== 'number') {
+  if (!data || data.error || data.detail || typeof data.total !== 'number') {
     container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-secondary);">${t('not-enough-data')}</div>`;
     document.getElementById('score-total').textContent = '0';
     document.getElementById('score-fill').style.width = '0%';
