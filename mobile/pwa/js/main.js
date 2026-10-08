@@ -1449,6 +1449,65 @@ function addPlaybackButton(bubbleEl, text, existingAudioBase64 = null) {
   bubbleEl.appendChild(btn);
 }
 
+// Smooth word-by-word reveal (replaces the old per-character typewriter).
+// Change this number to speed the text up (higher) or slow it down (lower).
+const REVEAL_CHARS_PER_SEC = 30;
+
+function smoothReveal(fullText, bubbleEl, messagesEl, onProgress) {
+  return new Promise((resolve) => {
+    const pieces = [];
+    const re = /\*\*|\n|[^\S\n]+|[^\s*]+|\*/g;
+    let bold = false;
+    let m;
+    while ((m = re.exec(fullText)) !== null) {
+      const s = m[0];
+      const start = m.index;
+      const end = re.lastIndex;
+      if (s === '**') { bold = !bold; pieces.push({ kind: 'mark', start, end }); }
+      else if (s === '\n') pieces.push({ kind: 'br', start, end });
+      else if (/^[^\S\n]+$/.test(s)) pieces.push({ kind: 'sp', start, end });
+      else pieces.push({ kind: 'w', s, bold, start, end });
+    }
+
+    bubbleEl.textContent = '';
+    let shown = 0;
+    let t0 = null;
+
+    function append(p) {
+      if (p.kind === 'w') {
+        const el = document.createElement(p.bold ? 'strong' : 'span');
+        el.className = 'w';
+        el.textContent = p.s;
+        bubbleEl.appendChild(el);
+      } else if (p.kind === 'sp') {
+        bubbleEl.appendChild(document.createTextNode(' '));
+      } else if (p.kind === 'br') {
+        bubbleEl.appendChild(document.createElement('br'));
+      }
+    }
+
+    function tick(ts) {
+      if (!bubbleEl.isConnected) { resolve(); return; }
+      if (t0 === null) t0 = ts;
+      const target = ((ts - t0) / 1000) * REVEAL_CHARS_PER_SEC;
+      let lastEnd = -1;
+      while (shown < pieces.length && pieces[shown].start <= target) {
+        const p = pieces[shown++];
+        append(p);
+        lastEnd = p.end;
+      }
+      if (lastEnd >= 0) {
+        if (onProgress) onProgress(fullText.slice(0, lastEnd));
+        if (isNearBottom(messagesEl)) messagesEl.scrollTop = messagesEl.scrollHeight;
+        updateScrollButton();
+      }
+      if (shown < pieces.length) requestAnimationFrame(tick);
+      else resolve();
+    }
+    requestAnimationFrame(tick);
+  });
+}
+
 async function sendToExecutive(text) {
   addMessage('user', text);
   document.getElementById('typing').classList.remove('hidden');
@@ -1461,33 +1520,7 @@ async function sendToExecutive(text) {
   messages.style.scrollBehavior = 'auto';
   let bubbleEl = null;
   let displayedText = '';
-  let typewriterTimer = null;
   let lastExpressionUpdate = 0;
-
-  function revealNextChar(fullText) {
-    if (displayedText.length < fullText.length) {
-      displayedText += fullText[displayedText.length];
-      const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-      bubbleEl.innerHTML = formatted + '<span class="cursor-blink">|</span>';
-
-      const now = Date.now();
-      if (now - lastExpressionUpdate > 400) {
-        updateExpression(displayedText);
-        lastExpressionUpdate = now;
-      }
-
-      if (isNearBottom(messages)) {
-        messages.scrollTop = messages.scrollHeight;
-      }
-      updateScrollButton();
-
-      typewriterTimer = setTimeout(() => revealNextChar(fullText), 45);
-    } else {
-      const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-      bubbleEl.innerHTML = formatted;
-      typewriterTimer = null;
-    }
-  }
 
   try {
     const isFirstMessage = conversationHistory.length === 0;
@@ -1532,23 +1565,23 @@ async function sendToExecutive(text) {
       currentAutoAudio.volume = currentVolume;
       currentAutoAudio.play().catch(e => console.log('Auto-play blocked:', e));
     }
-    revealNextChar(finalText);
 
-    await new Promise((resolve) => {
-      const checkDone = setInterval(() => {
-        if (displayedText.length >= finalText.length && !typewriterTimer) {
-          clearInterval(checkDone);
-          resolve();
-        }
-      }, 50);
+    await smoothReveal(finalText, bubbleEl, messages, (shown) => {
+      displayedText = shown;
+      const now = Date.now();
+      if (now - lastExpressionUpdate > 400) {
+        updateExpression(shown);
+        lastExpressionUpdate = now;
+      }
     });
+    displayedText = finalText;
 
     if (document.body.contains(bubbleEl)) {
       updateExpression(displayedText);
       checkVerdictTracking();
       checkUsageWarning();
 
-            addPlaybackButton(bubbleEl, finalText, audioBase64);
+      addPlaybackButton(bubbleEl, finalText, audioBase64);
       if (capcutTag) appendCapcutImage(bubbleEl, capcutTag);
       if (exampleTag) appendExampleAssetImage(bubbleEl, exampleTag);
 
@@ -1563,34 +1596,6 @@ async function sendToExecutive(text) {
   } finally {
     document.getElementById('send-btn').disabled = false;
     messages.style.scrollBehavior = '';
-  }
-}
-
-function loadDisplayName() {
-  if (currentUser && currentUser.first_name) {
-    const input = document.getElementById('p-displayname');
-    if (input) input.value = currentUser.first_name;
-  }
-}
-
-async function handleUpdateName() {
-  const newName = document.getElementById('p-displayname').value.trim();
-  if (!newName) { alert(t('enter-name-alert')); return; }
-  const btn = event.target;
-  const originalText = btn.textContent;
-  btn.disabled = true;
-  try {
-    const result = await updateDisplayName(newName);
-    if (result.success) {
-      btn.textContent = t('update-name-updated');
-      setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
-    } else {
-      btn.textContent = t('update-name-failed');
-      setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
-    }
-  } catch (e) {
-    btn.textContent = t('update-name-failed');
-    setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 1500);
   }
 }
 
@@ -2142,33 +2147,7 @@ async function sendScreenshots(files, dataUrls) {
   messages.style.scrollBehavior = 'auto';
   let bubbleEl = null;
   let displayedText = '';
-  let typewriterTimer = null;
   let lastExpressionUpdate = 0;
-
-  function revealNextChar(fullText) {
-    if (displayedText.length < fullText.length) {
-      displayedText += fullText[displayedText.length];
-      const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-      bubbleEl.innerHTML = formatted + '<span class="cursor-blink">|</span>';
-
-      const now = Date.now();
-      if (now - lastExpressionUpdate > 400) {
-        updateExpression(displayedText);
-        lastExpressionUpdate = now;
-      }
-
-      if (isNearBottom(messages)) {
-        messages.scrollTop = messages.scrollHeight;
-      }
-      updateScrollButton();
-
-      typewriterTimer = setTimeout(() => revealNextChar(fullText), 45);
-    } else {
-      const formatted = displayedText.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
-      bubbleEl.innerHTML = formatted;
-      typewriterTimer = null;
-    }
-  }
 
   try {
     const data = await scanScreenshot(files, pendingScreenshotType);
@@ -2198,16 +2177,15 @@ async function sendScreenshots(files, dataUrls) {
       currentAutoAudio.volume = currentVolume;
       currentAutoAudio.play().catch(e => console.log('Auto-play blocked:', e));
     }
-    revealNextChar(finalText);
-
-    await new Promise((resolve) => {
-      const checkDone = setInterval(() => {
-        if (displayedText.length >= finalText.length && !typewriterTimer) {
-          clearInterval(checkDone);
-          resolve();
-        }
-      }, 50);
+    await smoothReveal(finalText, bubbleEl, messages, (shown) => {
+      displayedText = shown;
+      const now = Date.now();
+      if (now - lastExpressionUpdate > 400) {
+        updateExpression(shown);
+        lastExpressionUpdate = now;
+      }
     });
+    displayedText = finalText;
 
     if (document.body.contains(bubbleEl)) {
       updateExpression(displayedText);
