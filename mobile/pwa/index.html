@@ -398,6 +398,18 @@
       <div class="tab-scroll" id="verdicts-list"></div>
     </div>
 
+    <!-- Assignments Tab -->
+    <div id="tab-assignments" class="tab-content hidden">
+      <div class="header">
+        <div class="divider"></div>
+        <div class="header-title-center" data-i18n="assignments-header-title">YOUR ASSIGNMENTS</div>
+        <div class="header-sub-center" data-i18n="assignments-header-sub">YOUR POSTING CHECKLISTS FROM THE BOARDROOM</div>
+        <div class="divider"></div>
+      </div>
+      <div class="assign-pills hidden" id="assignments-pills"></div>
+      <div class="tab-scroll" id="assignments-list"></div>
+    </div>
+
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
       <button class="nav-btn active" onclick="switchTab('boardroom')">
@@ -416,6 +428,10 @@
         <span class="nav-icon">📄</span>
         <span class="nav-label" data-i18n="nav-verdicts">Verdicts</span>
       </button>
+      <button class="nav-btn" onclick="switchTab('assignments')">
+        <span class="nav-icon">✅</span>
+        <span class="nav-label" data-i18n="nav-assignments">Assignments</span>
+      </button>
     </nav>
 
     <!-- MOBILE-ONLY: Slide-in Sidebar -->
@@ -430,6 +446,7 @@
         <button class="sidebar-nav-item" onclick="sidebarNavigate('profile')"><span class="sidebar-nav-icon">👤</span><span data-i18n="nav-profile">Profile</span></button>
         <button class="sidebar-nav-item" onclick="sidebarNavigate('score')"><span class="sidebar-nav-icon">🏆</span><span data-i18n="nav-score">Score</span></button>
         <button class="sidebar-nav-item" onclick="sidebarNavigate('verdicts')"><span class="sidebar-nav-icon">📄</span><span data-i18n="nav-verdicts">Verdicts</span></button>
+        <button class="sidebar-nav-item" onclick="sidebarNavigate('assignments')"><span class="sidebar-nav-icon">✅</span><span data-i18n="nav-assignments">Assignments</span></button>
         <button class="sidebar-nav-item" onclick="sidebarClearChat()"><span class="sidebar-nav-icon">🗑️</span><span data-i18n="sidebar-clear-chat">Clear Chat</span></button>
       </div>
       <div class="sidebar-divider"></div>

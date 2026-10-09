@@ -5,6 +5,7 @@ from routers import trial, queue, auth, notifications, waitlist
 from routers import accounts
 from routers import score
 from routers import questionnaire
+from routers import assignments
 from database import engine
 import models
 from migrations import run_migrations
@@ -30,9 +31,9 @@ app.include_router(billing.router, prefix="/api/billing", tags=["billing"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(notifications.router, prefix="/api/notifications", tags=["notifications"])
 app.include_router(accounts.router, prefix="/api/accounts", tags=["accounts"])
-app.include_router(score.router, prefix="/api/score", tags=["score"])
 app.include_router(waitlist.router, prefix="/api/waitlist", tags=["waitlist"])
 app.include_router(questionnaire.router, prefix="/api/questionnaire", tags=["questionnaire"])
+app.include_router(assignments.router, prefix="/api/assignments", tags=["assignments"])
 @app.get("/")
 def root():
     return {"status": "The Executive is in session."}

@@ -30,6 +30,7 @@ MIGRATIONS = [
     ("users", "biggest_challenge", "VARCHAR", None),
     ("users", "goal", "VARCHAR", None),
     ("users", "questionnaire_completed", "BOOLEAN", "FALSE"),
+    ("verdicts", "assignment_steps", "TEXT", None),
 ]
 
 

@@ -296,6 +296,33 @@ async function fetchScore() {
   return await response.json();
 }
 
+const ASSIGNMENTS_BASE = 'https://the-executive-backend.onrender.com/api/assignments';
+
+async function fetchAssignments() {
+  if (!currentUser) return [];
+  const response = await fetch(`${ASSIGNMENTS_BASE}/${currentUser.user_id}`);
+  const data = await response.json();
+  return data.assignments || [];
+}
+
+async function buildAssignmentChecklist(verdictId) {
+  const response = await fetch(`${ASSIGNMENTS_BASE}/${verdictId}/build`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: currentUser.user_id })
+  });
+  return await response.json();
+}
+
+async function setAssignmentDone(verdictId, done) {
+  const response = await fetch(`${ASSIGNMENTS_BASE}/${verdictId}/done`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_id: currentUser.user_id, done })
+  });
+  return await response.json();
+}
+
 function clearHistory() {
   conversationHistory = [];
 }

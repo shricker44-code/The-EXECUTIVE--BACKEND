@@ -146,6 +146,39 @@ const UI_TRANSLATIONS = {
     "btn-get-score-verdict": "GET VERDICT ON MY SCORE →",
     "verdicts-header-title": "THE EXECUTIVE'S RULINGS",
     "verdicts-header-sub": "TAP ANY RULING TO DISCUSS IN BOARDROOM",
+    "nav-assignments": "Assignments",
+    "assignments-header-title": "YOUR ASSIGNMENTS",
+    "assignments-header-sub": "YOUR POSTING CHECKLISTS FROM THE BOARDROOM",
+    "assign-empty": "No assignments yet. When The Executive gives you one in the Boardroom, it shows up here as a step-by-step posting checklist.",
+    "assign-loading": "Loading your assignments...",
+    "assign-load-failed": "Could not load your assignments. Check your connection and reopen this tab.",
+    "assign-building": "Building your checklist...",
+    "assign-build-failed": "Could not build this checklist.",
+    "assign-retry": "TRY AGAIN",
+    "assign-status-pending": "PENDING",
+    "assign-status-done": "DONE",
+    "assign-steps-label": "STEP BY STEP",
+    "assign-hashtags-label": "YOUR HASHTAGS",
+    "assign-copy-hashtags": "COPY HASHTAGS",
+    "assign-copied": "COPIED",
+    "assign-desc-label": "YOUR DESCRIPTION",
+    "assign-desc-note": "You write the sentences. The Executive checks them. Here is what each part must do:",
+    "assign-keyword": "Keyword phrase",
+    "assign-line1": "Line 1",
+    "assign-line2": "Line 2",
+    "assign-hashtag-line": "Hashtags",
+    "assign-posttime-label": "WHEN TO POST",
+    "assign-posttime-fallback": "Post when your followers are most active. In TikTok, open Profile, then the menu, then Creator tools, then Analytics, then Followers to see your most active times.",
+    "assign-bringback-label": "BRING BACK",
+    "assign-bringback-text": "Come back in {window} with: {metrics}.",
+    "assign-draft-placeholder": "Write your description here, then tap the button. The Executive will tell you exactly what is weak.",
+    "assign-check-btn": "CHECK MY DESCRIPTION",
+    "assign-discuss-btn": "DISCUSS IN BOARDROOM",
+    "assign-mark-done": "MARK AS POSTED",
+    "assign-mark-pending": "MARK AS NOT POSTED",
+    "assign-draft-empty": "Write your description first.",
+    "assign-check-msg": "Check my description for the assignment \"{title}\". Judge it against the checklist: keyword in line one ({keyword}), a comment-bait second line, and 3 to 5 targeted hashtags. Diagnose what is weak, do not rewrite it for me. My description:\n\n{draft}",
+    "assign-discuss-msg": "Let us go over my assignment: {title}",
     "usage-daily": "Daily usage: {used} / {cap} tokens today",
     "usage-daily-trial": "Daily: {used} / {cap} tokens today<br>Trial total: {trialUsed} / {trialCap} tokens used",
     "auth-submit-entering": "ENTERING...",
@@ -270,6 +303,39 @@ const UI_TRANSLATIONS = {
     "btn-get-score-verdict": "OBTENIR UN VERDICT SUR MON SCORE →",
     "verdicts-header-title": "LES JUGEMENTS DE THE EXECUTIVE",
     "verdicts-header-sub": "TOUCHE UN JUGEMENT POUR EN DISCUTER AU BUREAU",
+    "nav-assignments": "Missions",
+    "assignments-header-title": "TES MISSIONS",
+    "assignments-header-sub": "TES CHECKLISTS DE PUBLICATION DU BUREAU",
+    "assign-empty": "Aucune mission pour l'instant. Quand The Executive t'en donne une au bureau, elle apparaît ici sous forme de checklist de publication, étape par étape.",
+    "assign-loading": "Chargement de tes missions...",
+    "assign-load-failed": "Impossible de charger tes missions. Vérifie ta connexion et rouvre cet onglet.",
+    "assign-building": "Création de ta checklist...",
+    "assign-build-failed": "Impossible de créer cette checklist.",
+    "assign-retry": "RÉESSAYER",
+    "assign-status-pending": "EN ATTENTE",
+    "assign-status-done": "FAIT",
+    "assign-steps-label": "ÉTAPE PAR ÉTAPE",
+    "assign-hashtags-label": "TES HASHTAGS",
+    "assign-copy-hashtags": "COPIER LES HASHTAGS",
+    "assign-copied": "COPIÉ",
+    "assign-desc-label": "TA DESCRIPTION",
+    "assign-desc-note": "Tu écris les phrases. The Executive les vérifie. Voici ce que chaque partie doit faire :",
+    "assign-keyword": "Mot-clé",
+    "assign-line1": "Ligne 1",
+    "assign-line2": "Ligne 2",
+    "assign-hashtag-line": "Hashtags",
+    "assign-posttime-label": "QUAND PUBLIER",
+    "assign-posttime-fallback": "Publie quand tes abonnés sont le plus actifs. Dans TikTok, ouvre Profil, puis le menu, puis Outils de création, puis Analyses, puis Abonnés pour voir tes heures les plus actives.",
+    "assign-bringback-label": "À RAPPORTER",
+    "assign-bringback-text": "Reviens dans {window} avec : {metrics}.",
+    "assign-draft-placeholder": "Écris ta description ici, puis touche le bouton. The Executive te dira exactement ce qui est faible.",
+    "assign-check-btn": "VÉRIFIER MA DESCRIPTION",
+    "assign-discuss-btn": "EN DISCUTER AU BUREAU",
+    "assign-mark-done": "MARQUER COMME PUBLIÉ",
+    "assign-mark-pending": "MARQUER COMME NON PUBLIÉ",
+    "assign-draft-empty": "Écris d'abord ta description.",
+    "assign-check-msg": "Vérifie ma description pour la mission « {title} ». Juge-la avec la checklist : mot-clé en première ligne ({keyword}), une deuxième ligne qui appâte les commentaires, et 3 à 5 hashtags ciblés. Diagnostique ce qui est faible, ne la réécris pas à ma place. Ma description :\n\n{draft}",
+    "assign-discuss-msg": "Parlons de ma mission : {title}",
     "usage-daily": "Utilisation quotidienne : {used} / {cap} tokens aujourd'hui",
     "usage-daily-trial": "Quotidien : {used} / {cap} tokens aujourd'hui<br>Total essai : {trialUsed} / {trialCap} tokens utilisés",
     "auth-submit-entering": "ENTRÉE...",
@@ -394,6 +460,39 @@ const UI_TRANSLATIONS = {
     "btn-get-score-verdict": "OBTER VEREDITO SOBRE MEU SCORE →",
     "verdicts-header-title": "OS VEREDITOS DE THE EXECUTIVE",
     "verdicts-header-sub": "TOQUE EM QUALQUER VEREDITO PARA DISCUTIR NO ESCRITÓRIO",
+    "nav-assignments": "Tarefas",
+    "assignments-header-title": "SUAS TAREFAS",
+    "assignments-header-sub": "SEUS CHECKLISTS DE POSTAGEM DO ESCRITÓRIO",
+    "assign-empty": "Nenhuma tarefa ainda. Quando The Executive te der uma no escritório, ela aparece aqui como um checklist de postagem, passo a passo.",
+    "assign-loading": "Carregando suas tarefas...",
+    "assign-load-failed": "Não foi possível carregar suas tarefas. Verifique sua conexão e abra esta aba de novo.",
+    "assign-building": "Montando seu checklist...",
+    "assign-build-failed": "Não foi possível montar este checklist.",
+    "assign-retry": "TENTAR DE NOVO",
+    "assign-status-pending": "PENDENTE",
+    "assign-status-done": "FEITO",
+    "assign-steps-label": "PASSO A PASSO",
+    "assign-hashtags-label": "SUAS HASHTAGS",
+    "assign-copy-hashtags": "COPIAR HASHTAGS",
+    "assign-copied": "COPIADO",
+    "assign-desc-label": "SUA DESCRIÇÃO",
+    "assign-desc-note": "Você escreve as frases. The Executive confere. Veja o que cada parte precisa fazer:",
+    "assign-keyword": "Palavra-chave",
+    "assign-line1": "Linha 1",
+    "assign-line2": "Linha 2",
+    "assign-hashtag-line": "Hashtags",
+    "assign-posttime-label": "QUANDO POSTAR",
+    "assign-posttime-fallback": "Poste quando seus seguidores estão mais ativos. No TikTok, abra Perfil, depois o menu, depois Ferramentas do criador, depois Análises, depois Seguidores para ver seus horários mais ativos.",
+    "assign-bringback-label": "TRAGA DE VOLTA",
+    "assign-bringback-text": "Volte em {window} com: {metrics}.",
+    "assign-draft-placeholder": "Escreva sua descrição aqui e toque no botão. The Executive vai dizer exatamente o que está fraco.",
+    "assign-check-btn": "CONFERIR MINHA DESCRIÇÃO",
+    "assign-discuss-btn": "DISCUTIR NO ESCRITÓRIO",
+    "assign-mark-done": "MARCAR COMO POSTADO",
+    "assign-mark-pending": "MARCAR COMO NÃO POSTADO",
+    "assign-draft-empty": "Escreva sua descrição primeiro.",
+    "assign-check-msg": "Confira minha descrição da tarefa \"{title}\". Julgue pelo checklist: palavra-chave na primeira linha ({keyword}), uma segunda linha que provoque comentários e 3 a 5 hashtags direcionadas. Diagnostique o que está fraco, não reescreva por mim. Minha descrição:\n\n{draft}",
+    "assign-discuss-msg": "Vamos falar da minha tarefa: {title}",
     "usage-daily": "Uso diário: {used} / {cap} tokens hoje",
     "usage-daily-trial": "Diário: {used} / {cap} tokens hoje<br>Total do teste: {trialUsed} / {trialCap} tokens usados",
     "auth-submit-entering": "ENTRANDO...",
@@ -518,6 +617,39 @@ const UI_TRANSLATIONS = {
     "btn-get-score-verdict": "मेरे स्कोर पर फैसला पाएं →",
     "verdicts-header-title": "एग्ज़िक्यूटिव के फैसले",
     "verdicts-header-sub": "बोर्डरूम में चर्चा करने के लिए किसी भी फैसले पर टैप करें",
+    "nav-assignments": "असाइनमेंट",
+    "assignments-header-title": "आपके असाइनमेंट",
+    "assignments-header-sub": "बोर्डरूम से आपकी पोस्टिंग चेकलिस्ट",
+    "assign-empty": "अभी कोई असाइनमेंट नहीं है। जब The Executive आपको बोर्डरूम में कोई असाइनमेंट देगा, वह यहां स्टेप-बाय-स्टेप पोस्टिंग चेकलिस्ट के रूप में दिखेगा।",
+    "assign-loading": "आपके असाइनमेंट लोड हो रहे हैं...",
+    "assign-load-failed": "आपके असाइनमेंट लोड नहीं हो सके। अपना कनेक्शन जांचें और यह टैब दोबारा खोलें।",
+    "assign-building": "आपकी चेकलिस्ट बन रही है...",
+    "assign-build-failed": "यह चेकलिस्ट नहीं बन सकी।",
+    "assign-retry": "फिर कोशिश करें",
+    "assign-status-pending": "बाकी",
+    "assign-status-done": "हो गया",
+    "assign-steps-label": "स्टेप बाय स्टेप",
+    "assign-hashtags-label": "आपके हैशटैग",
+    "assign-copy-hashtags": "हैशटैग कॉपी करें",
+    "assign-copied": "कॉपी हो गया",
+    "assign-desc-label": "आपका डिस्क्रिप्शन",
+    "assign-desc-note": "वाक्य आप लिखते हैं। The Executive उन्हें जांचता है। हर हिस्से को क्या करना चाहिए:",
+    "assign-keyword": "कीवर्ड",
+    "assign-line1": "लाइन 1",
+    "assign-line2": "लाइन 2",
+    "assign-hashtag-line": "हैशटैग",
+    "assign-posttime-label": "कब पोस्ट करें",
+    "assign-posttime-fallback": "तब पोस्ट करें जब आपके फॉलोअर्स सबसे ज़्यादा एक्टिव हों। TikTok में प्रोफाइल खोलें, फिर मेन्यू, फिर Creator tools, फिर Analytics, फिर Followers में अपने सबसे एक्टिव समय देखें।",
+    "assign-bringback-label": "वापस लाएं",
+    "assign-bringback-text": "{window} बाद इनके साथ लौटें: {metrics}।",
+    "assign-draft-placeholder": "अपना डिस्क्रिप्शन यहां लिखें, फिर बटन दबाएं। The Executive ठीक-ठीक बताएगा कि क्या कमज़ोर है।",
+    "assign-check-btn": "मेरा डिस्क्रिप्शन जांचें",
+    "assign-discuss-btn": "बोर्डरूम में चर्चा करें",
+    "assign-mark-done": "पोस्ट हो गया चिह्नित करें",
+    "assign-mark-pending": "पोस्ट नहीं हुआ चिह्नित करें",
+    "assign-draft-empty": "पहले अपना डिस्क्रिप्शन लिखें।",
+    "assign-check-msg": "असाइनमेंट \"{title}\" के लिए मेरा डिस्क्रिप्शन जांचें। चेकलिस्ट से परखें: पहली लाइन में कीवर्ड ({keyword}), कमेंट बुलाने वाली दूसरी लाइन, और 3 से 5 टारगेटेड हैशटैग। बताएं कि क्या कमज़ोर है, मेरे लिए दोबारा न लिखें। मेरा डिस्क्रिप्शन:\n\n{draft}",
+    "assign-discuss-msg": "चलिए मेरे असाइनमेंट पर बात करें: {title}",
     "greeting-named": "{name}। बैठिए। मैं फ़ालतू बातें नहीं करता, तो सीधे मुद्दे पर आते हैं — अपनी niche, अपने नंबर, और क्या काम नहीं कर रहा है, मुझे बताइए।",
     "greeting-anon": "बैठिए। मैं फ़ालतू बातें नहीं करता, तो सीधे मुद्दे पर आते हैं — अपनी niche, अपने नंबर, और क्या काम नहीं कर रहा है, मुझे बताइए।",
     "account-delete-confirm": "\"{label}\" को हटाएं? इससे केवल यह अकाउंट हटेगा — आपके बाकी अकाउंट और प्रोफाइल सुरक्षित रहेंगे।",
@@ -661,6 +793,7 @@ function applyUITranslations() {
   renderVerdicts();
   renderAccountSwitcher();
   renderSidebarAccounts();
+  if (typeof renderAssignments === 'function' && currentTab === 'assignments') renderAssignments();
 }
 
 window.addEventListener('load', () => {
@@ -1259,11 +1392,12 @@ function switchTab(tab) {
   document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.remove('hidden');
-    const tabs = ['boardroom', 'profile', 'score', 'verdicts'];
+    const tabs = ['boardroom', 'profile', 'score', 'verdicts', 'assignments'];
   const idx = tabs.indexOf(tab);
   if (idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
   currentTab = tab;
   if (tab === 'score') loadComputedScore();
+  if (tab === 'assignments') loadAssignmentsTab();
     if (tab === 'profile') {
     loadUsageDisplay();
     updateLanguageButtons();
@@ -1775,6 +1909,285 @@ async function subscribeToPush(userId) {
       body: JSON.stringify({ user_id: userId, status: 'failed' })
     }).catch(() => {});
   }
+}
+
+// ============ ASSIGNMENTS TAB ============
+let assignmentsData = [];
+let assignmentsLoaded = false;
+let assignmentsFilter = null;
+let assignmentsOpenId = null;
+const assignmentsBuilding = {};
+const assignmentsBuildFailed = {};
+
+function assignEsc(v) {
+  return String(v === null || v === undefined ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function assignTickKey(id) { return 'assign_ticks_' + id; }
+function assignGetTicks(id) {
+  try { return JSON.parse(localStorage.getItem(assignTickKey(id)) || '[]'); } catch (e) { return []; }
+}
+function assignSetTicks(id, arr) {
+  try { localStorage.setItem(assignTickKey(id), JSON.stringify(arr)); } catch (e) {}
+}
+
+// Which chat an assignment belongs to. Old rows with no chat fold into the first chat.
+function assignChatId(item) {
+  if (item.account_id) return item.account_id;
+  return userAccounts.length ? userAccounts[0].id : null;
+}
+
+async function loadAssignmentsTab() {
+  const list = document.getElementById('assignments-list');
+  if (!list) return;
+  if (!assignmentsFilter) assignmentsFilter = currentAccountId || (userAccounts[0] && userAccounts[0].id) || null;
+  if (!assignmentsLoaded) list.innerHTML = '<div class="assign-loading">' + assignEsc(t('assign-loading')) + '</div>';
+  try {
+    assignmentsData = await fetchAssignments();
+    assignmentsLoaded = true;
+  } catch (e) {
+    list.innerHTML = '<div class="assign-empty">' + assignEsc(t('assign-load-failed')) + '</div>';
+    return;
+  }
+  // Follow the active chat when the tab is opened.
+  if (currentAccountId) assignmentsFilter = currentAccountId;
+  renderAssignments();
+}
+
+function renderAssignmentPills() {
+  const pills = document.getElementById('assignments-pills');
+  if (!pills) return;
+  if (userAccounts.length < 2) {
+    pills.classList.add('hidden');
+    pills.innerHTML = '';
+    return;
+  }
+  pills.classList.remove('hidden');
+  pills.innerHTML = userAccounts.map(function(acc) {
+    const active = acc.id === assignmentsFilter ? 'active' : '';
+    return '<button class="account-pill ' + active + '" onclick="selectAssignmentsChat(\'' + assignEsc(acc.id) + '\')">' + assignEsc(acc.label) + '</button>';
+  }).join('');
+}
+
+function selectAssignmentsChat(accountId) {
+  assignmentsFilter = accountId;
+  assignmentsOpenId = null;
+  renderAssignments();
+}
+
+function renderAssignments() {
+  const list = document.getElementById('assignments-list');
+  if (!list) return;
+  renderAssignmentPills();
+
+  const items = assignmentsData.filter(function(it) {
+    return userAccounts.length < 2 || assignChatId(it) === assignmentsFilter;
+  });
+
+  if (!items.length) {
+    list.innerHTML = '<div class="assign-empty">' + assignEsc(t('assign-empty')) + '</div>';
+    return;
+  }
+
+  list.innerHTML = items.map(renderAssignmentCard).join('');
+}
+
+function renderAssignmentCard(it) {
+  const cl = it.checklist;
+  const isOpen = assignmentsOpenId === it.id;
+  const done = it.posted_after === true;
+  const title = (cl && cl.title) ? cl.title : it.assignment;
+  let date = '';
+  if (it.created_at) {
+    try { date = new Date(it.created_at + (/[zZ]|[+-]\d\d:?\d\d$/.test(it.created_at) ? '' : 'Z')).toLocaleDateString(getLang()); } catch (e) {}
+  }
+  const badge = done
+    ? '<span class="assign-badge done">' + assignEsc(t('assign-status-done')) + '</span>'
+    : '<span class="assign-badge">' + assignEsc(t('assign-status-pending')) + '</span>';
+
+  let body = '';
+  if (isOpen) {
+    if (cl) body = renderAssignmentBody(it, cl, done);
+    else if (assignmentsBuilding[it.id]) body = '<div class="assign-building">' + assignEsc(t('assign-building')) + '</div>';
+    else if (assignmentsBuildFailed[it.id]) body = '<div class="assign-note">' + assignEsc(t('assign-build-failed')) + '</div><div class="assign-actions"><button class="assign-btn" onclick="buildAssignment(\'' + assignEsc(it.id) + '\')">' + assignEsc(t('assign-retry')) + '</button></div>';
+  }
+
+  return '<div class="assign-card' + (isOpen ? ' open' : '') + '" id="assign-card-' + assignEsc(it.id) + '">' +
+    '<div class="assign-head" onclick="toggleAssignment(\'' + assignEsc(it.id) + '\')">' +
+      '<div class="verdict-icon-box">' + (done ? '✅' : '📝') + '</div>' +
+      '<div class="assign-head-body"><div class="assign-title">' + assignEsc(title) + '</div>' +
+      '<div class="assign-meta">' + badge + (date ? '<span>' + assignEsc(date) + '</span>' : '') + '</div></div>' +
+      '<div class="assign-chevron">›</div>' +
+    '</div>' +
+    '<div class="assign-body">' + body + '</div>' +
+  '</div>';
+}
+
+function renderAssignmentBody(it, cl, done) {
+  const id = assignEsc(it.id);
+  const ticks = assignGetTicks(it.id);
+  const steps = (cl.steps || []).map(function(s, i) {
+    const on = ticks.indexOf(i) !== -1;
+    return '<li class="assign-step' + (on ? ' checked' : '') + '" onclick="toggleAssignStep(\'' + id + '\',' + i + ')">' +
+      '<span class="assign-step-box">' + (on ? '✓' : '') + '</span><span class="assign-step-text">' + assignEsc(s) + '</span></li>';
+  }).join('');
+
+  const tags = (cl.hashtags || []).map(function(h) { return '<span class="assign-chip">' + assignEsc(h) + '</span>'; }).join('');
+
+  let desc = '';
+  if (cl.keyword_phrase) desc += '<div class="assign-box"><b>' + assignEsc(t('assign-keyword')) + ':</b> ' + assignEsc(cl.keyword_phrase) + '</div>';
+  if (cl.line1_rule) desc += '<div class="assign-box"><b>' + assignEsc(t('assign-line1')) + ':</b> ' + assignEsc(cl.line1_rule) + '</div>';
+  if (cl.line2_rule) desc += '<div class="assign-box"><b>' + assignEsc(t('assign-line2')) + ':</b> ' + assignEsc(cl.line2_rule) + '</div>';
+  if (cl.hashtag_rule) desc += '<div class="assign-box"><b>' + assignEsc(t('assign-hashtag-line')) + ':</b> ' + assignEsc(cl.hashtag_rule) + '</div>';
+
+  const postTime = cl.post_time ? assignEsc(cl.post_time) : assignEsc(t('assign-posttime-fallback'));
+  const metrics = (cl.bring_back_metrics || []).join(', ');
+  const bringBack = (cl.bring_back_window || metrics)
+    ? assignEsc(t('assign-bringback-text', { window: cl.bring_back_window || '', metrics: metrics }))
+    : '';
+
+  return '' +
+    '<div class="assign-section-label">' + assignEsc(t('assign-steps-label')) + '</div>' +
+    '<ol class="assign-steps">' + steps + '</ol>' +
+    (tags ? '<div class="assign-section-label">' + assignEsc(t('assign-hashtags-label')) + '</div><div class="assign-chips">' + tags + '</div>' +
+      '<div class="assign-actions"><button class="assign-btn ghost" onclick="copyAssignHashtags(this,\'' + id + '\')">' + assignEsc(t('assign-copy-hashtags')) + '</button></div>' : '') +
+    '<div class="assign-section-label">' + assignEsc(t('assign-desc-label')) + '</div>' +
+    '<div class="assign-note">' + assignEsc(t('assign-desc-note')) + '</div>' + desc +
+    '<textarea class="assign-draft" id="assign-draft-' + id + '" placeholder="' + assignEsc(t('assign-draft-placeholder')) + '"></textarea>' +
+    '<div class="assign-actions"><button class="assign-btn" onclick="checkAssignDescription(\'' + id + '\')">' + assignEsc(t('assign-check-btn')) + '</button></div>' +
+    '<div class="assign-section-label">' + assignEsc(t('assign-posttime-label')) + '</div>' +
+    '<div class="assign-box">' + postTime + '</div>' +
+    (bringBack ? '<div class="assign-section-label">' + assignEsc(t('assign-bringback-label')) + '</div><div class="assign-box">' + bringBack + '</div>' : '') +
+    '<div class="assign-actions">' +
+      '<button class="assign-btn ghost" onclick="toggleAssignDone(\'' + id + '\')">' + assignEsc(done ? t('assign-mark-pending') : t('assign-mark-done')) + '</button>' +
+      '<button class="assign-btn ghost" onclick="discussAssignment(\'' + id + '\')">' + assignEsc(t('assign-discuss-btn')) + '</button>' +
+    '</div>';
+}
+
+// t() uses String.replace with a string, so "$&" style text inside a user's draft would be mangled. Substitute with functions instead.
+function assignMsg(key, vars) {
+  const tokens = {};
+  Object.keys(vars).forEach(function(k) { tokens[k] = '\u0001' + k + '\u0001'; });
+  let msg = t(key, tokens);
+  Object.keys(vars).forEach(function(k) {
+    msg = msg.split(tokens[k]).join(String(vars[k]));
+  });
+  return msg;
+}
+
+function findAssignment(id) {
+  return assignmentsData.find(function(a) { return a.id === id; });
+}
+
+// Re-render without losing what the user typed in the open description box.
+function rerenderAssignmentsKeepDraft() {
+  const ta = assignmentsOpenId ? document.getElementById('assign-draft-' + assignmentsOpenId) : null;
+  const draft = ta ? ta.value : '';
+  renderAssignments();
+  if (draft) {
+    const again = document.getElementById('assign-draft-' + assignmentsOpenId);
+    if (again) again.value = draft;
+  }
+}
+
+async function toggleAssignment(id) {
+  assignmentsOpenId = (assignmentsOpenId === id) ? null : id;
+  renderAssignments();
+  if (assignmentsOpenId === id) {
+    const it = findAssignment(id);
+    if (it && !it.checklist && !assignmentsBuilding[id]) buildAssignment(id);
+  }
+}
+
+async function buildAssignment(id) {
+  assignmentsBuilding[id] = true;
+  delete assignmentsBuildFailed[id];
+  rerenderAssignmentsKeepDraft();
+  try {
+    const res = await buildAssignmentChecklist(id);
+    if (res && res.success && res.assignment) {
+      const idx = assignmentsData.findIndex(function(a) { return a.id === id; });
+      if (idx >= 0) assignmentsData[idx] = res.assignment;
+    } else {
+      assignmentsBuildFailed[id] = true;
+    }
+  } catch (e) {
+    assignmentsBuildFailed[id] = true;
+  }
+  delete assignmentsBuilding[id];
+  rerenderAssignmentsKeepDraft();
+}
+
+function toggleAssignStep(id, i) {
+  const ticks = assignGetTicks(id);
+  const at = ticks.indexOf(i);
+  if (at === -1) ticks.push(i); else ticks.splice(at, 1);
+  assignSetTicks(id, ticks);
+  rerenderAssignmentsKeepDraft();
+}
+
+function copyAssignHashtags(btn, id) {
+  const it = findAssignment(id);
+  if (!it || !it.checklist) return;
+  const text = (it.checklist.hashtags || []).join(' ');
+  const done = function() {
+    const old = btn.textContent;
+    btn.textContent = t('assign-copied');
+    setTimeout(function() { btn.textContent = old; }, 1500);
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(function() {});
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+}
+
+async function toggleAssignDone(id) {
+  const it = findAssignment(id);
+  if (!it) return;
+  const next = it.posted_after !== true;
+  try {
+    const res = await setAssignmentDone(id, next);
+    if (res && res.success && res.assignment) {
+      const idx = assignmentsData.findIndex(function(a) { return a.id === id; });
+      if (idx >= 0) assignmentsData[idx] = res.assignment;
+    }
+  } catch (e) {}
+  rerenderAssignmentsKeepDraft();
+}
+
+async function goToAssignmentChat(it) {
+  const chatId = assignChatId(it);
+  if (chatId && chatId !== currentAccountId) {
+    await switchAccount(chatId);
+  } else {
+    switchTab('boardroom');
+  }
+}
+
+async function discussAssignment(id) {
+  const it = findAssignment(id);
+  if (!it) return;
+  const title = (it.checklist && it.checklist.title) || it.assignment;
+  await goToAssignmentChat(it);
+  await sendToExecutive(assignMsg('assign-discuss-msg', { title: title }));
+}
+
+async function checkAssignDescription(id) {
+  const it = findAssignment(id);
+  const ta = document.getElementById('assign-draft-' + id);
+  if (!it || !ta) return;
+  const draft = ta.value.trim();
+  if (!draft) { alert(t('assign-draft-empty')); return; }
+  const title = (it.checklist && it.checklist.title) || it.assignment;
+  const keyword = (it.checklist && it.checklist.keyword_phrase) || '';
+  await goToAssignmentChat(it);
+  await sendToExecutive(assignMsg('assign-check-msg', { title: title, keyword: keyword, draft: draft }));
 }
 
 async function discussVerdict(title) {

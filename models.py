@@ -79,6 +79,7 @@ class Verdict(Base):
     search_insights_snapshot = Column(Text, nullable=True)
     capcut_screenshot = Column(String, nullable=True)
     example_asset = Column(String, nullable=True)
+    assignment_steps = Column(Text, nullable=True)  # JSON posting checklist, built lazily by routers/assignments.py
 
 
 class WaitlistEntry(Base):
